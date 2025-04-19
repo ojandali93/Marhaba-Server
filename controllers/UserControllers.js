@@ -1,4 +1,4 @@
-import {supabase} from '../services/SupabaseClient'
+import {supabase} from '../services/SupabaseClient.js'
 
 export const createUser = async (req, res) => {
   const { email } = req.body;
