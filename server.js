@@ -10,6 +10,7 @@ import hpp from 'hpp';
 import compression from 'compression';
 import userRoutes from './routers/UserRouters.js';
 import authRoutes from './routers/AuthRoutes.js';
+import accountRoutes from './routers/AccountRoutes.js';
 
 
 dotenv.config();
@@ -38,6 +39,7 @@ app.use(limiter);
 // ✅ Routes
 app.use('/api/users', userRoutes);
 app.use('/api/auth', authRoutes);
+app.use('/api/account', accountRoutes);
 
 // ✅ Health check endpoint (optional)
 app.get('/health', (req, res) => res.send('✅ Marhaba backend is running'));
