@@ -4,17 +4,22 @@ import { v4 as uuidv4 } from 'uuid';
 
 export const UploadToDatabase = async (req, res) => {
   try {
-    const { fileBase64, fileName, userId } = req.body;
-    if (!fileBase64 || !fileName || !userId) {
-      return res.status(400).json({ error: 'Missing file or metadata' });
+    const { userId } = req.body;
+    const file = req.file;
+
+    if (!userId || !file) {
+      return res.status(400).json({ error: 'Missing userId or image file' });
     }
-    const buffer = Buffer.from(fileBase64, 'base64');
-    const uniqueName = `${userId}_${uuidv4()}_${fileName}`;
-    const storageRef = ref(storage, `UserImages/${uniqueName}`);
-    const snapshot = await uploadBytesResumable(storageRef, buffer, {
-      contentType: 'image/jpeg', 
+
+    const fileName = `${userId}_${uuidv4()}_${file.originalname}`;
+    const storageRef = ref(storage, `UserImages/${fileName}`);
+
+    const snapshot = await uploadBytesResumable(storageRef, file.buffer, {
+      contentType: file.mimetype,
     });
+
     const downloadURL = await getDownloadURL(snapshot.ref);
+
     return res.status(200).json({
       success: true,
       url: downloadURL,
