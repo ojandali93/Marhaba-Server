@@ -33,9 +33,9 @@ export const UploadToDatabase = async (req, res) => {
 
 export const createUserAccount = async (req, res) => {
   try {
-    const { profile, about, preferences, prompts, photos, survey, tags } = req.body;
+    const { profile } = req.body;
 
-    if (!profile || !about || !preferences || !prompts || !photos || !survey || !tags ) {
+    if (!profile ) {
       return res.status(400).json({ error: 'Missing requred information' });
     }
 
