@@ -5,7 +5,6 @@ import cors from 'cors';
 import morgan from 'morgan';
 import bodyParser from 'body-parser';
 import rateLimit from 'express-rate-limit';
-import hpp from 'hpp';
 import compression from 'compression';
 import userRoutes from './routers/UserRouters.js';
 import authRoutes from './routers/AuthRoutes.js';
@@ -29,7 +28,6 @@ app.use(cors());
 app.use(morgan('dev'));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
-app.use(hpp());
 app.use(compression());
 app.use(limiter);
 
