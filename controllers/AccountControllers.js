@@ -39,14 +39,15 @@ export const createUserAccount = async (req, res) => {
       return res.status(400).json({ error: 'Missing requred information' });
     }
 
+    const { email, password, name, dob, gender, height, fcmToken, approved, tier } = profile;
+
     const { data: user, error: signUpError } = await supabase.auth.admin.createUser({
       email,
       password,
       email_confirm: true,
-      user_metadata: {
-        name: profile.name // or any other custom data
-      }
+      user_metadata: { name },
     });
+
     if (signUpError) {
       console.error('Signup error:', signUpError.message);
       return res.status(400).json({ error: signUpError.message });
@@ -55,9 +56,17 @@ export const createUserAccount = async (req, res) => {
     const { data: profileData, error: profileError } = await supabase.from('Profile').insert([
       {
         user_id: userId,
-        ...profile,
+        email,
+        name,
+        dob,
+        gender,
+        height,
+        fcmToken,
+        approved,
+        tier
       },
     ]);
+    
     if(profileData){
       return res.status(200).json({ success: true, data: profileData})
     } else {
