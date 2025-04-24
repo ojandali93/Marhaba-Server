@@ -174,7 +174,7 @@ export const createUserPreferences = async (req, res) => {
       sect,
       views,
       ageMax,
-
+      ageMin
     }])
     .select();
 
