@@ -62,7 +62,7 @@ export const createUserProfile = async (req, res) => {
     if (profileData) {
       return res.status(200).json({ success: true, data: profileData });
     } else {
-      return res.status(500).json({ error: 'profile not returned' });
+      return res.status(500).json({ error: profileError.message });
     }
 
   } catch (error) {
