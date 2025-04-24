@@ -35,7 +35,7 @@ export const createUserAccount = async (req, res) => {
   try {
     const { email, password, name } = req.body;
 
-    const { data: user, error: signUpError } = await supabase.auth.admin.createUser({
+    const { data: signupUser, error: signUpError } = await supabase.auth.admin.createUser({
       email,
       password,
       email_confirm: true,
@@ -45,7 +45,7 @@ export const createUserAccount = async (req, res) => {
     if (signUpError) {
       throw signUpError
     }
-    const userId = user.user.id;
+    const userId = signupUser.user.id;
 
     if(userId){
       return res.status(200).json({ success: true, data: userId})
