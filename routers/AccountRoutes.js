@@ -1,8 +1,9 @@
 import express from 'express';
-import { createUserAccount } from '../controllers/AccountControllers.js';
+import { createUserAccount, createUserProfile } from '../controllers/AccountControllers.js';
 
 const router = express.Router();
 
 router.post('/createAccount', createUserAccount); // Must match
+router.post('/createProfile', createUserProfile);
 
 export default router;
