@@ -12,8 +12,6 @@ export const createUserAccount = async (req, res) => {
     const { data: signupUser, error: signUpError } = await supabase.auth.admin.createUser({
       email,
       password,
-      email_confirm: true,
-      user_metadata: { name },
     });
 
     if (signUpError) {
@@ -38,7 +36,7 @@ export const createUserAccount = async (req, res) => {
 
 export const createUserProfile = async (req, res) => {
   try {
-    const { userId,  email, name, dob, gender, height, fcmToken, approved, tier } = req.body;
+    const { userId,  email, name, dob, gender, height, fcmToken, approved, tier, longitude, latitude } = req.body;
 
     const { data: profileData, error: profileError } = await supabase
     .from('Profile')
@@ -51,7 +49,9 @@ export const createUserProfile = async (req, res) => {
       height,
       fcmToken,
       approved,
-      tier 
+      tier,
+      longitude,
+      latitude 
     }])
     .select();
 
