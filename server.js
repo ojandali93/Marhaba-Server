@@ -6,7 +6,6 @@ import morgan from 'morgan';
 import bodyParser from 'body-parser';
 import rateLimit from 'express-rate-limit';
 import compression from 'compression';
-import userRoutes from './routers/UserRouters.js';
 import authRoutes from './routers/AuthRoutes.js';
 import accountRoutes from './routers/AccountRoutes.js';
 
@@ -34,9 +33,9 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.use(compression());
 app.use(limiter);
 
-app.use('/api/users', userRoutes);
 app.use('/api/auth', authRoutes);
 app.use('/api/account', accountRoutes);
+
 app.use('*', (req, res) => {
   res.status(404).json({ error: 'Route not found', path: req.originalUrl });
 });

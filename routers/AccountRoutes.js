@@ -1,10 +1,8 @@
-import { Router } from 'express';
-import { upload } from '../middleware/multer.js';
-import { createUserAccount, UploadToDatabase } from '../controllers/AccountControllers.js';
+import express from 'express';
+import { createUserAccount } from '../controllers/AccountController.js';
 
-const router = Router();
+const router = express.Router();
 
-router.post('/uploadImage', upload.single('image'), UploadToDatabase)
-router.post('/createAccount', createUserAccount);
+router.post('/createAccount', createUserAccount); // Must match
 
 export default router;
