@@ -55,18 +55,16 @@ export const createUserProfile = async (req, res) => {
     }])
 
     if (profileError) {
-      console.error('❌ Supabase profile error:', profileError.message);
       return res.status(400).json({ error: profileError.message });
     }
 
     if (profileData) {
       return res.status(200).json({ success: true, data: profileData });
     } else {
-      return res.status(500).json({ error: profileError.message });
+      return res.status(500).json({ error: profileError });
     }
 
   } catch (error) {
-    console.error('❌ Server error:', error.message);
     return res.status(500).json({ error: 'Failed to create user' });
   }
 };
