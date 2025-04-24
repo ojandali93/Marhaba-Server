@@ -142,10 +142,10 @@ export const createUserTraits = async (req, res) => {
     const traitArray = typeof traits === 'string' ? traits.split(',') : traits;
     const insertData = traitArray.map(trait => ({
       userId,
-      tag: trait.trim(), // optional: trim whitespace
+      tag: trait, // optional: trim whitespace
     }));
     const { data: traitsData, error: traitsError } = await supabase
-      .from('Traits') // ✅ Use correct table name (not 'Career')
+      .from('Tags') // ✅ Use correct table name (not 'Career')
       .insert(insertData)
       .select();
     if (traitsError) {
