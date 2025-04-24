@@ -73,7 +73,7 @@ export const createUserProfile = async (req, res) => {
 
 export const createUserAbout = async (req, res) => {
   try {
-    const { userId, lookingFor,  background, religion, sect, views } = req.body;
+    const { userId, lookingFor,  background, religion, sect, views, smoke, drink } = req.body;
 
     const { data: aboutData, error: aboutError } = await supabase
     .from('About')
@@ -83,7 +83,9 @@ export const createUserAbout = async (req, res) => {
       background,
       religion, 
       sect,
-      views
+      views,
+      smoke,
+      drink
     }])
     .select();
 
@@ -95,6 +97,39 @@ export const createUserAbout = async (req, res) => {
       return res.status(200).json({ success: true, data: aboutData });
     } else {
       return res.status(500).json({ error: aboutError });
+    }
+
+  } catch (error) {
+    return res.status(500).json({ error: 'Failed to create user' });
+  }
+};
+
+export const createUserCareer = async (req, res) => {
+  try {
+    const { userId, lookingFor,  background, religion, sect, views, smoke, drink } = req.body;
+
+    const { data: careerData, error: careerError } = await supabase
+    .from('Career')
+    .insert([{
+      userId,
+      lookingFor,
+      background,
+      religion, 
+      sect,
+      views,
+      smoke,
+      drink
+    }])
+    .select();
+
+    if (careerError) {
+      return res.status(400).json({ error: aboutError.careerError });
+    }
+
+    if (careerData) {
+      return res.status(200).json({ success: true, data: careerData });
+    } else {
+      return res.status(500).json({ error: careerError });
     }
 
   } catch (error) {
