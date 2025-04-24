@@ -9,7 +9,7 @@ export const createUserAccount = async (req, res) => {
       return res.status(400).json({ error: 'Missing required fields' });
     }
 
-    const { data: signupUser, error: signUpError } = await supabase.auth.admin.createUser({
+    const { data: signupUser, error: signUpError } = await supabase.auth.signup({
       email,
       password,
     });
