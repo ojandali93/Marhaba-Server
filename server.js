@@ -21,10 +21,6 @@ const limiter = rateLimit({
   message: 'Too many requests, please try again later.',
 });
 
-app.get('/', (req, res) => {
-  res.send('🌐 Marhaba API is running!');
-});
-
 app.use(helmet());
 app.use(cors());
 app.use(morgan('dev'));
@@ -35,10 +31,6 @@ app.use(limiter);
 
 app.use('/api/auth', authRoutes);
 app.use('/api/account', accountRoutes);
-
-app.use('*', (req, res) => {
-  res.status(404).json({ error: 'Route not found', path: req.originalUrl });
-});
 
 app.get('/health', (req, res) => res.send('✅ Marhaba backend is running'));
 
