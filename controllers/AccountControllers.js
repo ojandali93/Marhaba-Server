@@ -274,3 +274,29 @@ export const createUserPrompts = async (req, res) => {
     return res.status(500).json({ error: 'Failed to save prompts' });
   }
 };
+
+export const createUserPhotos = async (req, res) => {
+  try {
+    const { userId, photos } = req.body;
+    const photoArray = typeof photos === 'string' ? JSON.parse(photos) : photos;
+    const insertData = photoArray
+      .filter(photo => photo && photo !== 'null' && photo !== '')
+      .map((photoUrl, index) => ({
+        userId,
+        photoUrl,
+        order: index + 1,
+      }));
+    const { data, error } = await supabase
+      .from('Photos')
+      .insert(insertData)
+      .select();
+    if (error) {
+      console.error('❌ Supabase insert error:', error.message);
+      return res.status(400).json({ error: error.message });
+    }
+    return res.status(200).json({ success: true, data });
+  } catch (error) {
+    console.error('❌ Server error:', error.message);
+    return res.status(500).json({ error: 'Failed to upload photos' });
+  }
+};
