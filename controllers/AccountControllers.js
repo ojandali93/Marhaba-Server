@@ -242,3 +242,35 @@ export const createUserEitherOr = async (req, res) => {
     return res.status(500).json({ error: 'Failed to create user' });
   }
 };
+
+export const createUserPrompts = async (req, res) => {
+  try {
+    const { userId, prompts } = req.body;
+    let parsedPrompts;
+    try {
+      parsedPrompts = typeof prompts === 'string' ? JSON.parse(prompts) : prompts;
+    } catch (e) {
+      return res.status(400).json({ error: 'Invalid prompts format. Must be an array.' });
+    }
+    if (!Array.isArray(parsedPrompts)) {
+      return res.status(400).json({ error: 'Prompts must be an array of { prompt, response }' });
+    }
+    const insertData = parsedPrompts.map(item => ({
+      userId,
+      prompt: item.prompt,
+      response: item.response,
+    }));
+    const { data: insertedPrompts, error: insertError } = await supabase
+      .from('Prompts')
+      .insert(insertData)
+      .select();
+    if (insertError) {
+      console.error('❌ Supabase insert error:', insertError.message);
+      return res.status(400).json({ error: insertError.message });
+    }
+    return res.status(200).json({ success: true, data: insertedPrompts });
+  } catch (error) {
+    console.error('❌ Server error:', error.message);
+    return res.status(500).json({ error: 'Failed to save prompts' });
+  }
+};
