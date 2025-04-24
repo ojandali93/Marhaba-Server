@@ -45,7 +45,7 @@ export const createUserProfile = async (req, res) => {
     }
 
     const { data: profileData, error: profileError } = await supabase
-    .from('Profiles')
+    .from('Profile')
     .insert([{
       userId,
       email,
