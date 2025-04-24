@@ -9,9 +9,13 @@ export const createUserAccount = async (req, res) => {
       return res.status(400).json({ error: 'Missing required fields' });
     }
 
-    const { data: signupUser, error: signUpError } = await supabase.auth.signup({
+    const { data: signupUser, error: signUpError } = await supabase.auth.admin.createUser({
       email,
       password,
+      email_confirm: false, // This triggers Supabase to send a confirmation email
+      user_metadata: {
+        name,
+      },
     });
 
     if (signUpError) {
@@ -32,6 +36,7 @@ export const createUserAccount = async (req, res) => {
     return res.status(500).json({ error: 'Failed to create user' });
   }
 };
+
 
 
 export const createUserProfile = async (req, res) => {
