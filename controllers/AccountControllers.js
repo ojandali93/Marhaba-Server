@@ -158,3 +158,37 @@ export const createUserTraits = async (req, res) => {
     return res.status(500).json({ error: 'Failed to create traits' });
   }
 };
+
+
+export const createUserPreferences = async (req, res) => {
+  try {
+    const { userId, gender,  distance, religion, sect, views, ageMin, ageMax } = req.body;
+
+    const { data: preferencesData, error: preferencesError } = await supabase
+    .from('Preferences')
+    .insert([{
+      userId,
+      gender,
+      distance,
+      religion, 
+      sect,
+      views,
+      ageMax,
+
+    }])
+    .select();
+
+    if (preferencesError) {
+      return res.status(400).json({ error: aboutError.preferencesError });
+    }
+
+    if (preferencesData) {
+      return res.status(200).json({ success: true, data: preferencesData });
+    } else {
+      return res.status(500).json({ error: preferencesError });
+    }
+
+  } catch (error) {
+    return res.status(500).json({ error: 'Failed to create user' });
+  }
+};
