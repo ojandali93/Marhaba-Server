@@ -53,6 +53,7 @@ export const createUserProfile = async (req, res) => {
       approved,
       tier 
     }])
+    .select();
 
     if (profileError) {
       return res.status(400).json({ error: profileError.message });
