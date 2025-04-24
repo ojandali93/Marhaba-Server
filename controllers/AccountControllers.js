@@ -33,13 +33,7 @@ export const UploadToDatabase = async (req, res) => {
 
 export const createUserAccount = async (req, res) => {
   try {
-    const { profile } = req.body;
-
-    if (!profile ) {
-      return res.status(400).json({ error: 'Missing requred information' });
-    }
-
-    const { email, password, name, dob, gender, height, fcmToken, approved, tier } = profile;
+    const { email, password, name } = req.body;
 
     const { data: user, error: signUpError } = await supabase.auth.admin.createUser({
       email,
@@ -49,28 +43,14 @@ export const createUserAccount = async (req, res) => {
     });
 
     if (signUpError) {
-      console.error('Signup error:', signUpError.message);
-      return res.status(400).json({ error: signUpError.message });
+      throw signUpError
     }
     const userId = user.user.id;
-    const { data: profileData, error: profileError } = await supabase.from('Profile').insert([
-      {
-        user_id: userId,
-        email,
-        name,
-        dob,
-        gender,
-        height,
-        fcmToken,
-        approved,
-        tier
-      },
-    ]);
-    
-    if(profileData){
-      return res.status(200).json({ success: true, data: profileData})
+
+    if(userId){
+      return res.status(200).json({ success: true, data: userId})
     } else {
-      return res.status(400).json({ error: profileError.message });
+      return res.status(400).json({ error: signUpError.message });
     }
 
   } catch (error) {
