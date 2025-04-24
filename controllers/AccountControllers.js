@@ -40,10 +40,6 @@ export const createUserProfile = async (req, res) => {
   try {
     const { userId,  email, name, dob, gender, height, fcmToken, approved, tier } = req.body;
 
-    if (!userId || !email || !name || !dob || !gender || !height || !fcmToken || !approved || !tier) {
-      return res.status(400).json({ error: 'Missing required fields' });
-    }
-
     const { data: profileData, error: profileError } = await supabase
     .from('Profile')
     .insert([{
