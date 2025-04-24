@@ -135,3 +135,26 @@ export const createUserCareer = async (req, res) => {
     return res.status(500).json({ error: 'Failed to create user' });
   }
 };
+
+export const createUserTraits = async (req, res) => {
+  try {
+    const { userId, traits } = req.body;
+    const traitArray = typeof traits === 'string' ? traits.split(',') : traits;
+    const insertData = traitArray.map(trait => ({
+      userId,
+      trait: trait.trim(), // optional: trim whitespace
+    }));
+    const { data: traitsData, error: traitsError } = await supabase
+      .from('Traits') // ✅ Use correct table name (not 'Career')
+      .insert(insertData)
+      .select();
+    if (traitsError) {
+      console.error('❌ Supabase insert error:', traitsError.message);
+      return res.status(400).json({ error: traitsError.message });
+    }
+    return res.status(200).json({ success: true, data: traitsData });
+  } catch (error) {
+    console.error('❌ Server error:', error.message);
+    return res.status(500).json({ error: 'Failed to create traits' });
+  }
+};
