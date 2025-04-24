@@ -106,19 +106,17 @@ export const createUserAbout = async (req, res) => {
 
 export const createUserCareer = async (req, res) => {
   try {
-    const { userId, lookingFor,  background, religion, sect, views, smoke, drink } = req.body;
+    const { userId, job,  company, remote, education, fiveYear } = req.body;
 
     const { data: careerData, error: careerError } = await supabase
     .from('Career')
     .insert([{
       userId,
-      lookingFor,
-      background,
-      religion, 
-      sect,
-      views,
-      smoke,
-      drink
+      job,
+      company,
+      remote, 
+      fiveYear,
+      education
     }])
     .select();
 
