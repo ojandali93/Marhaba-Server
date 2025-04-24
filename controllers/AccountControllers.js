@@ -5,6 +5,10 @@ export const createUserAccount = async (req, res) => {
   try {
     const { email, password, name } = req.body;
 
+    if (!email || !password || !name) {
+      return res.status(400).json({ error: 'Missing required fields' });
+    }
+
     const { data: signupUser, error: signUpError } = await supabase.auth.admin.createUser({
       email,
       password,
@@ -13,18 +17,20 @@ export const createUserAccount = async (req, res) => {
     });
 
     if (signUpError) {
-      throw signUpError
-    }
-    const userId = signupUser.user.id;
-
-    if(userId){
-      return res.status(200).json({ success: true, data: userId})
-    } else {
+      console.error('❌ Supabase signup error:', signUpError.message);
       return res.status(400).json({ error: signUpError.message });
     }
 
+    const userId = signupUser?.user?.id;
+
+    if (userId) {
+      return res.status(200).json({ success: true, data: userId });
+    } else {
+      return res.status(500).json({ error: 'User ID not returned' });
+    }
+
   } catch (error) {
-    console.error('❌ Upload error:', error);
-    return res.status(500).json({ error: 'Failed to upload image' });
+    console.error('❌ Server error:', error.message);
+    return res.status(500).json({ error: 'Failed to create user' });
   }
 };
