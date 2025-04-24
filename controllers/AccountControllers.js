@@ -69,3 +69,35 @@ export const createUserProfile = async (req, res) => {
     return res.status(500).json({ error: 'Failed to create user' });
   }
 };
+
+
+export const createUserAbout = async (req, res) => {
+  try {
+    const { userId, lookingFor,  background, religion, sect, views } = req.body;
+
+    const { data: aboutData, error: aboutError } = await supabase
+    .from('About')
+    .insert([{
+      userId,
+      lookingFor,
+      background,
+      religion, 
+      sect,
+      views
+    }])
+    .select();
+
+    if (aboutError) {
+      return res.status(400).json({ error: aboutError.message });
+    }
+
+    if (aboutData) {
+      return res.status(200).json({ success: true, data: aboutData });
+    } else {
+      return res.status(500).json({ error: aboutError });
+    }
+
+  } catch (error) {
+    return res.status(500).json({ error: 'Failed to create user' });
+  }
+};
