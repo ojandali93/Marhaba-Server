@@ -1,5 +1,5 @@
 import express from 'express';
-import { createUserAbout, createUserAccount, createUserCareer, createUserPreferences, createUserProfile, createUserTraits } from '../controllers/AccountControllers.js';
+import { createUserAbout, createUserAccount, createUserCareer, createUserEitherOr, createUserPreferences, createUserProfile, createUserTraits } from '../controllers/AccountControllers.js';
 
 const router = express.Router();
 
@@ -9,5 +9,6 @@ router.post('/createAbout', createUserAbout);
 router.post('/createCareer', createUserCareer);
 router.post('/createTraits', createUserTraits);
 router.post('/createPreferences', createUserPreferences);
+router.post('/createSurvey', createUserEitherOr);
 
 export default router;

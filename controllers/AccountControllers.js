@@ -192,3 +192,53 @@ export const createUserPreferences = async (req, res) => {
     return res.status(500).json({ error: 'Failed to create user' });
   }
 };
+
+export const createUserEitherOr = async (req, res) => {
+  try {
+    const { userId, friday,  energy, planning, 
+      morningEnergy, social, verted, pineapple, 
+      giveUp, communication,  firstSight, morning, 
+      travel, spicy, decisions, arrive, partner, 
+      move, opposites, ghost, longDistance  } = req.body;
+
+    const { data: surveyData, error: surveyError } = await supabase
+    .from('Survey')
+    .insert([{
+      userId,
+      friday,
+      energy,
+      planning, 
+      morningEnergy,
+      social,
+      verted,
+      pineapple,
+      giveUp,
+      communication,
+      firstSight,
+      morning, 
+      travel,
+      spicy,
+      decisions,
+      arrive,
+      partner, 
+      move,
+      opposites,
+      ghost,
+      longDistance,
+    }])
+    .select();
+
+    if (surveyError) {
+      return res.status(400).json({ error: surveyError });
+    }
+
+    if (surveyData) {
+      return res.status(200).json({ success: true, data: surveyData });
+    } else {
+      return res.status(500).json({ error: surveyError });
+    }
+
+  } catch (error) {
+    return res.status(500).json({ error: 'Failed to create user' });
+  }
+};
