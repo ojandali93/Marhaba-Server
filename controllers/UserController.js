@@ -1,4 +1,4 @@
-import { supabase } from "../services/SupabaseClient";
+import { supabase } from '../services/SupabaseClient.js';
 
 export const grabSingleProfile = async (req, res) => {
   try {
