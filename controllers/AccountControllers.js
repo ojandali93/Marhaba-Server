@@ -78,7 +78,7 @@ export const createUserProfile = async (req, res) => {
 
 export const createUserAbout = async (req, res) => {
   try {
-    const { userId, lookingFor,  background, religion, sect, views, smoke, drink } = req.body;
+    const { userId, lookingFor,  background, religion, sect, views, smoke, drink, hasKids, wantsKids, timeline, travel } = req.body;
 
     const { data: aboutData, error: aboutError } = await supabase
     .from('About')
@@ -90,7 +90,11 @@ export const createUserAbout = async (req, res) => {
       sect,
       views,
       smoke,
-      drink
+      drink,
+      hasKids, 
+      wantsKids,
+      timeline,
+      travel
     }])
     .select();
 
@@ -303,5 +307,93 @@ export const createUserPhotos = async (req, res) => {
   } catch (error) {
     console.error('❌ Server error:', error.message);
     return res.status(500).json({ error: 'Failed to upload photos' });
+  }
+};
+
+// Communication Style Endpoint
+export const createCommunicationStyles = async (req, res) => {
+  try {
+    const { userId, commStyle } = req.body;
+    const commArray = typeof commStyle === 'string' ? commStyle.split(',') : commStyle;
+
+    const insertData = commArray.map(style => ({
+      userId,
+      style: style.trim(),
+    }));
+
+    const { data, error } = await supabase
+      .from('Communication')
+      .insert(insertData);
+
+    if (error) return res.status(400).json({ error: error.message });
+    return res.status(200).json({ success: true, data });
+  } catch (error) {
+    return res.status(500).json({ error: 'Failed to create communication styles' });
+  }
+};
+
+// Love Language Endpoint
+export const createLoveLanguage = async (req, res) => {
+  try {
+    const { userId, loveLanguage } = req.body;
+    const langArray = typeof loveLanguage === 'string' ? loveLanguage.split(',') : loveLanguage;
+
+    const insertData = langArray.map(language => ({
+      userId,
+      language: language.trim(),
+    }));
+
+    const { data, error } = await supabase
+      .from('Love')
+      .insert(insertData);
+
+    if (error) return res.status(400).json({ error: error.message });
+    return res.status(200).json({ success: true, data });
+  } catch (error) {
+    return res.status(500).json({ error: 'Failed to create love languages' });
+  }
+};
+
+// Core Values Endpoint
+export const createCoreValues = async (req, res) => {
+  try {
+    const { userId, coreValues } = req.body;
+    const valueArray = typeof coreValues === 'string' ? coreValues.split(',') : coreValues;
+
+    const insertData = valueArray.map(values => ({
+      userId,
+      value: values.trim(),
+    }));
+
+    const { data, error } = await supabase
+      .from('Values')
+      .insert(insertData);
+
+    if (error) return res.status(400).json({ error: error.message });
+    return res.status(200).json({ success: true, data });
+  } catch (error) {
+    return res.status(500).json({ error: 'Failed to create core values' });
+  }
+};
+
+// Time Priorities Endpoint
+export const createTimePriorities = async (req, res) => {
+  try {
+    const { userId, timePriority } = req.body;
+    const timeArray = typeof timePriority === 'string' ? timePriority.split(',') : timePriority;
+
+    const insertData = timeArray.map(priority => ({
+      userId,
+      priority: priority.trim(),
+    }));
+
+    const { data, error } = await supabase
+      .from('Time')
+      .insert(insertData);
+
+    if (error) return res.status(400).json({ error: error.message });
+    return res.status(200).json({ success: true, data });
+  } catch (error) {
+    return res.status(500).json({ error: 'Failed to create time priorities' });
   }
 };
