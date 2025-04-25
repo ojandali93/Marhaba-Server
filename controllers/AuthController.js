@@ -51,26 +51,25 @@ export const loginUser = async (req, res) => {
 
 // controllers/AuthController.js
 
+// Logout endpoint
 export const logoutUser = async (req, res) => {
   try {
-    const authHeader = req.headers.authorization;
+    const { refresh_token } = req.body;
 
-    if (!authHeader || !authHeader.startsWith('Bearer ')) {
-      return res.status(401).json({ error: 'Missing or malformed Authorization header' });
+    if (!refresh_token) {
+      return res.status(400).json({ error: 'Refresh token missing.' });
     }
 
-    const token = authHeader.split(' ')[1];
-
-    const { error } = await supabase.auth.admin.signOut(token);
+    const { error } = await supabase.auth.admin.signOut(refresh_token);
 
     if (error) {
-      console.error('❌ Logout error:', error.message);
+      console.error('Logout error:', error.message);
       return res.status(400).json({ error: error.message });
     }
 
-    return res.status(200).json({ success: true, message: 'User logged out successfully' });
+    return res.status(200).json({ success: true, message: 'Logged out successfully.' });
   } catch (error) {
-    console.error('❌ Server error:', error.message);
-    return res.status(500).json({ error: 'Internal server error' });
+    console.error('❌ Server logout error:', error.message);
+    return res.status(500).json({ error: 'Server error during logout' });
   }
 };
