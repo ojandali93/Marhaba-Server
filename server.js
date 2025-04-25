@@ -8,7 +8,7 @@ import rateLimit from 'express-rate-limit';
 import compression from 'compression';
 import authRoutes from './routers/AuthRoutes.js';
 import accountRoutes from './routers/AccountRoutes.js';
-
+import userRoutes from './routers/UserRoutes.js';
 
 dotenv.config();
 
@@ -31,6 +31,7 @@ app.use(limiter);
 
 app.use('/api/auth', authRoutes);
 app.use('/api/account', accountRoutes);
+app.use('/api/user', userRoutes);
 
 app.get('/health', (req, res) => res.send('✅ Marhaba backend is running'));
 
