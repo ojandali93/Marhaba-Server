@@ -48,3 +48,29 @@ export const loginUser = async (req, res) => {
     return res.status(500).json({ error: 'Server error during login' });
   }
 };
+
+// controllers/AuthController.js
+
+export const logoutUser = async (req, res) => {
+  try {
+    const authHeader = req.headers.authorization;
+
+    if (!authHeader || !authHeader.startsWith('Bearer ')) {
+      return res.status(401).json({ error: 'Missing or malformed Authorization header' });
+    }
+
+    const token = authHeader.split(' ')[1];
+
+    const { error } = await supabase.auth.admin.signOut(token);
+
+    if (error) {
+      console.error('❌ Logout error:', error.message);
+      return res.status(400).json({ error: error.message });
+    }
+
+    return res.status(200).json({ success: true, message: 'User logged out successfully' });
+  } catch (error) {
+    console.error('❌ Server error:', error.message);
+    return res.status(500).json({ error: 'Internal server error' });
+  }
+};
