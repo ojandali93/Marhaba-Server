@@ -397,3 +397,37 @@ export const createTimePriorities = async (req, res) => {
     return res.status(500).json({ error: 'Failed to create time priorities' });
   }
 };
+
+
+export const uploadImageToSupabase = async (req, res) => {
+  try {
+    const { base64, fileType, fileExtension } = req.body;
+
+    if (!base64 || !fileType || !fileExtension) {
+      return res.status(400).json({ error: 'Missing image data.' });
+    }
+
+    // Create a unique filename
+    const filename = `${uuidv4()}.${fileExtension}`;
+
+    const { data, error } = await supabase.storage
+      .from('profile-images') // your bucket name (adjust if different)
+      .upload(`public/${filename}`, Buffer.from(base64, 'base64'), {
+        contentType: fileType,
+        cacheControl: '3600',
+        upsert: false,
+      });
+
+    if (error) {
+      console.error('Supabase Upload Error:', error);
+      return res.status(500).json({ error: 'Failed to upload image to Supabase.' });
+    }
+
+    const imageUrl = `${process.env.SUPABASE_URL}/storage/v1/object/public/user-images/public/${filename}`;
+
+    return res.status(200).json({ success: true, url: imageUrl });
+  } catch (err) {
+    console.error('Server Error:', err.message);
+    return res.status(500).json({ error: 'Server error uploading image.' });
+  }
+};

@@ -28,6 +28,7 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(compression());
 app.use(limiter);
+app.use(express.json({ limit: '20mb' })); 
 
 app.use('/api/auth', authRoutes);
 app.use('/api/account', accountRoutes);
