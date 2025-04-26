@@ -1,5 +1,6 @@
 import { v4 as uuidv4 } from 'uuid';
 import { supabase } from '../services/SupabaseClient.js';
+import multer from 'multer';
 
 export const createUserAccount = async (req, res) => {
   try {
@@ -398,36 +399,38 @@ export const createTimePriorities = async (req, res) => {
   }
 };
 
+const upload = multer({ storage: multer.memoryStorage() }); // ⬅️ multer is LOCAL here!
 
-export const uploadImageToSupabase = async (req, res) => {
-  try {
-    const { base64, fileType, fileExtension } = req.body;
+export const uploadImage = [
+  upload.single('file'), // ⬅️ multer handles the incoming file
 
-    if (!base64 || !fileType || !fileExtension) {
-      return res.status(400).json({ error: 'Missing image data.' });
+  async (req, res) => {
+    try {
+      if (!req.file) {
+        return res.status(400).json({ error: 'No file provided.' });
+      }
+
+      const fileBuffer = req.file.buffer;
+      const originalName = req.file.originalname;
+      const uniqueName = `${uuidv4()}_${originalName}`;
+
+      const { data, error } = await supabase.storage
+        .from('UserImages')
+        .upload(uniqueName, fileBuffer, {
+          contentType: req.file.mimetype,
+        });
+
+      if (error) {
+        console.error('Supabase upload error:', error);
+        return res.status(500).json({ error: 'Failed to upload to storage' });
+      }
+
+      const publicUrl = `https://your-project.supabase.co/storage/v1/object/public/UserImages/${uniqueName}`;
+
+      return res.status(200).json({ success: true, url: publicUrl });
+    } catch (error) {
+      console.error('Server error:', error);
+      return res.status(500).json({ error: 'Internal server error' });
     }
-
-    // Create a unique filename
-    const filename = `${uuidv4()}.${fileExtension}`;
-
-    const { data, error } = await supabase.storage
-      .from('profile-images') // your bucket name (adjust if different)
-      .upload(`public/${filename}`, Buffer.from(base64, 'base64'), {
-        contentType: fileType,
-        cacheControl: '3600',
-        upsert: false,
-      });
-
-    if (error) {
-      console.error('Supabase Upload Error:', error);
-      return res.status(500).json({ error: 'Failed to upload image to Supabase.' });
-    }
-
-    const imageUrl = `${process.env.SUPABASE_URL}/storage/v1/object/public/user-images/public/${filename}`;
-
-    return res.status(200).json({ success: true, url: imageUrl });
-  } catch (err) {
-    console.error('Server Error:', err.message);
-    return res.status(500).json({ error: 'Server error uploading image.' });
-  }
-};
+  },
+];
