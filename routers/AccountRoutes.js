@@ -1,5 +1,5 @@
 import express from 'express';
-import { createCommunicationStyles, createCoreValues, createLoveLanguage, createTimePriorities, createUserAbout, createUserAccount, createUserCareer, createUserEitherOr, createUserPhotos, createUserPreferences, createUserProfile, createUserPrompts, createUserTraits, uploadImageToSupabase } from '../controllers/AccountControllers.js';
+import { createCommunicationStyles, createCoreValues, createLoveLanguage, createTimePriorities, createUserAbout, createUserAccount, createUserCareer, createUserEitherOr, createUserPhotos, createUserPreferences, createUserProfile, createUserPrompts, createUserTraits, uploadImage, uploadImageToSupabase } from '../controllers/AccountControllers.js';
 
 const router = express.Router();
 
@@ -17,6 +17,6 @@ router.post('/createCommunication', createCommunicationStyles);
 router.post('/createLove', createLoveLanguage);
 router.post('/createTime', createTimePriorities);
 router.post('/createValues', createCoreValues);
-router.post('/upoadImage', uploadImageToSupabase);
+router.post('/upoadImage', uploadImage);
 
 export default router;
