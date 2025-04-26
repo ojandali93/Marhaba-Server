@@ -30,3 +30,32 @@ export const grabSingleProfile = async (req, res) => {
     });
   }
 };
+
+export const grabAllUsers = async (req, res) => {
+  try {
+    const { data: profileData, error: profileError } = await supabase
+    .from('Profile')
+    .select('*, About(*), Career(*), Communication(*), Love(*), Photos(*), Preferences(*), Prompts(*), Survey(*), Tags(*), Time(*), Values(*)')
+    .select();
+
+    if (profileError) {
+      console.error('❌ Supabase error:', profileError);
+      return res.status(400).json({ error: profileError.message || 'Failed to fetch profile.' });
+    }
+
+    if (!profileData) {
+      return res.status(404).json({ error: 'Profile not found.' });
+    }
+
+    return res.status(200).json({ success: true, data: profileData });
+
+  }catch (error) {
+    console.error('❌ Server internal error:', error);
+    return res.status(500).json({
+      error: {
+        message: error.message || 'Server crashed while grabbing profile.',
+        stack: process.env.NODE_ENV === 'development' ? error.stack : undefined,
+      },
+    });
+  }
+};
