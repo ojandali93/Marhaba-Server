@@ -425,7 +425,7 @@ export const uploadImage = [
         return res.status(500).json({ error: 'Failed to upload to storage' });
       }
 
-      const publicUrl = `https://your-project.supabase.co/storage/v1/object/public/UserImages/${uniqueName}`;
+      const publicUrl = `https://mxwqscooobwlsdgmxjsa.supabase.co/storage/v1/object/public/profile-images/${uniqueName}`;
 
       return res.status(200).json({ success: true, url: publicUrl });
     } catch (error) {
