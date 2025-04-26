@@ -415,7 +415,7 @@ export const uploadImage = [
       const uniqueName = `${uuidv4()}_${originalName}`;
 
       const { data, error } = await supabase.storage
-        .from('UserImages')
+        .from('profile-images')
         .upload(uniqueName, fileBuffer, {
           contentType: req.file.mimetype,
         });
