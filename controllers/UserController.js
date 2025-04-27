@@ -64,6 +64,7 @@ export const grabAllUsers = async (req, res) => {
 
 export const likeProfile = async (req, res) => {
   const { userId, targetUserId, interaction, viewed, approved } = req.body;
+  console.log(userId, targetUserId, interaction, viewed, approved);
   try {
     const { data: likeData, error: likeError } = await supabase
     .from('Interactions')
