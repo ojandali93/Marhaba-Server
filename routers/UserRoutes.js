@@ -4,7 +4,7 @@ import { grabAllUsers, grabSingleProfile, likeProfile } from '../controllers/Use
 const router = Router();
 
 router.get('/allUsers', grabAllUsers);
-router.post('/likeUser', likeProfile);
+router.post('/interaction', likeProfile);
 router.get('/:userId', grabSingleProfile);
 
 export default router;

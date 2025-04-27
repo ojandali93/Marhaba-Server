@@ -63,16 +63,18 @@ export const grabAllUsers = async (req, res) => {
 };
 
 export const likeProfile = async (req, res) => {
-  const { liker, liked, likeStatus, viewed, approved } = req.body;
+  const { userId, targetUSerId, interaction, viewed, approved } = req.body;
   try {
     const { data: likeData, error: likeError } = await supabase
-    .from('Likes')
+    .from('Interactions')
     .insert([{
-      liker,
-      liked,
-      likeStatus,
+      userId,
+      targetUSerId,
+      interaction,
       viewed,
-      approved
+      approved,
+      message: null,
+      viewed_at: null,
     }])
     .select();
 
