@@ -69,7 +69,7 @@ export const likeProfile = async (req, res) => {
     .from('Interactions')
     .insert([{
       userId,
-      targetUserId,
+      targetUSerId,
       interaction,
       viewed,
       approved,
