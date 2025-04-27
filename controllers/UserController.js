@@ -36,7 +36,6 @@ export const grabAllUsers = async (req, res) => {
     const { data: profileData, error: profileError } = await supabase
     .from('Profile')
     .select('*, About(*), Career(*), Communication(*), Love(*), Photos(*), Preferences(*), Prompts(*), Survey(*), Tags(*), Time(*), Values(*)')
-    .select();
 
     if (profileError) {
       console.error('❌ Supabase error:', profileError);
