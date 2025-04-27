@@ -36,14 +36,16 @@ export const grabAllUsers = async (req, res) => {
     const { data: profileData, error: profileError } = await supabase
     .from('Profile')
     .select('*, About(*), Career(*), Communication(*), Love(*), Photos(*), Preferences(*), Prompts(*), Survey(*), Tags(*), Time(*), Values(*)')
+    
 
     if (profileError) {
       console.error('❌ Supabase error:', profileError);
-      return res.status(400).json({ error: profileError.message || 'Failed to fetch profile.' });
+      return res.status(400).json({ error: profileError.message || 'Failed to fetch profiles.' });
     }
 
-    if (!profileData) {
-      return res.status(404).json({ error: 'Profile not found.' });
+    if (profileData === null) {
+        console.warn('⚠️ Supabase query succeeded but returned null data.');
+        return res.status(404).json({ error: 'Failed to retrieve profile data.' });
     }
 
     return res.status(200).json({ success: true, data: profileData });
@@ -52,7 +54,7 @@ export const grabAllUsers = async (req, res) => {
     console.error('❌ Server internal error:', error);
     return res.status(500).json({
       error: {
-        message: error.message || 'Server crashed while grabbing profile.',
+        message: error.message || 'Server crashed while grabbing profiles.',
         stack: process.env.NODE_ENV === 'development' ? error.stack : undefined,
       },
     });
