@@ -3,8 +3,8 @@ import { grabAllUsers, grabSingleProfile, likeProfile } from '../controllers/Use
 
 const router = Router();
 
-router.get('/:userId', grabSingleProfile);
 router.get('/allUsers', grabAllUsers);
 router.get('/likeUser', likeProfile);
+router.get('/:userId', grabSingleProfile);
 
 export default router;
