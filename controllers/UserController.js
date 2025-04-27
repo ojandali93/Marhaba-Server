@@ -63,7 +63,7 @@ export const grabAllUsers = async (req, res) => {
 };
 
 export const likeProfile = async (req, res) => {
-  const { userId, targetUserId, interaction, viewed, approved } = req.body;
+  const { userId, targetUserId, interaction, viewed, approved, message } = req.body;
   console.log(userId, targetUserId, interaction, viewed, approved);
   try {
     const { data: likeData, error: likeError } = await supabase
@@ -74,7 +74,7 @@ export const likeProfile = async (req, res) => {
       interaction,
       viewed,
       approved,
-      message: null,
+      message,
       viewed_at: null,
     }])
     .select();
