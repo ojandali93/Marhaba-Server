@@ -123,7 +123,6 @@ export const getUserInteractions = async (req, res) => {
         )
       `)
       .eq('targetUserId', userId)
-      .in('interaction', ['liked', 'super'])
       .order('created_at', { ascending: false });
 
     if (error) {
