@@ -1,5 +1,5 @@
 import express from 'express';
-import { createCommunicationStyles, createCoreValues, createLoveLanguage, createTimePriorities, createUserAbout, createUserAccount, createUserCareer, createUserEitherOr, createUserPhotos, createUserPreferences, createUserProfile, createUserPrompts, createUserTraits, uploadImage } from '../controllers/AccountControllers.js';
+import { createCommunicationStyles, createCoreValues, createLoveLanguage, createTimePriorities, createUserAbout, createUserAccount, createUserAttachment, createUserCareer, createUserCore, createUserEitherOr, createUserEmotions, createUserFuture, createUserLifestyle, createUserPhotos, createUserPreferences, createUserProfile, createUserPrompts, createUserTraits, uploadImage } from '../controllers/AccountControllers.js';
 
 const router = express.Router();
 
@@ -18,5 +18,10 @@ router.post('/createLove', createLoveLanguage);
 router.post('/createTime', createTimePriorities);
 router.post('/createValues', createCoreValues);
 router.post('/upoadImage', uploadImage);
+router.post('/createCore', createUserCore);
+router.post('/createEmotions', createUserEmotions);
+router.post('/createAttachment', createUserAttachment);
+router.post('/createLifestyle', createUserLifestyle);
+router.post('/createFuture', createUserFuture);
 
 export default router;

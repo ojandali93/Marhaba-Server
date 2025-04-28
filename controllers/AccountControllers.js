@@ -469,3 +469,127 @@ export const createUserCore = async (req, res) => {
     return res.status(500).json({ error: 'Failed to create user' });
   }
 };
+
+export const createUserEmotions = async (req, res) => {
+  try {
+    const { userId, confict, apology, stress, emotion } = req.body;
+
+    const { data: preferencesData, error: preferencesError } = await supabase
+    .from('Emotions')
+    .insert([{
+      userId,
+      confict,
+      apology,
+      stress,
+      emotion,
+    }])
+    .select();
+
+    if (preferencesError) {
+      return res.status(400).json({ error: aboutError.preferencesError });
+    }
+
+    if (preferencesData) {
+      return res.status(200).json({ success: true, data: preferencesData });
+    } else {
+      return res.status(500).json({ error: preferencesError });
+    }
+
+  } catch (error) {
+    return res.status(500).json({ error: 'Failed to create user' });
+  }
+};
+
+export const createUserAttachment = async (req, res) => {
+  try {
+    const { userId, close, partner, fear, independent, response } = req.body;
+
+    const { data: preferencesData, error: preferencesError } = await supabase
+    .from('Attachment')
+    .insert([{
+      userId,
+      close,
+      partner,
+      fear,
+      independent,
+      response,
+    }])
+    .select();
+
+    if (preferencesError) {
+      return res.status(400).json({ error: aboutError.preferencesError });
+    }
+
+    if (preferencesData) {
+      return res.status(200).json({ success: true, data: preferencesData });
+    } else {
+      return res.status(500).json({ error: preferencesError });
+    }
+
+  } catch (error) {
+    return res.status(500).json({ error: 'Failed to create user' });
+  }
+};
+
+export const createUserLifestyle = async (req, res) => {
+  try {
+    const { userId, travel, social, health, finances, living } = req.body;
+
+    const { data: preferencesData, error: preferencesError } = await supabase
+    .from('Lifestyle')
+    .insert([{
+      userId,
+      travel,
+      social,
+      health,
+      finances,
+      living,
+    }])
+    .select();
+
+    if (preferencesError) {
+      return res.status(400).json({ error: aboutError.preferencesError });
+    }
+
+    if (preferencesData) {
+      return res.status(200).json({ success: true, data: preferencesData });
+    } else {
+      return res.status(500).json({ error: preferencesError });
+    }
+
+  } catch (error) {
+    return res.status(500).json({ error: 'Failed to create user' });
+  }
+};
+
+export const createUserFuture = async (req, res) => {
+  try {
+    const { userId, marriage, children, career, finances, pace, live } = req.body;
+
+    const { data: preferencesData, error: preferencesError } = await supabase
+    .from('Future')
+    .insert([{
+      userId,
+      marriage,
+      children,
+      career,
+      finances,
+      pace,
+      live,
+    }])
+    .select();
+
+    if (preferencesError) {
+      return res.status(400).json({ error: aboutError.preferencesError });
+    }
+
+    if (preferencesData) {
+      return res.status(200).json({ success: true, data: preferencesData });
+    } else {
+      return res.status(500).json({ error: preferencesError });
+    }
+
+  } catch (error) {
+    return res.status(500).json({ error: 'Failed to create user' });
+  }
+};
