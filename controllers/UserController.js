@@ -122,7 +122,7 @@ export const getUserInteractions = async (req, res) => {
           Photos ( photoUrl ) 
         )
       `)
-      .eq('liked', userId)
+      .eq('targetUserId', userId)
       .in('interaction', ['liked', 'super'])
       .order('created_at', { ascending: false });
 
