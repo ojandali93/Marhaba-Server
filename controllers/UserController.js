@@ -5,7 +5,7 @@ export const grabSingleProfile = async (req, res) => {
     const { userId } = req.params;
     const { data: profileData, error: profileError } = await supabase
     .from('Profile')
-    .select('*, About(*), Career(*), Communication(*), Love(*), Photos(*), Preferences(*), Prompts(*), Survey(*), Tags(*), Time(*), Values(*)')
+    .select('*, About(*), Anger(*), Career(*), Communication(*), Core(*), Emotions(*), Future(*), Lifestyle(*), Love(*), Photos(*), Preferences(*), Prompts(*), Survey(*), Tags(*), Time(*), Values(*)')
     .eq('userId', userId)
     .single();
 
