@@ -472,13 +472,13 @@ export const createUserCore = async (req, res) => {
 
 export const createUserEmotions = async (req, res) => {
   try {
-    const { userId, confict, apology, stress, emotion } = req.body;
+    const { userId, conflict, apology, stress, emotion } = req.body;
 
     const { data: preferencesData, error: preferencesError } = await supabase
     .from('Emotions')
     .insert([{
       userId,
-      confict,
+      conflict,
       apology,
       stress,
       emotion,
