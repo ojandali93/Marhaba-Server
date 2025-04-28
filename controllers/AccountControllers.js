@@ -593,3 +593,32 @@ export const createUserFuture = async (req, res) => {
     return res.status(500).json({ error: 'Failed to create user' });
   }
 };
+
+export const createUserAnger = async (req, res) => {
+  try {
+    const { userId, triggers } = req.body; // ✅ triggers (plural)
+
+    if (!Array.isArray(triggers)) {
+      return res.status(400).json({ error: 'Triggers must be an array' });
+    }
+
+    const records = triggers.map(trigger => ({
+      userId,
+      trigger, // ✅ Make a record for each trigger
+    }));
+
+    const { data, error } = await supabase
+      .from('Anger') // ✅ Correct your table name here
+      .insert(records)
+      .select();
+
+    if (error) {
+      return res.status(400).json({ error: error.message });
+    }
+
+    return res.status(200).json({ success: true, data });
+  } catch (error) {
+    console.error('Server error:', error);
+    return res.status(500).json({ error: 'Failed to create anger triggers' });
+  }
+};
