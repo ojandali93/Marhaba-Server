@@ -129,7 +129,7 @@ export const getUserInteractions = async (req, res) => {
       console.error('Error fetching interactions:', error);
       return res.status(500).json({ error: 'Failed to fetch interactions' });
     }
-
+    console.log(JSON.stringify(data))
     return res.status(200).json({ success: true, data });
   } catch (error) {
     console.error('Server error:', error);
