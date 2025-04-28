@@ -62,41 +62,39 @@ export const grabAllUsers = async (req, res) => {
   }
 };
 
-export const likeProfile = async (req, res) => {
-  const { userId, targetUserId, interaction, viewed, approved, message } = req.body;
-  console.log(userId, targetUserId, interaction, viewed, approved);
+export const getUserInteractions = async (req, res) => {
   try {
-    const { data: likeData, error: likeError } = await supabase
-    .from('Interactions')
-    .insert([{
-      userId,
-      targetUserId,
-      interaction,
-      viewed,
-      approved,
-      message,
-      viewed_at: null,
-    }])
-    .select();
+    const { userId } = req.params;
 
-    if (likeError) {
-      console.error('❌ Supabase error:', likeError);
-      return res.status(400).json({ error: likeError.message || 'Failed to fetch profile.' });
+    if (!userId) {
+      return res.status(400).json({ error: 'Missing userId parameter' });
     }
 
-    if (!likeData) {
-      return res.status(404).json({ error: 'Profile not found.' });
+    const { data, error } = await supabase
+      .from('Interactions')
+      .select(`
+        *, 
+        likerProfile:userId ( 
+          id, 
+          name, 
+          dob, 
+          height, 
+          gender, 
+          Photos ( photoUrl ) 
+        )
+      `)
+      .eq('liked', userId)
+      .in('interaction', ['liked', 'super'])
+      .order('created_at', { ascending: false });
+
+    if (error) {
+      console.error('Error fetching interactions:', error);
+      return res.status(500).json({ error: 'Failed to fetch interactions' });
     }
 
-    return res.status(200).json({ success: true, data: likeData });
-
-  }catch (error) {
-    console.error('❌ Server internal error:', error);
-    return res.status(500).json({
-      error: {
-        message: error.message || 'Server crashed while grabbing profile.',
-        stack: process.env.NODE_ENV === 'development' ? error.stack : undefined,
-      },
-    });
+    return res.status(200).json({ success: true, data });
+  } catch (error) {
+    console.error('Server error:', error);
+    return res.status(500).json({ error: 'Server error occurred' });
   }
 };
