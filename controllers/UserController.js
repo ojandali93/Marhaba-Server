@@ -141,10 +141,6 @@ export const approvedInteraction = async (req, res) => {
   try {
     const { id } = req.body;
 
-    if (!userId) {
-      return res.status(400).json({ error: 'Missing userId parameter' });
-    }
-
     const { data, error } = await supabase
       .from('Interactions')
       .update({ viewed: true, approved: true })
@@ -153,7 +149,7 @@ export const approvedInteraction = async (req, res) => {
 
     if (error) {
       console.error('Error fetching interactions:', error);
-      return res.status(500).json({ error: 'Failed to fetch interactions' });
+      return res.status(500).json({ error: error });
     }
     console.log(JSON.stringify(data))
     return res.status(200).json({ success: true, data });
