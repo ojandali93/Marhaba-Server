@@ -5,7 +5,7 @@ const router = Router();
 
 router.get('/allUsers', grabAllUsers);
 router.post('/interaction', likeProfile);
-router.post('/approved', approvedInteraction);
+router.put('/approved', approvedInteraction);
 router.get('/liked/:userId', getUserInteractions);
 router.get('/:userId', grabSingleProfile);
 
