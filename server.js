@@ -75,12 +75,53 @@ io.use((socket, next) => {
 io.on('connection', (socket) => {
   console.log(`✅ User connected: ${socket.user?.id}`);
 
+  socket.on('joinConversation', ({ conversationId }) => {
+    socket.join(`conversation_${conversationId}`);
+    console.log(`🛜 User joined room: conversation_${conversationId}`);
+  });
+
+  socket.on('sendMessage', async (message) => {
+    try {
+      console.log('✉️ New message received:', message);
+
+      const { data, error } = await supabase
+        .from('Messages')
+        .insert([
+          {
+            conversationId: message.conversationId,
+            senderId: message.senderId,
+            receiverId: message.receiverId,
+            text: message.text,
+            createdAt: message.createdAt,
+          },
+        ])
+        .select()
+        .single();
+
+      if (error) {
+        console.error('❌ Error saving message:', error);
+        return;
+      }
+
+      console.log('✅ Message saved:', data);
+
+      // Emit the new message to users in the same conversation room
+      io.to(`conversation_${message.conversationId}`).emit('newMessage', data);
+    } catch (err) {
+      console.error('❌ Server error during sendMessage:', err);
+    }
+  });
+
+  socket.on('leaveConversation', ({ conversationId }) => {
+    socket.leave(`conversation_${conversationId}`);
+    console.log(`🚪 User left room: conversation_${conversationId}`);
+  });
+
   socket.on('disconnect', (reason) => {
     console.log(`❌ User disconnected: ${socket.user?.id}, Reason: ${reason}`);
   });
-
-  // Add more custom socket event listeners here if needed later
 });
+
 
 // --- SUPABASE REALTIME SUBSCRIPTION ---
 const setupRealtimeMessages = () => {
