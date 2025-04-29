@@ -163,7 +163,7 @@ export const approvedInteraction = async (req, res) => {
 export const CheckUserMatchStatus = async (req, res) => {
   try {
     const { userId1, userId2 } = req.params;
-
+    console.log(userId1, userId2)
     const { data, error } = await supabase
       .from('Interactions')
       .select()
