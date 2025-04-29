@@ -91,8 +91,10 @@ io.on('connection', (socket) => {
             conversationId: message.conversationId,
             senderId: message.senderId,
             receiverId: message.receiverId,
-            text: message.text,
-            createdAt: message.createdAt,
+            content: message.text,
+            type: 'string',
+            readStatus: 'unread',
+            created_at: message.createdAt,
           },
         ])
         .select()
