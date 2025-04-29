@@ -119,6 +119,7 @@ export const getUserInteractions = async (req, res) => {
           dob, 
           height, 
           gender, 
+          userId,
           Photos ( photoUrl ) 
         )
       `)
