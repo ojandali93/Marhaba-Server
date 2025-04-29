@@ -1,4 +1,5 @@
 import { supabase } from '../services/SupabaseClient.js';
+import jwt from 'jsonwebtoken';
 
 export const checkSession = async (req, res) => {
   const authHeader = req.headers.authorization;
@@ -36,12 +37,15 @@ export const loginUser = async (req, res) => {
       console.error('❌ Login error:', error.message);
       return res.status(401).json({ error: error.message });
     }
-
+    const token = jwt.sign(user, process.env.JWT_SECRET, {
+      expiresIn: '7d', // or '1h', etc.
+    });
     const { session, user } = data;
     return res.status(200).json({
       message: 'Login successful',
       session,
       userId: user.id,
+      token: token,
     });
   } catch (err) {
     console.error('❌ Server error:', err.message);
