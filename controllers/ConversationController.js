@@ -56,7 +56,7 @@ export const getUserConversations = async (req, res) => {
               Photos (*)
             )
           `)
-        .or(`user1Id.eq.${id},user2Id.eq.${id}`)
+            .or(`user1Id.eq.${id},user2Id.eq.${id}`)
   
       if (error) {
         console.error('❌ Supabase error:', error);
