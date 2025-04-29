@@ -70,3 +70,25 @@ export const getUserConversations = async (req, res) => {
       return res.status(500).json({ error: 'Internal server error' });
     }
   };
+
+  export const getConversationmessages = async (req, res) => {
+    const { conversationId } = req.params;
+  
+    try {
+      const { data: conversations, error } = await supabase
+        .from('Messages')
+        .select(`(*)`)
+        .eq('conversationId', conversationId)
+        .order('updated_at', { ascending: false });
+  
+      if (error) {
+        console.error('❌ Supabase error:', error);
+        return res.status(400).json({ error: error.message });
+      }
+  
+      return res.status(200).json({ success: true, data: conversations });
+    } catch (err) {
+      console.error('❌ Server error:', err);
+      return res.status(500).json({ error: 'Internal server error' });
+    }
+  };
