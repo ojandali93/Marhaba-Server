@@ -56,7 +56,7 @@ export const getUserConversations = async (req, res) => {
               Photos (*)
             )
           `)
-        .or(`userId.eq.${id},userId2.eq.${id}`)
+        .or(`user1Id.eq.${id},user2Id.eq.${id}`)
         .order('updatedAt', { ascending: false });
   
       if (error) {
