@@ -41,6 +41,8 @@ export const createConversation = async (req, res) => {
 
 export const getUserConversations = async (req, res) => {
     const { id } = req.params;
+
+    console.log('💬 Getting conversations for user:', id);
   
     try {
       // ✅ First query: user is user1Id
@@ -59,39 +61,41 @@ export const getUserConversations = async (req, res) => {
         `)
         .eq('user1Id', id);
   
-      if (error1) {
-        console.error('❌ Supabase error (user1Id):', error1);
-        return res.status(400).json({ error: error1.message });
-      }
+    //   if (error1) {
+    //     console.error('❌ Supabase error (user1Id):', error1);
+    //     return res.status(400).json({ error: error1.message });
+    //   }
   
-      // ✅ Second query: user is user2Id
-      const { data: conversations2, error: error2 } = await supabase
-        .from('Conversations')
-        .select(`
-          *,
-          profile1:Profile!Conversations_user1Id_fkey (
-            *,
-            Photos (*)
-          ),
-          profile2:Profile!Conversations_user2Id_fkey (
-            *,
-            Photos (*)
-          )
-        `)
-        .eq('user2Id', id);
+    //   // ✅ Second query: user is user2Id
+    //   const { data: conversations2, error: error2 } = await supabase
+    //     .from('Conversations')
+    //     .select(`
+    //       *,
+    //       profile1:Profile!Conversations_user1Id_fkey (
+    //         *,
+    //         Photos (*)
+    //       ),
+    //       profile2:Profile!Conversations_user2Id_fkey (
+    //         *,
+    //         Photos (*)
+    //       )
+    //     `)
+    //     .eq('user2Id', id);
   
-      if (error2) {
-        console.error('❌ Supabase error (user2Id):', error2);
-        return res.status(400).json({ error: error2.message });
-      }
+    //   if (error2) {
+    //     console.error('❌ Supabase error (user2Id):', error2);
+    //     return res.status(400).json({ error: error2.message });
+    //   }
   
-      // ✅ Combine and sort by updated_at (most recent first)
-      const allConversations = [...(conversations1 || []), ...(conversations2 || [])];
-      const sortedConversations = allConversations.sort((a, b) =>
-        new Date(b.updated_at).getTime() - new Date(a.updated_at).getTime()
-      );
+    //   // ✅ Combine and sort by updated_at (most recent first)
+    //   const allConversations = [...(conversations1 || []), ...(conversations2 || [])];
+    //   const sortedConversations = allConversations.sort((a, b) =>
+    //     new Date(b.updated_at).getTime() - new Date(a.updated_at).getTime()
+    //   );
+
+    console.log('💬 Conversations:', conversations1);
   
-      return res.status(200).json({ success: true, data: sortedConversations });
+      return res.status(200).json({ success: true, data: conversations1 });
     } catch (err) {
       console.error('❌ Server error:', err);
       return res.status(500).json({ error: 'Internal server error' });
