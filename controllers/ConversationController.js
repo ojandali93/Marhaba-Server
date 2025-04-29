@@ -12,7 +12,7 @@ export const createConversation = async (req, res) => {
             userId: userId,
             userId2: userId2,
             lastMessage: lastMessage,
-            updatedAt: updatedAt
+            updated_at: updatedAt
         })
         .select()
         .single();
