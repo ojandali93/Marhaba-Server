@@ -47,11 +47,11 @@ export const getUserConversations = async (req, res) => {
         .from('Conversations')
         .select(`
           *,
-          profile1:Profiles!Conversations_userId_fkey (
+          profile1:Profile!Conversations_userId_fkey (
             *,
             Photos (*)
           ),
-          profile2:Profiles!Conversations_userId2_fkey (
+          profile2:Profile!Conversations_userId2_fkey (
             *,
             Photos (*)
           )
