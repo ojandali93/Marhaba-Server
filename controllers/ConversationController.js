@@ -9,8 +9,8 @@ export const createConversation = async (req, res) => {
     const { data: profileData, error: profileError } = await supabase
         .from('Conversations')
         .insert({
-            userId1: userId,
-            userId2: userId2,
+            user1Id: userId,
+            user2Id: userId2,
             lastMessage: lastMessage,
             updated_at: updatedAt
         })
