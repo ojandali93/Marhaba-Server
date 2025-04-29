@@ -14,7 +14,7 @@ import { supabase } from './services/SupabaseClient.js';
 import authRoutes from './routers/AuthRoutes.js';
 import accountRoutes from './routers/AccountRoutes.js';
 import userRoutes from './routers/UserRoutes.js';
-
+import conversationRoutes from './routers/ConversationRoutes.js';
 dotenv.config();
 
 const app = express();
@@ -49,6 +49,7 @@ app.use(express.urlencoded({ extended: true, limit: '20mb' }));
 app.use('/api/auth', authRoutes);
 app.use('/api/account', accountRoutes);
 app.use('/api/user', userRoutes);
+app.use('/api/conversation', conversationRoutes);
 
 // Health check
 app.get('/health', (req, res) => res.send('✅ Marhaba backend is running'));
