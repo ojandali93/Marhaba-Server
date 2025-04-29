@@ -89,8 +89,8 @@ io.on('connection', (socket) => {
         .insert([
           {
             conversationId: message.conversationId,
-            senderId: message.senderId,
-            receiverId: message.receiverId,
+            sender: message.senderId,
+            receiver: message.receiverId,
             content: message.text,
             type: 'string',
             readStatus: 'unread',
