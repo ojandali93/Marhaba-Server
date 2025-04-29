@@ -57,7 +57,7 @@ export const getUserConversations = async (req, res) => {
             )
           `)
         .or(`user1Id.eq.${id},user2Id.eq.${id}`)
-        .order('updatd_at', { ascending: false });
+        .order('updated_at', { ascending: false });
   
       if (error) {
         console.error('❌ Supabase error:', error);
