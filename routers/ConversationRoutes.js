@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import { createConversation, getConversations, getUserConversations } from '../controllers/ConversationController.js';
+import { createConversation, getUserConversations } from '../controllers/ConversationController.js';
 
 const router = Router();
 
