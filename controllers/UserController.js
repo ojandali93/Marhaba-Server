@@ -169,7 +169,6 @@ export const CheckUserMatchStatus = async (req, res) => {
       .select()
       .eq('userId', userId2)
       .eq('targetUserId', userId1)
-      .single()
 
     if (error) {
       console.error('Error fetching interactions:', error);
