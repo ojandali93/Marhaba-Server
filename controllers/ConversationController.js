@@ -38,3 +38,35 @@ export const createConversation = async (req, res) => {
     });
   }
 };
+
+export const getUserConversations = async (req, res) => {
+    const { id } = req.params;
+  
+    try {
+      const { data: conversations, error } = await supabase
+        .from('Conversations')
+        .select(`
+          *,
+          profile1:Profiles!Conversations_userId_fkey (
+            *,
+            Photos (*)
+          ),
+          profile2:Profiles!Conversations_userId2_fkey (
+            *,
+            Photos (*)
+          )
+        `)
+        .or(`userId.eq.${id},userId2.eq.${id}`)
+        .order('updatedAt', { ascending: false });
+  
+      if (error) {
+        console.error('❌ Supabase error:', error);
+        return res.status(400).json({ error: error.message });
+      }
+  
+      return res.status(200).json({ success: true, data: conversations });
+    } catch (err) {
+      console.error('❌ Server error:', err);
+      return res.status(500).json({ error: 'Internal server error' });
+    }
+  };
