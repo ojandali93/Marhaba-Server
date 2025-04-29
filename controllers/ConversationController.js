@@ -46,16 +46,16 @@ export const getUserConversations = async (req, res) => {
       const { data: conversations, error } = await supabase
         .from('Conversations')
         .select(`
-          *,
-          profile1:Profile!Conversations_userId_fkey (
             *,
-            Photos (*)
-          ),
-          profile2:Profile!Conversations_userId2_fkey (
-            *,
-            Photos (*)
-          )
-        `)
+            profile1:Profiles!Conversations_user1Id_fkey (
+              *,
+              Photos (*)
+            ),
+            profile2:Profiles!Conversations_user2Id_fkey (
+              *,
+              Photos (*)
+            )
+          `)
         .or(`userId.eq.${id},userId2.eq.${id}`)
         .order('updatedAt', { ascending: false });
   
