@@ -695,6 +695,7 @@ export const updateUserProfile = async (req, res) => {
       .select();
 
     if (aboutError) {
+      console.log(aboutError);
       return res.status(400).json({ error: aboutError.message });
     }
 
