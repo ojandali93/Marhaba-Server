@@ -25,4 +25,6 @@ router.post('/createLifestyle', createUserLifestyle);
 router.post('/createFuture', createUserFuture);
 router.post('/createAnger', createUserAnger);
 
+router.put('/updatePhotos', createUserAnger);
+
 export default router;

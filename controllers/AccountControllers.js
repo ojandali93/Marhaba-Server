@@ -42,7 +42,7 @@ export const createUserAccount = async (req, res) => {
 
 export const createUserProfile = async (req, res) => {
   try {
-    const { userId,  email, name, dob, gender, height, fcmToken, approved, tier, longitude, latitude } = req.body;
+    const { userId,  email, name, dob, gender, height, fcmToken, approved, tier, longitude, latitude, phone } = req.body;
 
     const { data: profileData, error: profileError } = await supabase
     .from('Profile')
@@ -57,7 +57,8 @@ export const createUserProfile = async (req, res) => {
       approved,
       tier,
       longitude,
-      latitude 
+      latitude,
+      phone
     }])
     .select();
 
@@ -310,6 +311,56 @@ export const createUserPhotos = async (req, res) => {
     return res.status(500).json({ error: 'Failed to upload photos' });
   }
 };
+
+export const editUserPhotos = async (req, res) => {
+  try {
+    const { userId, photos } = req.body;
+
+    // Parse photo array from JSON if passed as a string
+    const photoArray = typeof photos === 'string' ? JSON.parse(photos) : photos;
+
+    if (!Array.isArray(photoArray) || photoArray.length === 0) {
+      return res.status(400).json({ error: 'No photos provided.' });
+    }
+
+    // 1. Delete existing photos for this user
+    const { error: deleteError } = await supabase
+      .from('Photos')
+      .delete()
+      .eq('userId', userId);
+
+    if (deleteError) {
+      console.error('❌ Supabase delete error:', deleteError.message);
+      return res.status(400).json({ error: 'Failed to delete existing photos' });
+    }
+
+    // 2. Prepare new insert data
+    const insertData = photoArray
+      .filter(photo => photo && photo !== 'null' && photo !== '')
+      .map((photoUrl, index) => ({
+        userId,
+        photoUrl,
+        order: index + 1,
+      }));
+
+    // 3. Insert new photos
+    const { data, error: insertError } = await supabase
+      .from('Photos')
+      .insert(insertData)
+      .select();
+
+    if (insertError) {
+      console.error('❌ Supabase insert error:', insertError.message);
+      return res.status(400).json({ error: insertError.message });
+    }
+
+    return res.status(200).json({ success: true, data });
+  } catch (error) {
+    console.error('❌ Server error:', error.message);
+    return res.status(500).json({ error: 'Failed to update photos' });
+  }
+};
+
 
 // Communication Style Endpoint
 export const createCommunicationStyles = async (req, res) => {
