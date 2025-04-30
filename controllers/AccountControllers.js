@@ -690,7 +690,7 @@ export const updateUserProfile = async (req, res) => {
 
     const { data: aboutData, error: aboutError } = await supabase
       .from('About')
-      .update({ smoke, drink, hasKid })
+      .update({ smoke, drink, hasKids: hasKid })
       .eq('userId', userId)
       .select();
 
