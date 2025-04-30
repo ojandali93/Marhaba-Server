@@ -1,5 +1,5 @@
 import express from 'express';
-import { createCommunicationStyles, createCoreValues, createLoveLanguage, createTimePriorities, createUserAbout, createUserAccount, createUserAnger, createUserAttachment, createUserCareer, createUserCore, createUserEitherOr, createUserEmotions, createUserFuture, createUserLifestyle, createUserPhotos, createUserPreferences, createUserProfile, createUserPrompts, createUserTraits, editUserPhotos, uploadImage } from '../controllers/AccountControllers.js';
+import { updateUserProfile, createCommunicationStyles, createCoreValues, createLoveLanguage, createTimePriorities, createUserAbout, createUserAccount, createUserAnger, createUserAttachment, createUserCareer, createUserCore, createUserEitherOr, createUserEmotions, createUserFuture, createUserLifestyle, createUserPhotos, createUserPreferences, createUserProfile, createUserPrompts, createUserTraits, editUserPhotos, uploadImage } from '../controllers/AccountControllers.js';
 
 const router = express.Router();
 
@@ -26,5 +26,6 @@ router.post('/createFuture', createUserFuture);
 router.post('/createAnger', createUserAnger);
 
 router.put('/updatePhotos', editUserPhotos);
+router.put('/updateProfile', updateUserProfile);
 
 export default router;
