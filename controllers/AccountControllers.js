@@ -677,6 +677,7 @@ export const createUserAnger = async (req, res) => {
 export const updateUserProfile = async (req, res) => {
   try {
     const { userId, name, gender, height, smoke, drink, hasKid } = req.body;
+    console.log(userId, name, gender, height, smoke, drink, hasKid);
     const { data, error } = await supabase
       .from('Profile')
       .update({ name, gender, height })
