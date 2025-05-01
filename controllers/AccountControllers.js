@@ -814,3 +814,46 @@ export const updateUserCareer = async (req, res) => {
     return res.status(500).json({ error: 'Failed to update user profile' });
   }
 };
+
+export const updateUserPrompts = async (req, res) => {
+  try {
+    const { userId, prompts } = req.body;
+
+    if (!userId || !Array.isArray(prompts)) {
+      return res.status(400).json({ error: 'Missing userId or prompts array' });
+    }
+
+    // 1. Delete existing prompts for this user
+    const { error: deleteError } = await supabase
+      .from('Prompts')
+      .delete()
+      .eq('userId', userId);
+
+    if (deleteError) {
+      console.error('❌ Failed to delete existing prompts:', deleteError.message);
+      return res.status(400).json({ error: deleteError.message });
+    }
+
+    // 2. Insert new prompts
+    const insertData = prompts.map(p => ({
+      userId,
+      prompt: p.prompt,
+      response: p.response,
+    }));
+
+    const { data, error: insertError } = await supabase
+      .from('Prompts')
+      .insert(insertData)
+      .select();
+
+    if (insertError) {
+      console.error('❌ Failed to insert new prompts:', insertError.message);
+      return res.status(400).json({ error: insertError.message });
+    }
+
+    return res.status(200).json({ success: true, data });
+  } catch (error) {
+    console.error('❌ Server error:', error.message || error);
+    return res.status(500).json({ error: 'Failed to update user prompts' });
+  }
+};
