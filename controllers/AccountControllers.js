@@ -860,9 +860,9 @@ export const updateUserPrompts = async (req, res) => {
 
 export const updateUserTags = async (req, res) => {
   try {
-    const { userId, traits } = req.body;
+    const { userId, tags } = req.body;
 
-    console.log('tags', traits);
+    console.log('tags', tags);
     // Step 1: Delete all existing tags
     const { error: deleteError } = await supabase
       .from('Tags')
