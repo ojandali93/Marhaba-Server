@@ -704,3 +704,25 @@ export const updateUserProfile = async (req, res) => {
     return res.status(500).json({ error: 'Failed to update user profile' });
   }
 };
+
+export const updateUserAbout = async (req, res) => {
+  try {
+    const { userId, lookingFor, background, religion, sect, views, timeline, travel, wantsKids } = req.body;
+     
+    console.log(userId, lookingFor, background, religion, sect, views, timeline, travel, wantsKids);
+    
+    const { data, error } = await supabase
+      .from('About')
+      .update({ lookingFor, background,religion, sect, views, timeline, travel, wantsKids })
+      .eq('userId', userId)
+      .select();
+    
+    if (error) {
+      return res.status(400).json({ error: error.message });
+    }
+
+    return res.status(200).json({ success: true, data, data });
+  } catch (error) {
+    return res.status(500).json({ error: 'Failed to update user profile' });
+  }
+};
