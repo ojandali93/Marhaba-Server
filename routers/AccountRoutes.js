@@ -31,4 +31,7 @@ router.put('/updateAbout', updateUserAbout);
 router.put('/updateCore', updateUserCore);
 router.put('/updateLifestyle', updateuserLifestyle);
 router.put('/updateFuture', updateUserFuture);
+router.put('/updateCareer', updateUserCareer);
+
+
 export default router;
