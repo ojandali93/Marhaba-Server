@@ -875,7 +875,7 @@ export const updateUserTags = async (req, res) => {
     }
 
     // Step 2: Create new tag records
-    const insertData = traits.map((tag) => ({
+    const insertData = tags.map((tag) => ({
       userId,
       tag,
     }));
