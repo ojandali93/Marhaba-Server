@@ -896,3 +896,25 @@ export const updateUserTags = async (req, res) => {
     return res.status(500).json({ error: 'Server error updating tags' });
   }
 };
+
+export const updateSurvey = async (req, res) => {
+  try {
+    const { userId, eitherOr } = req.body;
+     
+    console.log(userId, eitherOr);
+    
+    const { data, error } = await supabase
+      .from('Survey')
+      .update(eitherOr)
+      .eq('userId', userId)
+      .select();
+    
+    if (error) {
+      return res.status(400).json({ error: error.message });
+    }
+
+    return res.status(200).json({ success: true, data, data });
+  } catch (error) {
+    return res.status(500).json({ error: 'Failed to update user profile' });
+  }
+};
