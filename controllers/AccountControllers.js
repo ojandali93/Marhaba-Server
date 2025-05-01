@@ -862,10 +862,7 @@ export const updateUserTags = async (req, res) => {
   try {
     const { userId, traits } = req.body;
 
-    if (!userId || !Array.isArray(traits)) {
-      return res.status(400).json({ error: 'Invalid userId or traits' });
-    }
-
+    console.log('tags', traits);
     // Step 1: Delete all existing tags
     const { error: deleteError } = await supabase
       .from('Tags')
