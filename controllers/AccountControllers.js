@@ -857,3 +857,45 @@ export const updateUserPrompts = async (req, res) => {
     return res.status(500).json({ error: 'Failed to update user prompts' });
   }
 };
+
+export const updateUserTags = async (req, res) => {
+  try {
+    const { userId, traits } = req.body;
+
+    if (!userId || !Array.isArray(traits)) {
+      return res.status(400).json({ error: 'Invalid userId or traits' });
+    }
+
+    // Step 1: Delete all existing tags
+    const { error: deleteError } = await supabase
+      .from('Tags')
+      .delete()
+      .eq('userId', userId);
+
+    if (deleteError) {
+      console.error('❌ Error deleting tags:', deleteError.message);
+      return res.status(400).json({ error: 'Failed to clear existing tags' });
+    }
+
+    // Step 2: Create new tag records
+    const insertData = traits.map((tag) => ({
+      userId,
+      tag,
+    }));
+
+    const { data, error: insertError } = await supabase
+      .from('Tags')
+      .insert(insertData)
+      .select();
+
+    if (insertError) {
+      console.error('❌ Error inserting tags:', insertError.message);
+      return res.status(400).json({ error: 'Failed to insert new tags' });
+    }
+
+    return res.status(200).json({ success: true, data });
+  } catch (error) {
+    console.error('❌ Server error updating tags:', error.message);
+    return res.status(500).json({ error: 'Server error updating tags' });
+  }
+};
