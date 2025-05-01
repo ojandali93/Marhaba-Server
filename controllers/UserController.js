@@ -181,3 +181,24 @@ export const CheckUserMatchStatus = async (req, res) => {
     return res.status(500).json({ error: 'Server error occurred' });
   }
 };
+
+export const updateUserLocation = async (req, res) => {
+  try {
+    const { userId, longitude, latitude } = req.body;
+    console.log(userId, longitude, latitude)
+    const { data, error } = await supabase
+      .from('Profile')
+      .update({ longitude, latitude })
+      .eq('userId', userId)
+
+    if (error) {
+      console.error('Error fetching interactions:', error);
+      return res.status(500).json({ error: error });
+    }
+    console.log(JSON.stringify(data))
+    return res.status(200).json({ success: true, data });
+  } catch (error) {
+    console.error('Server error:', error);
+    return res.status(500).json({ error: 'Server error occurred' });
+  }
+};
