@@ -770,3 +770,25 @@ export const updateuserLifestyle = async (req, res) => {
     return res.status(500).json({ error: 'Failed to update user profile' });
   }
 };
+
+export const updateUserFuture = async (req, res) => {
+  try {
+    const { userId, marriage, children, career, finances, pace, live } = req.body;
+     
+    console.log(userId, marriage, children, career, finances, pace, live);
+    
+    const { data, error } = await supabase
+      .from('Future')
+      .update({ marriage, children, career, finances, pace, live })
+      .eq('userId', userId)
+      .select();
+    
+    if (error) {
+      return res.status(400).json({ error: error.message });
+    }
+
+    return res.status(200).json({ success: true, data, data });
+  } catch (error) {
+    return res.status(500).json({ error: 'Failed to update user profile' });
+  }
+};
