@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import { approvedInteraction, CheckUserMatchStatus, getUserInteractions, grabAllUsers, grabSingleProfile, likeProfile, updateUserLocation, updateUserTutorial } from '../controllers/UserController.js';
+import { approvedInteraction, CheckUserMatchStatus, getUserInteractions, grabAllUsers, grabSingleProfile, likeProfile, updateInteraction, updateUserLocation, updateUserTutorial } from '../controllers/UserController.js';
 
 const router = Router();
 
@@ -8,8 +8,8 @@ router.post('/interaction', likeProfile);
 router.put('/approved', approvedInteraction);
 router.put('/location', updateUserLocation);
 router.put('/tutorial', updateUserTutorial);
+router.put('/updateInteraction', updateInteraction);
 router.get('/liked/:userId', getUserInteractions);
 router.get('/matchStatus/:userId1/:userId2', CheckUserMatchStatus);
 router.get('/:userId', grabSingleProfile);
-
 export default router;
