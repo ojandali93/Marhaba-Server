@@ -1,4 +1,4 @@
-import { supabase } from "../services/SupabaseClient";
+import { supabase } from "../services/SupabaseClient.js";
 
   export const createViewed = async (req, res) => {
     const { viewer, viewed } = req.body;
