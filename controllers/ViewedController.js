@@ -22,7 +22,7 @@ import { supabase } from "../services/SupabaseClient.js";
   };
 
   export const getViewed = async (req, res) => {
-    const { viewer } = req.body;
+    const { viewer } = req.params;
   
     try {
       const { data, error } = await supabase

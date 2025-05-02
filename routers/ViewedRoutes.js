@@ -4,6 +4,6 @@ import { createViewed, getViewed } from '../controllers/ViewedController.js';
 const router = Router();
 
 router.post('/create', createViewed);
-router.get('/:userId', getViewed);
+router.get('/user/:viewer', getViewed);
 
 export default router;
