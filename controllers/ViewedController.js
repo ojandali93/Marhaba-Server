@@ -29,7 +29,7 @@ import { supabase } from "../services/SupabaseClient.js";
         .from('Viewed')
         .select(`
           *, 
-          viewerProfile:userId ( 
+          viewerProfile:viewer ( 
             *,
             About(*),
             Anger(*),
@@ -49,7 +49,7 @@ import { supabase } from "../services/SupabaseClient.js";
             Time(*),
             Values(*)
           ),
-          ViewedProfile:userId ( 
+          ViewedProfile:viewed ( 
             *,
             About(*),
             Anger(*),
