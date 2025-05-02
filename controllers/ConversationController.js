@@ -48,12 +48,10 @@ export const getUserConversations = async (req, res) => {
         .select(`
             *,
             profile1:Profile!Conversations_user1Id_fkey (
-              *,
-              Photos (*)
+              *, About(*), Anger(*), Attachment(*), Career(*), Communication(*), Core(*), Emotions(*), Future(*), Lifestyle(*), Love(*), Photos(*), Preferences(*), Prompts(*), Survey(*), Tags(*), Time(*), Values(*)
             ),
             profile2:Profile!Conversations_user2Id_fkey (
-              *,
-              Photos (*)
+              *, About(*), Anger(*), Attachment(*), Career(*), Communication(*), Core(*), Emotions(*), Future(*), Lifestyle(*), Love(*), Photos(*), Preferences(*), Prompts(*), Survey(*), Tags(*), Time(*), Values(*)
             )
           `)
         .or(`user1Id.eq.${userId},user2Id.eq.${userId}`)
