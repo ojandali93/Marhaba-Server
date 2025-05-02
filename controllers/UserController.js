@@ -114,13 +114,24 @@ export const getUserInteractions = async (req, res) => {
       .select(`
         *, 
         likerProfile:userId ( 
-          id, 
-          name, 
-          dob, 
-          height, 
-          gender, 
-          userId,
-          Photos ( photoUrl ) 
+          *,
+          About(*),
+          Anger(*),
+          Attachment(*),
+          Career(*),
+          Communication(*),
+          Core(*),
+          Emotions(*),
+          Future(*),
+          Lifestyle(*),
+          Love(*),
+          Photos(*),
+          Preferences(*),
+          Prompts(*),
+          Survey(*),
+          Tags(*),
+          Time(*),
+          Values(*)
         )
       `)
       .eq('targetUserId', userId)
