@@ -29,6 +29,26 @@ import { supabase } from "../services/SupabaseClient.js";
         .from('Viewed')
         .select(`
           *, 
+          viewerProfile:userId ( 
+            *,
+            About(*),
+            Anger(*),
+            Attachment(*),
+            Career(*),
+            Communication(*),
+            Core(*),
+            Emotions(*),
+            Future(*),
+            Lifestyle(*),
+            Love(*),
+            Photos(*),
+            Preferences(*),
+            Prompts(*),
+            Survey(*),
+            Tags(*),
+            Time(*),
+            Values(*)
+          ),
           ViewedProfile:userId ( 
             *,
             About(*),
