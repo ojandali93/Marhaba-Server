@@ -202,3 +202,24 @@ export const updateUserLocation = async (req, res) => {
     return res.status(500).json({ error: 'Server error occurred' });
   }
 };
+
+export const updateUserTutorial = async (req, res) => {
+  try {
+    const { userId, tutorial } = req.body;
+    console.log(userId, tutorial)
+    const { data, error } = await supabase
+      .from('Profile')
+      .update({ tutorial })
+      .eq('userId', userId)
+
+    if (error) {
+      console.error('Error fetching interactions:', error);
+      return res.status(500).json({ error: error });
+    }
+    console.log(JSON.stringify(data))
+    return res.status(200).json({ success: true, data });
+  } catch (error) {
+    console.error('Server error:', error);
+    return res.status(500).json({ error: 'Server error occurred' });
+  }
+};
