@@ -65,7 +65,7 @@ export const likeProfile = async (req, res) => {
   const {
     userId,
     targetUserId,
-    userIdInteraction,
+    userInteraction,
     targetInteraction,
     viewed,
     approved,
@@ -79,7 +79,7 @@ export const likeProfile = async (req, res) => {
       .insert([{
         userId,
         targetUserId,
-        userIdInteraction,
+        userInteraction,
         targetInteraction,
         viewed,
         approved,
@@ -184,7 +184,7 @@ export const updateInteraction = async (req, res) => {
       id,
       userId,
       targetUserId,
-      userIdInteraction,
+      userInteraction,
       targetInteraction,
       viewed,
       approved,
@@ -198,7 +198,7 @@ export const updateInteraction = async (req, res) => {
       .update({ 
         userId,
         targetUserId,
-        userIdInteraction,
+        userInteraction,
         targetInteraction,
         viewed,
         approved,
