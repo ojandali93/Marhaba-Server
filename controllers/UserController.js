@@ -67,9 +67,10 @@ export const likeProfile = async (req, res) => {
     targetUserId,
     userIdInteraction,
     targetInteraction,
-    viewedByTarget,
+    viewed,
     approved,
-    matched,
+    viewed_at,
+    approved_at, 
     message
   } = req.body;
   try {
@@ -80,11 +81,11 @@ export const likeProfile = async (req, res) => {
         targetUserId,
         userIdInteraction,
         targetInteraction,
-        viewedByTarget,
+        viewed,
         approved,
-        matched,
+        approved_at,
         message,
-        viewed_at: null
+        viewed_at
       }])
       .select();
 
@@ -179,11 +180,32 @@ export const approvedInteraction = async (req, res) => {
 
 export const updateInteraction = async (req, res) => {
   try {
-    const { id, viewed, approved, message } = req.body;
+    const { 
+      id,
+      userId,
+      targetUserId,
+      userIdInteraction,
+      targetInteraction,
+      viewed,
+      approved,
+      viewed_at,
+      approved_at, 
+      message
+     } = req.body;
 
     const { data, error } = await supabase
       .from('Interactions')
-      .update({ viewed, approved, message })
+      .update({ 
+        userId,
+        targetUserId,
+        userIdInteraction,
+        targetInteraction,
+        viewed,
+        approved,
+        viewed_at,
+        approved_at, 
+        message
+      })
       .eq('id', id)
       .select()
 
