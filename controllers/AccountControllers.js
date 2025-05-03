@@ -677,7 +677,6 @@ export const createUserAnger = async (req, res) => {
 export const updateUserProfile = async (req, res) => {
   try {
     const { userId, name, gender, height, smoke, drink, hasKid } = req.body;
-    console.log(userId, name, gender, height, smoke, drink, hasKid);
     const { data, error } = await supabase
       .from('Profile')
       .update({ name, gender, height })
@@ -709,7 +708,6 @@ export const updateUserAbout = async (req, res) => {
   try {
     const { userId, lookingFor, background, religion, sect, views, timeline, travel, wantsKids } = req.body;
      
-    console.log(userId, lookingFor, background, religion, sect, views, timeline, travel, wantsKids);
 
     const { data, error } = await supabase
       .from('About')
@@ -731,7 +729,6 @@ export const updateUserCore = async (req, res) => {
   try {
     const { userId, family, faith,  ambition, career, honest, transparent, trust, politics, social } = req.body;
      
-    console.log(userId, family, faith,  ambition, career, honest, transparent, trust, politics, social);
     
     const { data, error } = await supabase
       .from('Core')
@@ -753,7 +750,6 @@ export const updateuserLifestyle = async (req, res) => {
   try {
     const { userId, travel, social, health, finances, living } = req.body;
      
-    console.log(userId, travel, social, health, finances, living);
     
     const { data, error } = await supabase
       .from('Lifestyle')
@@ -775,7 +771,6 @@ export const updateUserFuture = async (req, res) => {
   try {
     const { userId, marriage, children, career, finances, pace, live } = req.body;
      
-    console.log(userId, marriage, children, career, finances, pace, live);
     
     const { data, error } = await supabase
       .from('Future')
@@ -797,7 +792,6 @@ export const updateUserCareer = async (req, res) => {
   try {
     const { userId, job,  company, site, location, education, fiveYear } = req.body;
      
-    console.log(userId, job,  company, site, location, education, fiveYear);
     
     const { data, error } = await supabase
       .from('Career')
@@ -862,7 +856,6 @@ export const updateUserTags = async (req, res) => {
   try {
     const { userId, tags } = req.body;
 
-    console.log('tags', tags);
     // Step 1: Delete all existing tags
     const { error: deleteError } = await supabase
       .from('Tags')
@@ -901,7 +894,6 @@ export const updateSurvey = async (req, res) => {
   try {
     const { userId, eitherOr } = req.body;
      
-    console.log(userId, eitherOr);
     
     const { data, error } = await supabase
       .from('Survey')

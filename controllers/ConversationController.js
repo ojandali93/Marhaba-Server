@@ -3,7 +3,6 @@ import { supabase } from '../services/SupabaseClient.js';
 export const createConversation = async (req, res) => {
   try {
     const { userId, userId2, lastMessage, updatedAt } = req.body;
-    console.log('💬 Creating conversation with:', { userId, userId2, lastMessage, updatedAt });
 
 
     const { data: profileData, error: profileError } = await supabase

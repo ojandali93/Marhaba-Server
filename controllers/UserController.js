@@ -63,7 +63,6 @@ export const grabAllUsers = async (req, res) => {
 
 export const likeProfile = async (req, res) => {
   const { userId, targetUserId, interaction, viewed, approved, message } = req.body;
-  console.log(userId, targetUserId, interaction, viewed, approved);
   try {
     const { data: likeData, error: likeError } = await supabase
     .from('Interactions')
@@ -140,7 +139,6 @@ export const getUserInteractions = async (req, res) => {
       console.error('Error fetching interactions:', error);
       return res.status(500).json({ error: 'Failed to fetch interactions' });
     }
-    console.log(JSON.stringify(data))
     return res.status(200).json({ success: true, data });
   } catch (error) {
     console.error('Server error:', error);
@@ -162,7 +160,6 @@ export const approvedInteraction = async (req, res) => {
       console.error('Error fetching interactions:', error);
       return res.status(500).json({ error: error });
     }
-    console.log(JSON.stringify(data))
     return res.status(200).json({ success: true, data });
   } catch (error) {
     console.error('Server error:', error);
@@ -184,7 +181,6 @@ export const updateInteraction = async (req, res) => {
       console.error('Error fetching interactions:', error);
       return res.status(500).json({ error: error });
     }
-    console.log(JSON.stringify(data))
     return res.status(200).json({ success: true, data });
   } catch (error) {
     console.error('Server error:', error);
@@ -195,7 +191,6 @@ export const updateInteraction = async (req, res) => {
 export const CheckUserMatchStatus = async (req, res) => {
   try {
     const { userId1, userId2 } = req.params;
-    console.log(userId1, userId2)
     const { data, error } = await supabase
       .from('Interactions')
       .select()
@@ -206,7 +201,6 @@ export const CheckUserMatchStatus = async (req, res) => {
       console.error('Error fetching interactions:', error);
       return res.status(500).json({ error: error });
     }
-    console.log(JSON.stringify(data))
     return res.status(200).json({ success: true, data });
   } catch (error) {
     console.error('Server error:', error);
@@ -217,7 +211,6 @@ export const CheckUserMatchStatus = async (req, res) => {
 export const updateUserLocation = async (req, res) => {
   try {
     const { userId, longitude, latitude } = req.body;
-    console.log(userId, longitude, latitude)
     const { data, error } = await supabase
       .from('Profile')
       .update({ longitude, latitude })
@@ -227,7 +220,6 @@ export const updateUserLocation = async (req, res) => {
       console.error('Error fetching interactions:', error);
       return res.status(500).json({ error: error });
     }
-    console.log(JSON.stringify(data))
     return res.status(200).json({ success: true, data });
   } catch (error) {
     console.error('Server error:', error);
@@ -238,7 +230,6 @@ export const updateUserLocation = async (req, res) => {
 export const updateUserTutorial = async (req, res) => {
   try {
     const { userId, tutorial } = req.body;
-    console.log(userId, tutorial)
     const { data, error } = await supabase
       .from('Profile')
       .update({ tutorial })
@@ -248,7 +239,6 @@ export const updateUserTutorial = async (req, res) => {
       console.error('Error fetching interactions:', error);
       return res.status(500).json({ error: error });
     }
-    console.log(JSON.stringify(data))
     return res.status(200).json({ success: true, data });
   } catch (error) {
     console.error('Server error:', error);
