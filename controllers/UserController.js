@@ -7,7 +7,6 @@ export const grabSingleProfile = async (req, res) => {
     .from('Profile')
     .select('*, About(*), Anger(*), Attachment(*), Career(*), Communication(*), Core(*), Emotions(*), Future(*), Lifestyle(*), Love(*), Photos(*), Preferences(*), Prompts(*), Survey(*), Tags(*), Time(*), Values(*)')
     .eq('userId', userId)
-    .single();
 
     if (profileError) {
       console.error('❌ Supabase error:', profileError);
