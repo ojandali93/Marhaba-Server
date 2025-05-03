@@ -62,37 +62,47 @@ export const grabAllUsers = async (req, res) => {
 };
 
 export const likeProfile = async (req, res) => {
-  const { userId, targetUserId, interaction, viewed, approved, message } = req.body;
+  const {
+    userId,
+    targetUserId,
+    userIdInteraction,
+    targetInteraction,
+    viewedByTarget,
+    approved,
+    matched,
+    message
+  } = req.body;
   try {
     const { data: likeData, error: likeError } = await supabase
-    .from('Interactions')
-    .insert([{
-      userId,
-      targetUserId,
-      interaction,
-      viewed,
-      approved,
-      message,
-      viewed_at: null,
-    }])
-    .select();
+      .from('Interactions')
+      .insert([{
+        userId,
+        targetUserId,
+        userIdInteraction,
+        targetInteraction,
+        viewedByTarget,
+        approved,
+        matched,
+        message,
+        viewed_at: null
+      }])
+      .select();
 
     if (likeError) {
       console.error('❌ Supabase error:', likeError);
-      return res.status(400).json({ error: likeError.message || 'Failed to fetch profile.' });
+      return res.status(400).json({ error: likeError.message || 'Failed to insert interaction.' });
     }
 
     if (!likeData) {
-      return res.status(404).json({ error: 'Profile not found.' });
+      return res.status(404).json({ error: 'Interaction insert returned no data.' });
     }
 
     return res.status(200).json({ success: true, data: likeData });
-
-  }catch (error) {
+  } catch (error) {
     console.error('❌ Server internal error:', error);
     return res.status(500).json({
       error: {
-        message: error.message || 'Server crashed while grabbing profile.',
+        message: error.message || 'Server crashed while inserting interaction.',
         stack: process.env.NODE_ENV === 'development' ? error.stack : undefined,
       },
     });
