@@ -354,6 +354,8 @@ export const filterProfiles = async (req, res) => {
       distance,
     } = req.body;
 
+    console.log('request body', req.body)
+
     const now = new Date();
 
     let { data, error } = await supabase
