@@ -329,12 +329,14 @@ export const getWeeklyInteractionStats = async (req, res) => {
   }
 };
 
+// Node.js + Supabase (using Supabase JS client)
+
 export const filterProfiles = async (req, res) => {
   try {
     const {
       userId,
-      ageRange,
-      distance,
+      ageMin,
+      ageMax,
       gender,
       background,
       religion,
@@ -349,16 +351,17 @@ export const filterProfiles = async (req, res) => {
       relocate,
       latitude,
       longitude,
+      distance,
     } = req.body;
 
     const now = new Date();
 
-    // Step 1: Fetch profiles with joined tables
-    const { data, error } = await supabase
+    let { data, error } = await supabase
       .from('Profile')
       .select(`
         *,
         About(*),
+        Photos(*),
         Anger(*),
         Attachment(*),
         Career(*),
@@ -368,7 +371,6 @@ export const filterProfiles = async (req, res) => {
         Future(*),
         Lifestyle(*),
         Love(*),
-        Photos(*),
         Preferences(*),
         Prompts(*),
         Survey(*),
@@ -378,76 +380,59 @@ export const filterProfiles = async (req, res) => {
       `)
       .neq('userId', userId);
 
-      console.log('userId', userId)
-      console.log('ageRange', ageRange)
-      console.log('distance', distance)
-      console.log('gender', gender)
-      console.log('background', background)
-      console.log('religion', religion)
-      console.log('sect', sect)
-      console.log('views', views)
-      console.log('drink', drink)
-      console.log('smoke', smoke)
-      console.log('hasKids', hasKids)
-      console.log('wantsKids', wantsKids)
-      console.log('lookingFor', lookingFor)
-      console.log('timeline', timeline)
-      console.log('relocate', relocate)
-      console.log('latitude', latitude)
-      console.log('longitude', longitude)
-
     if (error) {
-      console.error('❌ Error fetching profiles:', error);
+      console.error('Error fetching profiles:', error);
       return res.status(500).json({ error: 'Failed to fetch profiles.' });
     }
 
-    let filtered = data.filter((profile) => {
+    const filtered = data.filter((profile) => {
       const about = profile.About;
       if (!about) return false;
 
-      // Age from DOB
-      if (ageRange) {
-        const age = now.getFullYear() - new Date(about.dob).getFullYear();
-        if (age < ageRange.min || age > ageRange.max) return false;
+      // Age check using DOB
+      if (profile.dob && ageMin && ageMax) {
+        const age = now.getFullYear() - new Date(profile.dob).getFullYear();
+        if (age < ageMin || age > ageMax) return false;
       }
 
-      if (gender && profile.gender !== gender) return false;
-      if (background?.length && !background.includes(about.background)) return false;
-      if (religion?.length && !religion.includes(about.religion)) return false;
-      if (sect?.length && !sect.includes(about.sect)) return false;
-      if (views?.length && !views.includes(about.views)) return false;
-      if (drink?.length && !drink.includes(about.drink)) return false;
-      if (smoke?.length && !smoke.includes(about.smoke)) return false;
-      if (hasKids?.length && !hasKids.includes(about.hasKids)) return false;
-      if (wantsKids?.length && !wantsKids.includes(about.wantsKids)) return false;
-      if (lookingFor?.length && !lookingFor.includes(about.lookingFor)) return false;
-      if (timeline?.length && !timeline.includes(about.timeline)) return false;
-      if (relocate?.length && !relocate.includes(about.relocate)) return false;
+      const match = (val, arr) => !arr?.length || arr.includes(val);
 
-      return true;
+      return (
+        match(profile.gender, [gender]) &&
+        match(about.background, background) &&
+        match(about.religion, religion) &&
+        match(about.sect, sect) &&
+        match(about.views, views) &&
+        match(about.drink, drink) &&
+        match(about.smoke, smoke) &&
+        match(about.hasKids, hasKids) &&
+        match(about.wantsKids, wantsKids) &&
+        match(about.lookingFor, lookingFor) &&
+        match(about.timeline, timeline) &&
+        match(about.relocate, relocate)
+      );
     });
 
-    // Optional: Distance filter
-    if (distance && latitude && longitude) {
-      const R = 6371;
-      filtered = filtered.filter((profile) => {
-        if (!profile.latitude || !profile.longitude) return false;
-        const dLat = (profile.latitude - latitude) * (Math.PI / 180);
-        const dLon = (profile.longitude - longitude) * (Math.PI / 180);
-        const a =
-          Math.sin(dLat / 2) * Math.sin(dLat / 2) +
-          Math.cos(latitude * (Math.PI / 180)) *
-            Math.cos(profile.latitude * (Math.PI / 180)) *
-            Math.sin(dLon / 2) * Math.sin(dLon / 2);
-        const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-        const d = R * c;
-        return d <= distance;
-      });
-    }
+    // Distance filter
+    const R = 6371;
+    const final = distance && latitude && longitude
+      ? filtered.filter((p) => {
+          if (!p.latitude || !p.longitude) return false;
+          const dLat = (p.latitude - latitude) * (Math.PI / 180);
+          const dLon = (p.longitude - longitude) * (Math.PI / 180);
+          const a =
+            Math.sin(dLat / 2) ** 2 +
+            Math.cos(latitude * (Math.PI / 180)) *
+              Math.cos(p.latitude * (Math.PI / 180)) *
+              Math.sin(dLon / 2) ** 2;
+          const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+          return R * c <= distance;
+        })
+      : filtered;
 
-    return res.status(200).json({ success: true, data: filtered });
+    return res.status(200).json({ success: true, data: final });
   } catch (err) {
-    console.error('❌ Server error:', err);
-    return res.status(500).json({ error: 'Server crashed while filtering.' });
+    console.error('Server error:', err);
+    return res.status(500).json({ error: 'Server crashed.' });
   }
 };
