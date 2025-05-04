@@ -351,85 +351,95 @@ export const filterProfiles = async (req, res) => {
       longitude
     } = req.body;
 
+    console.log(req.body);
+
     // Step 1: Fetch all profiles excluding the current user
-    let query = supabase
-      .from('Profile')
-      .select('*, About(*), Anger(*), Attachment(*), Career(*), Communication(*), Core(*), Emotions(*), Future(*), Lifestyle(*), Love(*), Photos(*), Preferences(*), Prompts(*), Survey(*), Tags(*), Time(*), Values(*)')
-      .neq('userId', userId);
+    const filters = [];
+    if(gender) filters.push(`about.gender = ${gender}`);
 
-    // Step 2: Apply filters dynamically
-    if (gender) query = query.eq('About.gender', gender);
-    if (background && Array.isArray(background)) {
-      query = query.in('About.background', background);
-    } else if (background) {
-      query = query.eq('About.background', background);
-    }
-    if (religion && Array.isArray(religion)) {
-      query = query.in('About.religion', religion);
-    } else if (religion) {
-      query = query.eq('About.religion', religion);
-    }
-    if (sect && Array.isArray(sect)) {
-      query = query.in('About.sect', sect);
-    } else if (sect) {
-      query = query.eq('About.sect', sect);
-    }
-    if (views && Array.isArray(views)) {
-      query = query.in('About.views', views);
-    } else if (views) {
-      query = query.eq('About.views', views);
-    }
-    if (drink && Array.isArray(drink)) {
-      query = query.in('About.drink', drink);
-    } else if (drink) {
-      query = query.eq('About.drink', drink);
-    }
-    if (smoke && Array.isArray(smoke)) {
-      query = query.in('About.smoke', smoke);
-    } else if (smoke) {
-      query = query.eq('About.smoke', smoke);
-    }
-    if (hasKids && Array.isArray(hasKids)) {
-      query = query.in('About.hasKids', hasKids);
-    } else if (hasKids) {
-      query = query.eq('About.hasKids', hasKids);
-    }
-    if (wantsKids && Array.isArray(wantsKids)) {
-      query = query.in('About.wantsKids', wantsKids);
-    } else if (wantsKids) {
-      query = query.eq('About.wantsKids', wantsKids);
-    }
-    if (lookingFor && Array.isArray(lookingFor)) {
-      query = query.in('About.lookingFor', lookingFor);
-    } else if (lookingFor) {
-      query = query.eq('About.lookingFor', lookingFor);
-    }
-    if (timeline && Array.isArray(timeline)) {
-      query = query.in('About.timeline', timeline);
-    } else if (timeline) {
-      query = query.eq('About.timeline', timeline);
-    }
-    if (relocate && Array.isArray(relocate)) {
-      query = query.in('About.relocate', relocate);
-    } else if (relocate) {
-      query = query.eq('About.smoke', relocate);
-    }
-    if (ageRange) {
-      query = query.gte('About.ageMin', ageRange.min).lte('About.ageMax', ageRange.max);
+    if (background && Array.isArray(background)){
+      filters.push(`about.background IN (${background.map(b => `'${b}'`).join(',')})`);
+    } else if (background) filters.push(`about.background = '${background}'`);
+
+    if (religion && Array.isArray(religion)){
+      filters.push(`about.religion IN (${religion.map(b => `'${b}'`).join(',')})`);
+    } else if (religion) filters.push(`about.religion = '${religion}'`);
+
+    if (sect && Array.isArray(sect)){
+      filters.push(`about.sect IN (${sect.map(b => `'${b}'`).join(',')})`);
+    } else if (sect) filters.push(`about.sect = '${sect}'`);
+
+    if (views && Array.isArray(views)){
+      filters.push(`about.views IN (${views.map(b => `'${b}'`).join(',')})`);
+    } else if (views) filters.push(`about.views = '${views}'`);
+
+    if (drink && Array.isArray(drink)){
+      filters.push(`about.drink IN (${drink.map(b => `'${b}'`).join(',')})`);
+    } else if (drink) filters.push(`about.drink = '${drink}'`);
+
+    if (smoke && Array.isArray(smoke)){
+      filters.push(`about.smoke IN (${smoke.map(b => `'${b}'`).join(',')})`);
+    } else if (smoke) filters.push(`about.smoke = '${smoke}'`);
+
+    if (hasKids && Array.isArray(hasKids)){
+      filters.push(`about.hasKids IN (${hasKids.map(b => `'${b}'`).join(',')})`);
+    } else if (hasKids) filters.push(`about.hasKids = '${hasKids}'`);
+
+    if (wantsKids && Array.isArray(wantsKids)){
+      filters.push(`about.wantsKids IN (${wantsKids.map(b => `'${b}'`).join(',')})`);
+    } else if (wantsKids) filters.push(`about.wantsKids = '${wantsKids}'`);
+
+    if (lookingFor && Array.isArray(lookingFor)){
+      filters.push(`about.lookingFor IN (${lookingFor.map(b => `'${b}'`).join(',')})`);
+    } else if (lookingFor) filters.push(`about.lookingFor = '${lookingFor}'`);
+
+    if (timeline && Array.isArray(timeline)){
+      filters.push(`about.timeline IN (${timeline.map(b => `'${b}'`).join(',')})`);
+    } else if (timeline) filters.push(`about.timeline = '${timeline}'`);
+
+    if (relocate && Array.isArray(relocate)){
+      filters.push(`about.relocate IN (${relocate.map(b => `'${b}'`).join(',')})`);
+    } else if (relocate) filters.push(`about.relocate = '${relocate}'`);
+    
+    if (ageRange && ageRange.min && ageRange.max) {
+      filters.push(`EXTRACT(YEAR FROM AGE(CURRENT_DATE, about.dob)) BETWEEN ${ageRange.min} AND ${ageRange.max}`);
     }
 
-    // Step 3: Execute query
-    const { data, error } = await query;
+    const whereClause = filters.length ? `WHERE p.userId != '${userId}' AND ${filters.join(' AND ')}` : `WHERE p.userId != '${userId}'`;
+
+    const sql = `
+      SELECT p.*, about.*, anger.*, attachment.*, career.*, communication.*, core.*, emotions.*, future.*, lifestyle.*, love.*, photos.*, preferences.*, prompts.*, survey.*, tags.*, time.*, values.*
+      FROM Profile p
+      LEFT JOIN About a ON p.userId = a.userId
+      LEFT JOIN Anger anger ON p.userId = anger.userId
+      LEFT JOIN Attachment attachment ON p.userId = attachment.userId
+      LEFT JOIN Career career ON p.userId = career.userId
+      LEFT JOIN Communication communication ON p.userId = communication.userId
+      LEFT JOIN Core core ON p.userId = core.userId
+      LEFT JOIN Emotions emotions ON p.userId = emotions.userId
+      LEFT JOIN Future future ON p.userId = future.userId
+      LEFT JOIN Lifestyle lifestyle ON p.userId = lifestyle.userId
+      LEFT JOIN Love love ON p.userId = love.userId
+      LEFT JOIN Photos ph ON p.userId = ph.userId
+      LEFT JOIN Preferences preferences ON p.userId = preferences.userId
+      LEFT JOIN Prompts prompts ON p.userId = prompts.userId
+      LEFT JOIN Survey survey ON p.userId = survey.userId
+      LEFT JOIN Tags tags ON p.userId = tags.userId
+      LEFT JOIN Time time ON p.userId = time.userId
+      LEFT JOIN Values values ON p.userId = values.userId
+      ${whereClause}
+    `;
+
+    const { data, error } = await supabase.rpc('execute_sql_query', { query_text: sql });
 
     if (error) {
-      console.error('❌ Error filtering profiles:', error);
+      console.error('❌ Error executing raw SQL query:', error);
       return res.status(500).json({ error: 'Failed to filter profiles.' });
     }
 
-    // Step 4: Distance Filtering
     let filteredProfiles = data;
     if (distance && latitude && longitude) {
-      const R = 6371; // Earth's radius in km
+      const R = 6371;
       filteredProfiles = data.filter(profile => {
         if (!profile.latitude || !profile.longitude) return false;
         const dLat = (profile.latitude - latitude) * (Math.PI / 180);
@@ -438,8 +448,7 @@ export const filterProfiles = async (req, res) => {
           Math.sin(dLat / 2) * Math.sin(dLat / 2) +
           Math.cos(latitude * (Math.PI / 180)) *
             Math.cos(profile.latitude * (Math.PI / 180)) *
-            Math.sin(dLon / 2) *
-            Math.sin(dLon / 2);
+            Math.sin(dLon / 2) * Math.sin(dLon / 2);
         const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
         const distanceToProfile = R * c;
         return distanceToProfile <= distance;
