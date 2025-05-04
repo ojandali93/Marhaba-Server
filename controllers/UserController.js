@@ -378,6 +378,24 @@ export const filterProfiles = async (req, res) => {
       `)
       .neq('userId', userId);
 
+      console.log('userId', userId)
+      console.log('ageRange', ageRange)
+      console.log('distance', distance)
+      console.log('gender', gender)
+      console.log('background', background)
+      console.log('religion', religion)
+      console.log('sect', sect)
+      console.log('views', views)
+      console.log('drink', drink)
+      console.log('smoke', smoke)
+      console.log('hasKids', hasKids)
+      console.log('wantsKids', wantsKids)
+      console.log('lookingFor', lookingFor)
+      console.log('timeline', timeline)
+      console.log('relocate', relocate)
+      console.log('latitude', latitude)
+      console.log('longitude', longitude)
+
     if (error) {
       console.error('❌ Error fetching profiles:', error);
       return res.status(500).json({ error: 'Failed to fetch profiles.' });
