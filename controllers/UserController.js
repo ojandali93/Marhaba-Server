@@ -411,7 +411,7 @@ export const filterProfiles = async (req, res) => {
         if (age < ageRange.min || age > ageRange.max) return false;
       }
 
-      if (gender && about.gender !== gender) return false;
+      if (gender && profile.gender !== gender) return false;
       if (background?.length && !background.includes(about.background)) return false;
       if (religion?.length && !religion.includes(about.religion)) return false;
       if (sect?.length && !sect.includes(about.sect)) return false;
