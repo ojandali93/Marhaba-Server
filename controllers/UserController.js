@@ -332,9 +332,9 @@ export const getWeeklyInteractionStats = async (req, res) => {
 export const filterProfiles = async (req, res) => {
   try {
     const {
-      userId, // current user making the request
-      ageRange,            // { min: number, max: number }
-      distance,            // in kilometers
+      userId,
+      ageRange,
+      distance,
       gender,
       background,
       religion,
@@ -348,99 +348,71 @@ export const filterProfiles = async (req, res) => {
       timeline,
       relocate,
       latitude,
-      longitude
+      longitude,
     } = req.body;
 
-    console.log(req.body);
+    const now = new Date();
 
-    // Step 1: Fetch all profiles excluding the current user
-    const filters = [];
-    if(gender) filters.push(`about.gender = ${gender}`);
-
-    if (background && Array.isArray(background)){
-      filters.push(`about.background IN (${background.map(b => `'${b}'`).join(',')})`);
-    } else if (background) filters.push(`about.background = '${background}'`);
-
-    if (religion && Array.isArray(religion)){
-      filters.push(`about.religion IN (${religion.map(b => `'${b}'`).join(',')})`);
-    } else if (religion) filters.push(`about.religion = '${religion}'`);
-
-    if (sect && Array.isArray(sect)){
-      filters.push(`about.sect IN (${sect.map(b => `'${b}'`).join(',')})`);
-    } else if (sect) filters.push(`about.sect = '${sect}'`);
-
-    if (views && Array.isArray(views)){
-      filters.push(`about.views IN (${views.map(b => `'${b}'`).join(',')})`);
-    } else if (views) filters.push(`about.views = '${views}'`);
-
-    if (drink && Array.isArray(drink)){
-      filters.push(`about.drink IN (${drink.map(b => `'${b}'`).join(',')})`);
-    } else if (drink) filters.push(`about.drink = '${drink}'`);
-
-    if (smoke && Array.isArray(smoke)){
-      filters.push(`about.smoke IN (${smoke.map(b => `'${b}'`).join(',')})`);
-    } else if (smoke) filters.push(`about.smoke = '${smoke}'`);
-
-    if (hasKids && Array.isArray(hasKids)){
-      filters.push(`about.hasKids IN (${hasKids.map(b => `'${b}'`).join(',')})`);
-    } else if (hasKids) filters.push(`about.hasKids = '${hasKids}'`);
-
-    if (wantsKids && Array.isArray(wantsKids)){
-      filters.push(`about.wantsKids IN (${wantsKids.map(b => `'${b}'`).join(',')})`);
-    } else if (wantsKids) filters.push(`about.wantsKids = '${wantsKids}'`);
-
-    if (lookingFor && Array.isArray(lookingFor)){
-      filters.push(`about.lookingFor IN (${lookingFor.map(b => `'${b}'`).join(',')})`);
-    } else if (lookingFor) filters.push(`about.lookingFor = '${lookingFor}'`);
-
-    if (timeline && Array.isArray(timeline)){
-      filters.push(`about.timeline IN (${timeline.map(b => `'${b}'`).join(',')})`);
-    } else if (timeline) filters.push(`about.timeline = '${timeline}'`);
-
-    if (relocate && Array.isArray(relocate)){
-      filters.push(`about.relocate IN (${relocate.map(b => `'${b}'`).join(',')})`);
-    } else if (relocate) filters.push(`about.relocate = '${relocate}'`);
-    
-    if (ageRange && ageRange.min && ageRange.max) {
-      filters.push(`EXTRACT(YEAR FROM AGE(CURRENT_DATE, about.dob)) BETWEEN ${ageRange.min} AND ${ageRange.max}`);
-    }
-
-    const whereClause = filters.length ? `WHERE p.userId != '${userId}' AND ${filters.join(' AND ')}` : `WHERE p.userId != '${userId}'`;
-
-    const sql = `
-      SELECT p.*, about.*, anger.*, attachment.*, career.*, communication.*, core.*, emotions.*, future.*, lifestyle.*, love.*, photos.*, preferences.*, prompts.*, survey.*, tags.*, time.*, values.*
-      FROM Profile p
-      LEFT JOIN About a ON p.userId = a.userId
-      LEFT JOIN Anger anger ON p.userId = anger.userId
-      LEFT JOIN Attachment attachment ON p.userId = attachment.userId
-      LEFT JOIN Career career ON p.userId = career.userId
-      LEFT JOIN Communication communication ON p.userId = communication.userId
-      LEFT JOIN Core core ON p.userId = core.userId
-      LEFT JOIN Emotions emotions ON p.userId = emotions.userId
-      LEFT JOIN Future future ON p.userId = future.userId
-      LEFT JOIN Lifestyle lifestyle ON p.userId = lifestyle.userId
-      LEFT JOIN Love love ON p.userId = love.userId
-      LEFT JOIN Photos ph ON p.userId = ph.userId
-      LEFT JOIN Preferences preferences ON p.userId = preferences.userId
-      LEFT JOIN Prompts prompts ON p.userId = prompts.userId
-      LEFT JOIN Survey survey ON p.userId = survey.userId
-      LEFT JOIN Tags tags ON p.userId = tags.userId
-      LEFT JOIN Time time ON p.userId = time.userId
-      LEFT JOIN Values values ON p.userId = values.userId
-      ${whereClause}
-    `;
-
-    const { data, error } = await supabase.rpc('execute_sql_query', { query_text: sql });
+    // Step 1: Fetch profiles with joined tables
+    const { data, error } = await supabase
+      .from('Profile')
+      .select(`
+        *,
+        About(*),
+        Anger(*),
+        Attachment(*),
+        Career(*),
+        Communication(*),
+        Core(*),
+        Emotions(*),
+        Future(*),
+        Lifestyle(*),
+        Love(*),
+        Photos(*),
+        Preferences(*),
+        Prompts(*),
+        Survey(*),
+        Tags(*),
+        Time(*),
+        Values(*)
+      `)
+      .neq('userId', userId);
 
     if (error) {
-      console.error('❌ Error executing raw SQL query:', error);
-      return res.status(500).json({ error: 'Failed to filter profiles.' });
+      console.error('❌ Error fetching profiles:', error);
+      return res.status(500).json({ error: 'Failed to fetch profiles.' });
     }
 
-    let filteredProfiles = data;
+    let filtered = data.filter((profile) => {
+      const about = profile.About;
+      if (!about) return false;
+
+      // Age from DOB
+      if (ageRange) {
+        const age = now.getFullYear() - new Date(about.dob).getFullYear();
+        if (age < ageRange.min || age > ageRange.max) return false;
+      }
+
+      if (gender && about.gender !== gender) return false;
+      if (background?.length && !background.includes(about.background)) return false;
+      if (religion?.length && !religion.includes(about.religion)) return false;
+      if (sect?.length && !sect.includes(about.sect)) return false;
+      if (views?.length && !views.includes(about.views)) return false;
+      if (drink?.length && !drink.includes(about.drink)) return false;
+      if (smoke?.length && !smoke.includes(about.smoke)) return false;
+      if (hasKids?.length && !hasKids.includes(about.hasKids)) return false;
+      if (wantsKids?.length && !wantsKids.includes(about.wantsKids)) return false;
+      if (lookingFor?.length && !lookingFor.includes(about.lookingFor)) return false;
+      if (timeline?.length && !timeline.includes(about.timeline)) return false;
+      if (relocate?.length && !relocate.includes(about.relocate)) return false;
+
+      return true;
+    });
+
+    // Optional: Distance filter
     if (distance && latitude && longitude) {
       const R = 6371;
-      filteredProfiles = data.filter(profile => {
+      filtered = filtered.filter((profile) => {
         if (!profile.latitude || !profile.longitude) return false;
         const dLat = (profile.latitude - latitude) * (Math.PI / 180);
         const dLon = (profile.longitude - longitude) * (Math.PI / 180);
@@ -450,12 +422,12 @@ export const filterProfiles = async (req, res) => {
             Math.cos(profile.latitude * (Math.PI / 180)) *
             Math.sin(dLon / 2) * Math.sin(dLon / 2);
         const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-        const distanceToProfile = R * c;
-        return distanceToProfile <= distance;
+        const d = R * c;
+        return d <= distance;
       });
     }
 
-    return res.status(200).json({ success: true, data: filteredProfiles });
+    return res.status(200).json({ success: true, data: filtered });
   } catch (err) {
     console.error('❌ Server error:', err);
     return res.status(500).json({ error: 'Server crashed while filtering.' });
