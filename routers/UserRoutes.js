@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import { approvedInteraction, CheckUserMatchStatus, getUserInteractions, getWeeklyInteractionStats, grabAllUsers, grabSingleProfile, likeProfile, updateInteraction, updateUserLocation, updateUserTutorial } from '../controllers/UserController.js';
+import { approvedInteraction, CheckUserMatchStatus, filterProfiles, getUserInteractions, getWeeklyInteractionStats, grabAllUsers, grabSingleProfile, likeProfile, updateInteraction, updateUserLocation, updateUserTutorial } from '../controllers/UserController.js';
 
 const router = Router();
 
