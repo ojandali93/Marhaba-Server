@@ -9,6 +9,7 @@ router.put('/approved', approvedInteraction);
 router.put('/location', updateUserLocation);
 router.put('/tutorial', updateUserTutorial);
 router.put('/updateInteraction', updateInteraction);
+router.post('/filterProfiles', filterProfiles);
 router.get('/liked/:userId', getUserInteractions);
 router.get('/weeklyStats/:userId', getWeeklyInteractionStats);
 router.get('/matchStatus/:userId1/:userId2', CheckUserMatchStatus);
