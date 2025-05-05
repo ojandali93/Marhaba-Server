@@ -354,7 +354,8 @@ export const filterProfiles = async (req, res) => {
       distance,
     } = req.body;
 
-    console.log('request body', req.body)
+    console.log('--- Filter Request Body ---');
+    console.log(req.body);
 
     const now = new Date();
 
@@ -387,45 +388,112 @@ export const filterProfiles = async (req, res) => {
       return res.status(500).json({ error: 'Failed to fetch profiles.' });
     }
 
+    if (!data) {
+        console.warn('⚠️ No profiles found to filter (excluding self).');
+        return res.status(200).json({ success: true, data: [] });
+    }
+
+    console.log(`--- Starting Filter Logic for ${data.length} Profiles ---`);
+    let initialPassCount = 0; // Counter for profiles passing the initial filters
+
     const filtered = data.filter((profile) => {
       const about = profile.About;
-      if (!about) return false;
+      const profileId = profile.userId || 'UnknownID'; // Get profile ID for logging
+      console.log(`\n--- Checking Profile: ${profileId} ---`);
 
-      // Age check using DOB
-      if (profile.dob && ageMin && ageMax) {
-        const age = now.getFullYear() - new Date(profile.dob).getFullYear();
-        if (age < ageMin || age > ageMax) return false;
+      if (!about) {
+          console.log(`Profile ${profileId}: FAIL - Missing 'About' data.`);
+          return false;
       }
 
-      const match = (val, arr) => {
-        if (!arr?.length) return true;
-        if (val === null || val === undefined) return false;
-        return arr.some(
-          item => item.toLowerCase().trim() === val.toLowerCase().trim()
-        );
+      // Age check using DOB
+      let agePassed = true; // Assume true unless proven otherwise
+      if (profile.dob && ageMin && ageMax) {
+        const age = now.getFullYear() - new Date(profile.dob).getFullYear();
+        // Simple check, could be refined for more precise age calculation
+        if (age < ageMin || age > ageMax) {
+            agePassed = false;
+        }
+      }
+      console.log(`Profile ${profileId}: Age Check (${profile.dob ? (now.getFullYear() - new Date(profile.dob).getFullYear()) : 'N/A'} vs [${ageMin}-${ageMax}]): ${agePassed ? 'PASS' : 'FAIL'}`);
+      if (!agePassed) {
+           console.log(`Profile ${profileId}: FAIL - Overall (due to Age)`);
+           return false;
+      }
+
+
+      const match = (val, arr, fieldName) => {
+        const filterIsEmpty = !arr?.length;
+        const valueIsMissing = val === null || val === undefined;
+        let result = false;
+
+        if (filterIsEmpty) {
+          result = true; // Skip filter if array is empty
+          console.log(`Profile ${profileId}: ${fieldName} Check (Filter: Empty): SKIP (PASS)`);
+        } else if (valueIsMissing) {
+          result = false; // Fail if value is missing and filter is not empty
+          console.log(`Profile ${profileId}: ${fieldName} Check (Profile Value: Missing, Filter: [${arr.join(', ')}]): FAIL`);
+        } else {
+          result = arr.some(
+            item => item.toLowerCase().trim() === val.toLowerCase().trim()
+          );
+          console.log(`Profile ${profileId}: ${fieldName} Check (Profile Value: ${val}, Filter: [${arr.join(', ')}]): ${result ? 'PASS' : 'FAIL'}`);
+        }
+        return result;
       };
 
-      return (
-        match(profile.gender, [gender]) &&
-        match(about.background, background) &&
-        match(about.religion, religion) &&
-        match(about.sect, sect) &&
-        match(about.views, views) &&
-        match(about.drink, drink) &&
-        match(about.smoke, smoke) &&
-        match(about.hasKids, hasKids) &&
-        match(about.wantsKids, wantsKids) &&
-        match(about.lookingFor, lookingFor) &&
-        match(about.timeline, timeline) &&
-        match(about.relocate, relocate)
-      );
+      // Perform all checks and store results
+      const genderPassed = match(profile.gender, gender?.length ? [gender] : [], 'Gender'); // Handle gender potentially being single string or empty/null
+      const backgroundPassed = match(about.background, background, 'Background');
+      const religionPassed = match(about.religion, religion, 'Religion');
+      const sectPassed = match(about.sect, sect, 'Sect');
+      const viewsPassed = match(about.views, views, 'Views');
+      const drinkPassed = match(about.drink, drink, 'Drink');
+      const smokePassed = match(about.smoke, smoke, 'Smoke');
+      const hasKidsPassed = match(about.hasKids, hasKids, 'Has Kids');
+      const wantsKidsPassed = match(about.wantsKids, wantsKids, 'Wants Kids');
+      const lookingForPassed = match(about.lookingFor, lookingFor, 'Looking For');
+      const timelinePassed = match(about.timeline, timeline, 'Timeline');
+      const relocatePassed = match(about.relocate, relocate, 'Relocate');
+
+      // Determine overall pass status for this profile based on ALL criteria
+      const overallPassed =
+        genderPassed &&
+        backgroundPassed &&
+        religionPassed &&
+        sectPassed &&
+        viewsPassed &&
+        drinkPassed &&
+        smokePassed &&
+        hasKidsPassed &&
+        wantsKidsPassed &&
+        lookingForPassed &&
+        timelinePassed &&
+        relocatePassed;
+
+      console.log(`Profile ${profileId}: Overall non-distance filters: ${overallPassed ? 'PASS' : 'FAIL'}`);
+
+      if (overallPassed) {
+          initialPassCount++; // Increment count if passed initial filters
+      }
+
+      return overallPassed; // Return result for the .filter() method
     });
 
+    console.log(`\n--- Initial Filter Complete: ${initialPassCount} profiles passed ---`);
+
     // Distance filter
-    const R = 6371;
+    const R = 6371; // Earth radius in kilometers
+    let finalPassCount = 0; // Counter for profiles passing distance filter
+
+    console.log(`--- Applying Distance Filter (Max: ${distance} km) ---`);
     const final = distance && latitude && longitude
       ? filtered.filter((p) => {
-          if (!p.latitude || !p.longitude) return false;
+          const profileId = p.userId || 'UnknownID';
+          if (!p.latitude || !p.longitude) {
+              console.log(`Profile ${profileId}: Distance Check - FAIL (Missing Lat/Lon)`);
+              return false;
+          }
           const dLat = (p.latitude - latitude) * (Math.PI / 180);
           const dLon = (p.longitude - longitude) * (Math.PI / 180);
           const a =
@@ -434,9 +502,23 @@ export const filterProfiles = async (req, res) => {
               Math.cos(p.latitude * (Math.PI / 180)) *
               Math.sin(dLon / 2) ** 2;
           const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-          return R * c <= distance;
+          const calculatedDistance = R * c;
+          const passedDistance = calculatedDistance <= distance;
+          console.log(`Profile ${profileId}: Distance Check (${calculatedDistance.toFixed(2)} km vs ${distance} km): ${passedDistance ? 'PASS' : 'FAIL'}`);
+          if(passedDistance) {
+              finalPassCount++;
+          }
+          return passedDistance;
         })
-      : filtered;
+      : filtered; // If no distance filter applied, final is the same as filtered
+
+      if (!(distance && latitude && longitude)) {
+          finalPassCount = initialPassCount; // If distance wasn't applied, the count remains the same
+          console.log("--- Distance Filter Not Applied (Missing distance/lat/lon in request) ---")
+      }
+
+
+    console.log(`--- Filtering Complete: ${finalPassCount} profiles passed all filters ---`);
 
     return res.status(200).json({ success: true, data: final });
   } catch (err) {
