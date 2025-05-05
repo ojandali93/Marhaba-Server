@@ -399,8 +399,10 @@ export const filterProfiles = async (req, res) => {
 
       const match = (val, arr) => {
         if (!arr?.length) return true;
-        if (!val) return false;
-        return arr.some(item => item.toLowerCase().trim() === val.toLowerCase().trim());
+        if (!val) return true; // <- Treat null as wildcard (optional)
+        return arr.some(
+          item => item.toLowerCase().trim() === val.toLowerCase().trim()
+        );
       };
 
       return (
