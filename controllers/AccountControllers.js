@@ -78,6 +78,36 @@ export const createUserProfile = async (req, res) => {
   }
 };
 
+export const createNotifications = async (req, res) => {
+  try {
+    const { userId, messages, matches, likes, weeklyViews, miscellanious } = req.body;
+
+    const { data: profileData, error: profileError } = await supabase
+    .from('Notifications')
+    .insert([{
+      userId,
+      messages,
+      matches, 
+      likes,
+      weeklyViews,
+      miscellanious,
+    }])
+    .select();
+
+    if (profileError) {
+      return res.status(400).json({ error: profileError.message });
+    }
+
+    if (profileData) {
+      return res.status(200).json({ success: true, data: profileData });
+    } else {
+      return res.status(500).json({ error: profileError });
+    }
+
+  } catch (error) {
+    return res.status(500).json({ error: 'Failed to create user' });
+  }
+};
 
 export const createUserAbout = async (req, res) => {
   try {
