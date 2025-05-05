@@ -488,13 +488,16 @@ export const updateVisibility = async (req, res) => {
 export const updateViewed = async (req, res) => {
   const { userId } = req.body;
   try {
-    await supabase.from('Interactions')
-      .select('*')
+    const { data, error } = await supabase
+      .from('Interactions')
+      .update({ viewed: true, viewed_at: new Date() })
       .eq('targetUserId', userId)
-      .eq('viewed', false)
-      .update({ viewed: true, viewed_at: new Date() });
 
-    res.json({ success: true });
+    if (error) {
+      console.error('Error fetching interactions:', error);
+      return res.status(500).json({ error: error });
+    }
+    return res.status(200).json({ success: true, data });
   } catch (err) {
     console.error('Error updating viewed:', err);
     res.status(500).json({ success: false, error: 'Server error' });
