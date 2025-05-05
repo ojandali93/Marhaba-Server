@@ -397,7 +397,7 @@ export const filterProfiles = async (req, res) => {
     let initialPassCount = 0; // Counter for profiles passing the initial filters
 
     const filtered = data.filter((profile) => {
-      const about = profile.About;
+      const about = Array.isArray(profile.About) ? profile.About[0] : profile.About;
       const profileId = profile.userId || 'UnknownID'; // Get profile ID for logging
       console.log(`\n--- Checking Profile: ${profileId} ---`);
 
