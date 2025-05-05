@@ -489,7 +489,7 @@ export const updateViewed = async (req, res) => {
   const { userId } = req.body;
   try {
     await supabase.from('Interactions')
-      .where({ targetUserId: userId, viewed: false })
+      .eq('targetUserId', userId)
       .update({ viewed: true, viewed_at: new Date() });
 
     res.json({ success: true });
