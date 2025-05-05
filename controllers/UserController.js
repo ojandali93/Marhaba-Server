@@ -398,8 +398,8 @@ export const filterProfiles = async (req, res) => {
       }
 
       const match = (val, arr) => {
-        if (!arr?.length) return true;
-        if (!val) return true; // <- Treat null as wildcard (optional)
+        if (!arr?.length) return true; // no filter set, allow through
+        if (val === null || val === undefined) return false; // value is missing, fail match
         return arr.some(
           item => item.toLowerCase().trim() === val.toLowerCase().trim()
         );
