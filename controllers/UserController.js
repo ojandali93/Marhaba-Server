@@ -463,3 +463,22 @@ export const updateNotifications = async (req, res) => {
     return res.status(500).json({ error: 'Server error occurred' });
   }
 };
+
+export const updateVisibility = async (req, res) => {
+  try {
+    const { userId, visibility } = req.body;
+    const { data, error } = await supabase
+      .from('Profile')
+      .update({ visibility })
+      .eq('userId', userId)
+
+    if (error) {
+      console.error('Error fetching interactions:', error);
+      return res.status(500).json({ error: error });
+    }
+    return res.status(200).json({ success: true, data });
+  } catch (error) {
+    console.error('Server error:', error);
+    return res.status(500).json({ error: 'Server error occurred' });
+  }
+};
