@@ -108,7 +108,7 @@ io.on('connection', (socket) => {
       }
 
       console.log('✅ Message saved:', data);
-
+      console.log('✅ Message conversationId:', message.conversationId);
       await supabase.from('Conversations')
         .update({
           lastMessage: message.text,
