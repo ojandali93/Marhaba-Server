@@ -42,7 +42,7 @@ export const createUserAccount = async (req, res) => {
 
 export const createUserProfile = async (req, res) => {
   try {
-    const { userId,  email, name, dob, gender, height, fcmToken, approved, tier, longitude, latitude, phone } = req.body;
+    const { userId,  email, name, dob, gender, height, fcmToken, approved, tier, longitude, latitude, phone, visibility } = req.body;
 
     const { data: profileData, error: profileError } = await supabase
     .from('Profile')
@@ -58,7 +58,8 @@ export const createUserProfile = async (req, res) => {
       tier,
       longitude,
       latitude,
-      phone
+      phone,
+      visibility
     }])
     .select();
 
