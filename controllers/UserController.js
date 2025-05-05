@@ -397,7 +397,11 @@ export const filterProfiles = async (req, res) => {
         if (age < ageMin || age > ageMax) return false;
       }
 
-      const match = (val, arr) => !arr?.length || arr.includes(val);
+      const match = (val, arr) => {
+        if (!arr?.length) return true;
+        if (!val) return false;
+        return arr.some(item => item.toLowerCase().trim() === val.toLowerCase().trim());
+      };
 
       return (
         match(profile.gender, [gender]) &&
