@@ -37,10 +37,21 @@ export const loginUser = async (req, res) => {
       console.error('❌ Login error:', error.message);
       return res.status(401).json({ error: error.message });
     }
+
     const { session, user } = data;
-    const token = jwt.sign(user, process.env.JWT_SECRET, {
-      expiresIn: '7d', // or '1h', etc.
-    });
+    const token = jwt.sign(user, process.env.JWT_SECRET, { expiresIn: '7d' });
+
+    // ✅ Store the token in the Profiles table
+    const { error: updateError } = await supabase
+      .from('Profiles')
+      .update({ jwtToken: token }) // use the correct column name
+      .eq('id', user.id);
+
+    if (updateError) {
+      console.error('❌ Error saving token to profile:', updateError.message);
+      // Don’t block login if this fails — continue
+    }
+
     return res.status(200).json({
       message: 'Login successful',
       session,
