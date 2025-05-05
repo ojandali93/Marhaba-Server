@@ -484,3 +484,17 @@ export const updateVisibility = async (req, res) => {
     return res.status(500).json({ error: 'Server error occurred' });
   }
 };
+
+export const updateViewed = async (req, res) => {
+  const { userId } = req.body;
+  try {
+    await supabase.from('Interactions')
+      .where({ targetUserId: userId, viewed: false })
+      .update({ viewed: true, viewed_at: new Date() });
+
+    res.json({ success: true });
+  } catch (err) {
+    console.error('Error updating viewed:', err);
+    res.status(500).json({ success: false, error: 'Server error' });
+  }
+};
