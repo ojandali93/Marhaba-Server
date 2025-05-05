@@ -489,7 +489,9 @@ export const updateViewed = async (req, res) => {
   const { userId } = req.body;
   try {
     await supabase.from('Interactions')
+      .select('*')
       .eq('targetUserId', userId)
+      .eq('viewed', false)
       .update({ viewed: true, viewed_at: new Date() });
 
     res.json({ success: true });
