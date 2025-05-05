@@ -42,6 +42,8 @@ export const loginUser = async (req, res) => {
     const token = jwt.sign(user, process.env.JWT_SECRET, { expiresIn: '7d' });
 
     // ✅ Store the token in the Profiles table
+    console.log('id for storing token:', user.id);
+    console.log('✅ Storing token in Profiles table:', token);
     const { error: updateError } = await supabase
       .from('Profiles')
       .update({ jwtToken: token }) // use the correct column name
