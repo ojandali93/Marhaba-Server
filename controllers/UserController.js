@@ -5,7 +5,7 @@ export const grabSingleProfile = async (req, res) => {
     const { userId } = req.params;
     const { data: profileData, error: profileError } = await supabase
     .from('Profile')
-    .select('*, About(*), Anger(*), Attachment(*), Career(*), Communication(*), Core(*), Emotions(*), Future(*), Lifestyle(*), Love(*), Photos(*), Preferences(*), Prompts(*), Survey(*), Tags(*), Time(*), Values(*)')
+    .select('*, About(*), Anger(*), Attachment(*), Career(*), Communication(*), Core(*), Emotions(*), Future(*), Lifestyle(*), Love(*), Notifications(*), Photos(*), Preferences(*), Prompts(*), Survey(*), Tags(*), Time(*), Values(*)')
     .eq('userId', userId)
 
     if (profileError) {
@@ -34,7 +34,7 @@ export const grabAllUsers = async (req, res) => {
   try {
     const { data: profileData, error: profileError } = await supabase
     .from('Profile')
-    .select('*, About(*), Anger(*), Attachment(*), Career(*), Communication(*), Core(*), Emotions(*), Future(*), Lifestyle(*), Love(*), Photos(*), Preferences(*), Prompts(*), Survey(*), Tags(*), Time(*), Values(*)')
+    .select('*, About(*), Anger(*), Attachment(*), Career(*), Communication(*), Core(*), Emotions(*), Future(*), Lifestyle(*), Love(*), Notifications(*), Photos(*), Preferences(*), Prompts(*), Survey(*), Tags(*), Time(*), Values(*)')
     .order('created_at', { ascending: false });
 
 
@@ -134,6 +134,7 @@ export const getUserInteractions = async (req, res) => {
           Future(*),
           Lifestyle(*),
           Love(*),
+          Notifications(*),
           Photos(*),
           Preferences(*),
           Prompts(*),
@@ -371,6 +372,7 @@ export const filterProfiles = async (req, res) => {
         Future(*),
         Lifestyle(*),
         Love(*),
+        Notifications(*),
         Preferences(*),
         Prompts(*),
         Survey(*),
