@@ -109,6 +109,13 @@ io.on('connection', (socket) => {
 
       console.log('✅ Message saved:', data);
 
+      await supabase.from('Conversations')
+        .update({
+          lastMessage: message.text,
+          updated_at: new Date().toISOString()
+        })
+        .eq('id', message.conversationId);
+
       // Emit the new message to users in the same conversation room
       io.to(`conversation_${message.conversationId}`).emit('newMessage', data);
     } catch (err) {
