@@ -6,7 +6,7 @@ const router = Router();
 router.post('/create', createConversation);
 router.put('/read', markMessagesAsRead);
 router.get('/unread/:userId', getUnreadMessages);
-router.get('/messages/:userId', getConversationmessages);
+router.get('/messages/:conversationId', getConversationmessages);
 router.get('/:userId', getUserConversations);
 
 export default router;
