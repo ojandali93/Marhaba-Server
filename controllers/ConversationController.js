@@ -140,3 +140,24 @@ export const markMessagesAsRead = async (req, res) => {
     return res.status(500).json({ error: 'Failed to mark messages as read' });
   }
 };
+
+export const updateConversationLastMessage = async (req, res) => {
+  const { conversationId, message } = req.body;
+
+  try {
+    const { error } = await supabase
+      .from('Conversations')
+      .update({
+        lastMessage: message,
+        updated_at: new Date().toISOString()
+      })
+      .eq('id', conversationId); // 🛠 Make sure your column is 'id' not 'conversationId'
+
+    if (error) throw error;
+
+    return res.status(200).json({ success: true });
+  } catch (err) {
+    console.error('❌ Error updating last message:', err);
+    return res.status(500).json({ error: 'Failed to update last message' });
+  }
+};
