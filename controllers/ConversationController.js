@@ -93,27 +93,33 @@ export const getUserConversations = async (req, res) => {
 
 export const getUnreadMessages = async (req, res) => {
   const { userId } = req.params;
-  console.log('userId:', userId);
 
   if (!userId) {
-    return res.status(400).json({ error: 'Missing userId parameter' });
+    return res.status(400).json({ success: false, message: 'Missing userId.' });
   }
 
   try {
     const { data, error } = await supabase
       .from('Messages')
-      .select('*')
+      .select('conversationId')
       .eq('receiver', userId)
       .eq('readStatus', 'unread');
+
     if (error) {
-      console.error('Error fetching unread messages:', error);
-      return res.status(500).json({ error: 'Failed to fetch unread messages' });
+      console.error('❌ Error fetching unread messages:', error);
+      return res.status(500).json({ success: false, message: 'Failed to fetch unread messages.' });
     }
 
-    return res.status(200).json({ success: true, data });
+    // Create a map of conversationId -> true
+    const unreadMap = {};
+    data.forEach(({ conversationId }) => {
+      if (conversationId) unreadMap[conversationId] = true;
+    });
+
+    return res.status(200).json({ success: true, unreadMap });
   } catch (err) {
-    console.error('Server error:', err.message);
-    return res.status(500).json({ error: 'Server error' });
+    console.error('❌ Server error:', err);
+    return res.status(500).json({ success: false, message: 'Server error.' });
   }
 };
 
