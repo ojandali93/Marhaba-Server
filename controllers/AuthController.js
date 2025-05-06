@@ -45,7 +45,7 @@ export const loginUser = async (req, res) => {
     console.log('id for storing token:', user.id);
     console.log('✅ Storing token in Profiles table:', token);
     const { error: updateError } = await supabase
-      .from('Profiles')
+      .from('Profile')
       .update({ jwtToken: token }) // use the correct column name
       .eq('id', user.id);
 
