@@ -76,7 +76,7 @@ export const getUserConversations = async (req, res) => {
         .from('Messages')
         .select(`(*)`)
         .eq('conversationId', conversationId)
-        .order('created_at', { ascending: false });
+        .order('created_at', { ascending: true });
   
       if (error) {
         console.error('❌ Supabase error:', error);
