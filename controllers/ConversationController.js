@@ -116,3 +116,21 @@ export const getUnreadMessages = async (req, res) => {
     return res.status(500).json({ error: 'Server error' });
   }
 };
+
+export const markMessagesAsRead = async (req, res) => {
+  const { conversationId, userId } = req.body;
+  try {
+    const { error } = await supabase
+      .from('Messages')
+      .update({ readStatus: 'read' })
+      .eq('conversationId', conversationId)
+      .eq('receiver', userId); // Only mark messages meant for this user
+
+    if (error) throw error;
+
+    return res.status(200).json({ success: true });
+  } catch (err) {
+    console.error('❌ Error marking messages as read:', err);
+    return res.status(500).json({ error: 'Failed to mark messages as read' });
+  }
+};
