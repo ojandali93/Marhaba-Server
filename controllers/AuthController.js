@@ -58,7 +58,6 @@ export const loginUser = async (req, res) => {
       message: 'Login successful',
       session,
       userId: user.id,
-      token: token,
     });
   } catch (err) {
     console.error('❌ Server error:', err.message);
