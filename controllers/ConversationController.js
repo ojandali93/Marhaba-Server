@@ -93,6 +93,7 @@ export const getUserConversations = async (req, res) => {
 
 export const getUnreadMessages = async (req, res) => {
   const { userId } = req.params;
+  console.log('userId:', userId);
 
   if (!userId) {
     return res.status(400).json({ error: 'Missing userId parameter' });
