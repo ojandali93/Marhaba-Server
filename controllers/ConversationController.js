@@ -102,7 +102,7 @@ export const getUnreadMessages = async (req, res) => {
     const { data, error } = await supabase
       .from('Messages')
       .select('*')
-      .eq('receiverId', userId)
+      .eq('receiver', userId)
       .eq('readStatus', false);
 
     if (error) {
