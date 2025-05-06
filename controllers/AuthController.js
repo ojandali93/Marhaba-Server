@@ -39,14 +39,14 @@ export const loginUser = async (req, res) => {
     }
 
     const { session, user } = data;
-    const token = jwt.sign(user, process.env.JWT_SECRET);
+    const jtoken = jwt.sign(user, process.env.JWT_SECRET);
 
     // ✅ Store the token in the Profiles table
     console.log('id for storing token:', user.id);
-    console.log('✅ Storing token in Profiles table:', token);
+    console.log('✅ Storing token in Profiles table:', jtoken);
     const { error: updateError } = await supabase
       .from('Profile')
-      .update({ jwtToken: token }) // use the correct column name
+      .update({ jwtToken: jtoken }) // use the correct column name
       .eq('id', user.id);
 
     if (updateError) {
