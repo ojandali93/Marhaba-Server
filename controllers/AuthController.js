@@ -39,7 +39,7 @@ export const loginUser = async (req, res) => {
     }
 
     const { session, user } = data;
-    const token = jwt.sign(user, process.env.JWT_SECRET, { expiresIn: '7d' });
+    const token = jwt.sign(user, process.env.JWT_SECRET);
 
     // ✅ Store the token in the Profiles table
     console.log('id for storing token:', user.id);
