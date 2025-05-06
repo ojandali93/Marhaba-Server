@@ -3,7 +3,7 @@ import { supabase } from '../services/SupabaseClient.js';
 export const grabPendingProfiles = async (req, res) => {
   try {
     const { data, error } = await supabase
-      .from('Profiles') // your table name
+      .from('Profile') // your table name
       .select('*, About(*), Anger(*), Attachment(*), Career(*), Communication(*), Core(*), Emotions(*), Future(*), Lifestyle(*), Love(*), Notifications(*), Photos(*), Preferences(*), Prompts(*), Survey(*), Tags(*), Time(*), Values(*)')
       .eq('approved', 'pending');
     
