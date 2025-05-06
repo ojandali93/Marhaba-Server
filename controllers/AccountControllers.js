@@ -945,18 +945,3 @@ export const updateSurvey = async (req, res) => {
     return res.status(500).json({ error: 'Failed to update user profile' });
   }
 };
-
-export const grabPendingProfiles = async (req, res) => {
-  try {
-    const { userId, eitherOr } = req.body;
-    const { data, error } = await supabase
-      .from('Profiles') // your table name
-      .select('*')
-      .eq('approved', 'pending');
-    
-    if (error) throw error;
-    return res.status(200).json({ success: true, data });
-  } catch (error) {
-    return res.status(500).json({ error: 'Failed to update user profile' });
-  }
-};
