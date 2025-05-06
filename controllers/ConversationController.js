@@ -89,3 +89,30 @@ export const getUserConversations = async (req, res) => {
       return res.status(500).json({ error: 'Internal server error' });
     }
   };
+
+
+export const getUnreadMessages = async (req, res) => {
+  const { userId } = req.params;
+
+  if (!userId) {
+    return res.status(400).json({ error: 'Missing userId parameter' });
+  }
+
+  try {
+    const { data, error } = await supabase
+      .from('Messages')
+      .select('*')
+      .eq('receiverId', userId)
+      .eq('readStatus', false);
+
+    if (error) {
+      console.error('Error fetching unread messages:', error);
+      return res.status(500).json({ error: 'Failed to fetch unread messages' });
+    }
+
+    return res.status(200).json({ success: true, data });
+  } catch (err) {
+    console.error('Server error:', err.message);
+    return res.status(500).json({ error: 'Server error' });
+  }
+};
