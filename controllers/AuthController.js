@@ -47,7 +47,7 @@ export const loginUser = async (req, res) => {
     const { error: updateError } = await supabase
       .from('Profile')
       .update({ jwtToken: jtoken }) // use the correct column name
-      .eq('id', user.id);
+      .eq('userId', user.id);
 
     if (updateError) {
       console.error('❌ Error saving token to profile:', updateError.message);
