@@ -205,6 +205,8 @@ export const createUserTraits = async (req, res) => {
 export const createUserPreferences = async (req, res) => {
   try {
     const { userId, gender,  distance, religion, sect, views, ageMin, ageMax } = req.body;
+    console.log('userId:', userId); 
+    console.log('gender:', gender);
 
     const { data: preferencesData, error: preferencesError } = await supabase
     .from('Preferences')
