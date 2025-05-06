@@ -103,8 +103,7 @@ export const getUnreadMessages = async (req, res) => {
       .from('Messages')
       .select('*')
       .eq('receiver', userId)
-      .eq('readStatus', false);
-console.log('unread messages:', data);
+      .eq('readStatus', 'unread');
     if (error) {
       console.error('Error fetching unread messages:', error);
       return res.status(500).json({ error: 'Failed to fetch unread messages' });
