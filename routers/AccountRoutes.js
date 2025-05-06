@@ -1,5 +1,5 @@
 import express from 'express';
-import { updateUserProfile, createCommunicationStyles, createCoreValues, createLoveLanguage, createTimePriorities, createUserAbout, createUserAccount, createUserAnger, createUserAttachment, createUserCareer, createUserCore, createUserEitherOr, createUserEmotions, createUserFuture, createUserLifestyle, createUserPhotos, createUserPreferences, createUserProfile, createUserPrompts, createUserTraits, editUserPhotos, uploadImage, updateUserAbout, updateUserCore, updateuserLifestyle, updateUserFuture, updateUserCareer, updateUserPrompts, updateUserTags, updateSurvey, createNotifications } from '../controllers/AccountControllers.js';
+import { updateUserProfile, createCommunicationStyles, createCoreValues, createLoveLanguage, createTimePriorities, createUserAbout, createUserAccount, createUserAnger, createUserAttachment, createUserCareer, createUserCore, createUserEitherOr, createUserEmotions, createUserFuture, createUserLifestyle, createUserPhotos, createUserPreferences, createUserProfile, createUserPrompts, createUserTraits, editUserPhotos, uploadImage, updateUserAbout, updateUserCore, updateuserLifestyle, updateUserFuture, updateUserCareer, updateUserPrompts, updateUserTags, updateSurvey, createNotifications, grabPendingProfiles } from '../controllers/AccountControllers.js';
 
 const router = express.Router();
 
@@ -36,4 +36,6 @@ router.put('/updateCareer', updateUserCareer);
 router.put('/updatePrompts', updateUserPrompts);
 router.put('/updateTags', updateUserTags);
 router.put('/updateSurvey', updateSurvey);
+
+router.get('/pendingProfiles', grabPendingProfiles);
 export default router;
