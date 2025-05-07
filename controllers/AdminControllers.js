@@ -77,17 +77,20 @@ export const reSubmitProfile = async (req, res) => {
     const { data, error } = await supabase
       .from('Review')
       .update({ reviewerMessage: message, status: 'resubmit', flaggedPhotos: '' })
-      .eq('userId', userId);
+      .eq('userId', userId)
+      .select();
 
     if (error) throw error;
+    console.log('Review data:', data);
 
     const { data: profileData, error: profileError } = await supabase
     .from('Profile')
     .update({ approved: 'resubmit' })
-    .eq('userId', userId);
+    .eq('userId', userId)
+    .select();
 
     if (profileError) throw profileError;
-
+    console.log('Profile data:', profileData);
     return res.status(200).json({ success: true, data, profileData });
   } catch (error) {
     return res.status(500).json({ error: 'Failed to update user profile' });
