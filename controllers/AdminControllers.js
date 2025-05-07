@@ -55,7 +55,7 @@ export const rejectProfile = async (req, res) => {
 };
 
 export const reviewInfo = async (req, res) => {
-  const { userId } = req.body;
+  const { userId } = req.params;
 
   try {
     const { data, error } = await supabase

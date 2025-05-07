@@ -6,6 +6,6 @@ const router = express.Router();
 router.get('/pendingProfiles', grabPendingProfiles);
 router.post('/approveProfile', approveProfile);
 router.post('/rejectProfile', rejectProfile);
-router.post('/reviewInfo', reviewInfo);
+router.get('/reviewInfo/:userId', reviewInfo);
 
 export default router; 
