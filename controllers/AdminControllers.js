@@ -101,7 +101,8 @@ export const blockUser = async (req, res) => {
   const { blocker_id, blocked_id } = req.body;
   try {
     // 1. Add block record
-    await supabase.from('Blocks').insert([{ blocker_id, blocked_id }]);
+    await supabase.from('Blocked').insert([{ blockerId: 
+      blocker_id, blockedId: blocked_id }]);
 
     // 2. Remove conversations between users
     const { data: conversationData, error: conversationError } = await supabase
