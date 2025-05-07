@@ -99,6 +99,8 @@ export const reSubmitProfile = async (req, res) => {
 
 export const blockUser = async (req, res) => {
   const { blocker_id, blocked_id } = req.body;
+  console.log('blocker_id', blocker_id);
+  console.log('blocked_id', blocked_id);
   try {
     // 1. Add block record
     await supabase.from('Blocked').insert([{ blockerId: 
