@@ -53,3 +53,19 @@ export const rejectProfile = async (req, res) => {
     return res.status(500).json({ error: 'Failed to update user profile' });
   }
 };
+
+export const reviewInfo = async (req, res) => {
+  const { userId } = req.body;
+
+  try {
+    const { data, error } = await supabase
+      .from('Review')
+      .select('*')
+      .eq('userId', userId);
+
+    if (error) throw error;
+    return res.status(200).json({ success: true, data });
+  } catch (error) {
+    return res.status(500).json({ error: 'Failed to update user profile' });
+  }
+}
