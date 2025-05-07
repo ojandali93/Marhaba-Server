@@ -69,3 +69,27 @@ export const reviewInfo = async (req, res) => {
     return res.status(500).json({ error: 'Failed to update user profile' });
   }
 }
+
+export const reSubmitProfile = async (req, res) => {
+  const { userId, message } = req.params;
+
+  try {
+    const { data, error } = await supabase
+      .from('Review')
+      .update({ reviewerMessage: message, status: 'resubmit', flaggedPhotos: '' })
+      .eq('userId', userId);
+
+    if (error) throw error;
+
+    const { data: profileData, error: profileError } = await supabase
+    .from('Profile')
+    .update({ approved: 'resubmit' })
+    .eq('userId', userId);
+
+    if (profileError) throw profileError;
+
+    return res.status(200).json({ success: true, data, profileData });
+  } catch (error) {
+    return res.status(500).json({ error: 'Failed to update user profile' });
+  }
+}
