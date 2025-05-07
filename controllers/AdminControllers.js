@@ -96,3 +96,49 @@ export const reSubmitProfile = async (req, res) => {
     return res.status(500).json({ error: 'Failed to update user profile' });
   }
 }
+
+export const blockUser = async (req, res) => {
+  const { blocker_id, blocked_id } = req.body;
+  try {
+    // 1. Add block record
+    await supabase.from('Blocks').insert([{ blocker_id, blocked_id }]);
+
+    // 2. Remove conversations between users
+    await supabase
+      .from('Conversations')
+      .delete()
+      .or(`user1_id.eq.${blocker_id},user2_id.eq.${blocked_id}`)
+      .or(`user1_id.eq.${blocked_id},user2_id.eq.${blocker_id}`);
+
+    // 3. Remove interactions both ways
+    await supabase
+      .from('Interactions')
+      .delete()
+      .or(`userId.eq.${blocker_id},targetUserId.eq.${blocked_id}`)
+      .or(`userId.eq.${blocked_id},targetUserId.eq.${blocker_id}`);
+
+    res.status(200).send({ success: true, message: 'User blocked and related data removed.' });
+  } catch (error) {
+    console.error('❌ Block error:', error);
+    res.status(500).send({ success: false, error: error.message });
+  }
+}
+
+export const unblockUser = async (req, res) => {
+  const { blocker_id, blocked_id } = req.body;
+
+  try {
+    // 1. Remove block record
+    const { data, error } = await supabase.from('Blocks').delete()
+      .eq(`blockerId`, blocker_id)
+      .eq(`blockedId`, blocked_id);
+
+    if (error) throw error;
+
+    res.status(200).send({ success: true, message: 'User unblocked.' });
+  } catch (error) {
+    console.error('❌ Unblock error:', error);
+    res.status(500).send({ success: false, error: error.message });
+  }
+}
+
