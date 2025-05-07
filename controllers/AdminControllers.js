@@ -107,8 +107,8 @@ export const blockUser = async (req, res) => {
     const { data: conversationData, error: conversationError } = await supabase
       .from('Conversations')
       .delete()
-      .or(`user1_id.eq.${blocker_id},user2_id.eq.${blocked_id}`)
-      .or(`user1_id.eq.${blocked_id},user2_id.eq.${blocker_id}`);
+      .or(`user1Id.eq.${blocker_id},user2Id.eq.${blocked_id}`)
+      .or(`user1Id.eq.${blocked_id},user2Id.eq.${blocker_id}`);
 
     if (conversationError) throw conversationError;
     // 3. Remove interactions both ways
