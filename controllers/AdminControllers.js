@@ -104,18 +104,21 @@ export const blockUser = async (req, res) => {
     await supabase.from('Blocks').insert([{ blocker_id, blocked_id }]);
 
     // 2. Remove conversations between users
-    await supabase
+    const { data: conversationData, error: conversationError } = await supabase
       .from('Conversations')
       .delete()
       .or(`user1_id.eq.${blocker_id},user2_id.eq.${blocked_id}`)
       .or(`user1_id.eq.${blocked_id},user2_id.eq.${blocker_id}`);
 
+    if (conversationError) throw conversationError;
     // 3. Remove interactions both ways
-    await supabase
+    const { data: interactionData, error: interactionError } =  await supabase
       .from('Interactions')
       .delete()
       .or(`userId.eq.${blocker_id},targetUserId.eq.${blocked_id}`)
       .or(`userId.eq.${blocked_id},targetUserId.eq.${blocker_id}`);
+
+    if (interactionError) throw interactionError;
 
     res.status(200).send({ success: true, message: 'User blocked and related data removed.' });
   } catch (error) {
