@@ -71,7 +71,7 @@ export const reviewInfo = async (req, res) => {
 }
 
 export const reSubmitProfile = async (req, res) => {
-  const { userId, message } = req.params;
+  const { userId, message } = req.body;
 
   try {
     const { data, error } = await supabase
