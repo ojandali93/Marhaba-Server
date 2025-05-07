@@ -13,3 +13,43 @@ export const grabPendingProfiles = async (req, res) => {
     return res.status(500).json({ error: 'Failed to update user profile' });
   }
 };
+
+export const approveProfile = async (req, res) => {
+  const { userId } = req.body;
+
+  try {
+    const { data, error } = await supabase
+      .from('Profile')
+      .update({ approved: 'approved' })
+      .eq('userId', userId)
+    
+    if (error) throw error;
+    return res.status(200).json({ success: true, data });
+  } catch (error) {
+    return res.status(500).json({ error: 'Failed to update user profile' });
+  }
+};
+
+export const rejectProfile = async (req, res) => {
+  const { userId, note, flaggedPhotos, flaggedPrompts } = req.body;
+
+  try {
+    const { data, error } = await supabase
+      .from('Profile')
+      .update({ approved: 'rejected' })
+      .eq('userId', userId)
+    
+    if (error) throw error;
+
+    const { data: reviewData, error: reviewError } = await supabase
+      .from('Review')
+      .insert({ userId, notes: note, flaggedPhotos, flaggedPrompts })
+      .select();
+
+    if (reviewError) throw reviewError;
+
+    return res.status(200).json({ success: true, data, reviewData });
+  } catch (error) {
+    return res.status(500).json({ error: 'Failed to update user profile' });
+  }
+};
