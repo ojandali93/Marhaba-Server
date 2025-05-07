@@ -145,3 +145,22 @@ export const unblockUser = async (req, res) => {
   }
 }
 
+
+export const reportUser = async (req, res) => {
+  const { reporterId, reportedId, reason } = req.body;
+
+  try {
+    // 1. Insert report into Reports table
+    const { data, error } = await supabase
+      .from('Reports')
+      .insert([{ reporterId, reportedId, reason }]);
+
+    if (error) throw error;
+
+    res.status(200).send({ success: true, message: 'Reported' });
+  } catch (error) {
+    console.error('❌ Unblock error:', error);
+    res.status(500).send({ success: false, error: error.message });
+  }
+}
+
