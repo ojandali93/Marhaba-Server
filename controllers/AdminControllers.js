@@ -99,27 +99,23 @@ export const reSubmitProfile = async (req, res) => {
 
 export const blockUser = async (req, res) => {
   const { blocker_id, blocked_id } = req.body;
-  console.log('blocker_id', blocker_id);
-  console.log('blocked_id', blocked_id);
   try {
-    // 1. Add block record
-    await supabase.from('Blocked').insert([{ blockerId: 
-      blocker_id, blockedId: blocked_id }]);
+    // 1. Insert into Blocked table
+    await supabase.from('Blocked').insert([{ blockerId: blocker_id, blockedId: blocked_id }]);
 
-    // 2. Remove conversations between users
-    const { data: conversationData, error: conversationError } = await supabase
+    // 2. Delete mutual conversations
+    const { error: conversationError } = await supabase
       .from('Conversations')
       .delete()
-      .or(`user1Id.eq.${blocker_id},user2Id.eq.${blocked_id}`)
-      .or(`user1Id.eq.${blocked_id},user2Id.eq.${blocker_id}`);
+      .or(`and(user1Id.eq.${blocker_id},user2Id.eq.${blocked_id}),and(user1Id.eq.${blocked_id},user2Id.eq.${blocker_id})`);
 
     if (conversationError) throw conversationError;
-    // 3. Remove interactions both ways
-    const { data: interactionData, error: interactionError } =  await supabase
+
+    // 3. Delete mutual interactions
+    const { error: interactionError } = await supabase
       .from('Interactions')
       .delete()
-      .or(`userId.eq.${blocker_id},targetUserId.eq.${blocked_id}`)
-      .or(`userId.eq.${blocked_id},targetUserId.eq.${blocker_id}`);
+      .or(`and(userId.eq.${blocker_id},targetUserId.eq.${blocked_id}),and(userId.eq.${blocked_id},targetUserId.eq.${blocker_id})`);
 
     if (interactionError) throw interactionError;
 
@@ -128,7 +124,8 @@ export const blockUser = async (req, res) => {
     console.error('❌ Block error:', error);
     res.status(500).send({ success: false, error: error.message });
   }
-}
+};
+
 
 export const unblockUser = async (req, res) => {
   const { blocker_id, blocked_id } = req.body;
