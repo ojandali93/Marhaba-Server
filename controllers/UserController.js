@@ -80,6 +80,7 @@ export const getMatches = async (req, res) => {
     longitude,
     ageMin,
     ageMax,
+    gender, // ✅ include gender from req.body
   } = req.body;
 
   console.log('req.body', req.body);
@@ -125,10 +126,10 @@ export const getMatches = async (req, res) => {
 
     if (error) throw error;
 
-    // Step 3: Filter by distance and age
+    // Step 3: Filter by distance, age, and gender
     let filtered = allProfiles;
 
-    // Filter by distance
+    // ✅ Filter by distance
     if (latitude != null && longitude != null && distance) {
       filtered = filtered.filter(profile => {
         if (
@@ -154,6 +155,11 @@ export const getMatches = async (req, res) => {
         const age = getAgeFromDOB(profile.dob);
         return age >= ageMin && age <= ageMax;
       });
+    }
+
+    // ✅ Filter by gender
+    if (gender) {
+      filtered = filtered.filter(profile => profile.gender === gender);
     }
 
     return res.status(200).json({ success: true, matches: filtered });
