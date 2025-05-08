@@ -61,12 +61,27 @@ export const grabAllUsers = async (req, res) => {
   }
 };
 
+import { getDistanceMiles } from '../../utils/locationUtils';
+
+const getAgeFromDOB = dob => {
+  const birthDate = new Date(dob);
+  const today = new Date();
+  let age = today.getFullYear() - birthDate.getFullYear();
+  const m = today.getMonth() - birthDate.getMonth();
+  if (m < 0 || (m === 0 && today.getDate() < birthDate.getDate())) {
+    age--;
+  }
+  return age;
+};
+
 export const getMatches = async (req, res) => {
   const {
     userId,
     distance,
     latitude,
     longitude,
+    ageMin,
+    ageMax,
   } = req.body;
 
   console.log('req.body', req.body);
@@ -112,11 +127,12 @@ export const getMatches = async (req, res) => {
 
     if (error) throw error;
 
-    // Step 3: Filter by distance (if lat/lng available)
+    // Step 3: Filter by distance and age
     let filtered = allProfiles;
 
+    // Filter by distance
     if (latitude != null && longitude != null && distance) {
-      filtered = allProfiles.filter(profile => {
+      filtered = filtered.filter(profile => {
         if (
           profile.latitude != null &&
           profile.longitude != null
@@ -133,12 +149,22 @@ export const getMatches = async (req, res) => {
       });
     }
 
+    // ✅ Filter by age
+    if (ageMin != null && ageMax != null) {
+      filtered = filtered.filter(profile => {
+        if (!profile.dob) return false;
+        const age = getAgeFromDOB(profile.dob);
+        return age >= ageMin && age <= ageMax;
+      });
+    }
+
     return res.status(200).json({ success: true, matches: filtered });
   } catch (err) {
     console.error('❌ Match query error:', err);
     return res.status(500).json({ error: 'Failed to fetch matches' });
   }
 };
+
 
 
 export function getDistanceMiles(lat1, lon1, lat2, lon2) {
