@@ -12,13 +12,10 @@ export const createUserAccount = async (req, res) => {
       return res.status(400).json({ error: 'Missing required fields' });
     }
 
-    const { data: signupUser, error: signUpError } = await supabase.auth.admin.createUser({
+    const { data: signupUser, error: signUpError } = await supabase.auth.signUp({
       email,
       password,
       email_confirm: false, // ✅ Let Supabase trigger email verification
-      user_metadata: {
-        name,
-      },
       options: {
         emailRedirectTo: 'https://marhabahapp.github.io/VerifyEmailPage/', // ✅ GitHub Page
       },
