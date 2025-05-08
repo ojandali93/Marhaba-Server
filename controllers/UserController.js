@@ -61,8 +61,6 @@ export const grabAllUsers = async (req, res) => {
   }
 };
 
-import { getDistanceMiles } from '../../utils/locationUtils'; // assumes you have or will create this utility
-
 export const getMatches = async (req, res) => {
   const {
     userId,
