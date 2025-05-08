@@ -39,7 +39,7 @@ export const createUserAccount = async (req, res) => {
 
 export const checkUserEmail = async (req, res) => {
   try {
-    const { email } = req.body;
+    const { email } = req.params;
     const { data: signupUser, error: signUpError } = await await supabase
     .from('Profile')
     .select('email')
