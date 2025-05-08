@@ -12,7 +12,7 @@ router.post('/createPreferences', createUserPreferences);
 router.post('/createSurvey', createUserEitherOr);
 router.post('/createPrompts', createUserPrompts);
 router.post('/createPhotos', createUserPhotos);
-router.get('/checkEmail', checkUserEmail);
+router.get('/checkEmail/:email', checkUserEmail);
 
 router.post('/createCommunication', createCommunicationStyles);
 router.post('/createLove', createLoveLanguage);
