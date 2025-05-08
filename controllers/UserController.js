@@ -171,7 +171,108 @@ export const getMatches = async (req, res) => {
     console.error('❌ Match query error:', err);
     return res.status(500).json({ error: 'Failed to fetch matches' });
   }
+};export const getMatches = async (req, res) => {
+  const {
+    userId,
+    ageMin,
+    ageMax,
+    gender,
+    distance,
+    background,
+    religion,
+    latitude,
+    longitude,
+    page = 0,
+  } = req.body;
+
+  console.log('✅ Match request:', req.body);
+
+  try {
+    // Step 1: Get users who blocked the current user
+    const { data: blockedBy, error: blockError } = await supabase
+      .from('Blocked')
+      .select('blockerId')
+      .eq('blockedId', userId);
+
+    if (blockError) throw blockError;
+
+    const blockedByIds = blockedBy.map(row => row.blockerId);
+
+    // Step 2: Build initial profile query
+    let query = supabase
+      .from('Profile')
+      .select(
+        '*, About(*), Career(*), Core(*), Future(*), Lifestyle(*), Love(*), Notifications(*), Photos(*), Preferences(*), Prompts(*), Survey(*), Tags(*), Time(*), Values(*)',
+      )
+      .neq('userId', userId)
+      .eq('gender', gender)
+      .not('userId', 'in', `(${blockedByIds.join(',') || 'NULL'})`)
+      .order('created_at', { ascending: false });
+
+    // Step 3: Add background filter (uses foreignTable "About")
+    if (background?.length > 0) {
+      const bgFilter = background
+        .map(val => `background.ilike.%${val}%`)
+        .join(',');
+      query = query.or(bgFilter, { foreignTable: 'About' });
+    }
+
+    // Step 4: Add religion filter (uses foreignTable "About")
+    if (religion?.length > 0) {
+      const religionFilter = religion
+        .map(val => `religion.ilike.%${val}%`)
+        .join(',');
+      query = query.or(religionFilter, { foreignTable: 'About' });
+    }
+
+    const { data, error } = await query;
+
+    if (error) throw error;
+
+    // Step 5: Manual filtering (age & distance)
+    const distanceThresholds = [distance || 50, 100, 250, 500, 1000, 1500];
+    const limit = 100;
+    const offset = page * limit;
+
+    let matches = [];
+    for (let i = 0; i < distanceThresholds.length && matches.length < 1; i++) {
+      const threshold = distanceThresholds[i];
+      const filtered = data.filter(profile => {
+        if (blockedByIds.includes(profile.userId)) return false;
+
+        const age = getAge(profile.dob);
+        if (age < ageMin || age > ageMax) return false;
+
+        if (
+          profile.latitude != null &&
+          profile.longitude != null &&
+          latitude != null &&
+          longitude != null
+        ) {
+          const miles = getDistanceMiles(
+            latitude,
+            longitude,
+            profile.latitude,
+            profile.longitude,
+          );
+          return miles <= threshold;
+        }
+
+        return false;
+      });
+
+      if (filtered.length > 0) {
+        matches = filtered.slice(offset, offset + limit);
+      }
+    }
+
+    return res.status(200).json({ success: true, matches });
+  } catch (err) {
+    console.error('❌ Match query error:', err);
+    return res.status(500).json({ error: 'Failed to fetch matches' });
+  }
 };
+
 
 
 // Utility functions
