@@ -101,22 +101,29 @@ export const getMatches = async (req, res) => {
 
     // Step 3: Background filter
     if (background?.length > 0) {
+      console.log('background check', background);
       const bgFilter = background
         .map(val => `background.ilike.%${val}%`)
         .join(',');
+      console.log('bgFilter', bgFilter);
       query = query.or(`(${bgFilter})`, { foreignTable: 'About' });
+      console.log('query', query);
     }
 
     // Step 4: Religion filter
     if (religion?.length > 0) {
+      console.log('religion check', religion);  
       const religionFilter = religion
         .map(val => `religion.ilike.%${val}%`)
         .join(',');
+      console.log('religionFilter', religionFilter);
       query = query.or(`(${religionFilter})`, { foreignTable: 'About' });
+      console.log('query', query);
     }
 
     // Step 5: Execute query
     const { data, error } = await query;
+    console.log('data', data);
     if (error) throw error;
 
     // Step 6: Manual filters
