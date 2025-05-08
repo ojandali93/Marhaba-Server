@@ -2,6 +2,8 @@ import { v4 as uuidv4 } from 'uuid';
 import { supabase } from '../services/SupabaseClient.js';
 import multer from 'multer';
 
+import { supabase } from '../services/SupabaseClient.js';
+
 export const createUserAccount = async (req, res) => {
   try {
     const { email, password, name } = req.body;
@@ -13,9 +15,12 @@ export const createUserAccount = async (req, res) => {
     const { data: signupUser, error: signUpError } = await supabase.auth.admin.createUser({
       email,
       password,
-      email_confirm: false, // This triggers Supabase to send a confirmation email
+      email_confirm: false, // ✅ Let Supabase trigger email verification
       user_metadata: {
         name,
+      },
+      options: {
+        emailRedirectTo: 'https://marhabahapp.github.io/VerifyEmailPage/', // ✅ GitHub Page
       },
     });
 
@@ -31,14 +36,11 @@ export const createUserAccount = async (req, res) => {
     } else {
       return res.status(500).json({ error: 'User ID not returned' });
     }
-
   } catch (error) {
     console.error('❌ Server error:', error.message);
     return res.status(500).json({ error: 'Failed to create user' });
   }
 };
-
-
 
 export const createUserProfile = async (req, res) => {
   try {
