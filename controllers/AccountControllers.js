@@ -13,7 +13,7 @@ export const createUserAccount = async (req, res) => {
     const { data: signupUser, error: signUpError } = await supabase.auth.admin.createUser({
       email,
       password,
-      email_confirm: true, // This triggers Supabase to send a confirmation email
+      email_confirm: false, // This triggers Supabase to send a confirmation email
       user_metadata: {
         name,
       },
