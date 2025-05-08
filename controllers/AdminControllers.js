@@ -173,7 +173,7 @@ export const getBlockedUsers = async (req, res) => {
       .from('Blocked')
       .select(`
         *,
-        blockedId:Profiles (
+        blockedId:Profile (
           *,
           About(*),
           Core(*),
