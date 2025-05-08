@@ -62,20 +62,9 @@ export const grabAllUsers = async (req, res) => {
 };
 
 export const getMatches = async (req, res) => {
-  const {
-    userId,
-    ageMin,
-    ageMax,
-    gender,
-    distance,
-    background,
-    religion,
-    latitude,
-    longitude,
-    page = 0,
-  } = req.body;
+  const { userId } = req.body;
 
-  console.log('✅ Match request:', req.body);
+  console.log('✅ Basic Match Query for userId:', userId);
 
   try {
     // Step 1: Get users who blocked the current user
@@ -88,84 +77,21 @@ export const getMatches = async (req, res) => {
 
     const blockedByIds = blockedBy.map(row => row.blockerId);
 
-    // Step 2: Base query
-    let query = supabase
+    // Step 2: Get all users excluding the current user and those who blocked them
+    const { data, error } = await supabase
       .from('Profile')
       .select(
-        '*, About(*), Career(*), Core(*), Future(*), Lifestyle(*), Love(*), Notifications(*), Photos(*), Preferences(*), Prompts(*), Survey(*), Tags(*), Time(*), Values(*)',
+        '*, About(*), Photos(*)'
       )
       .neq('userId', userId)
-      .eq('gender', gender)
       .not('userId', 'in', `(${blockedByIds.join(',') || 'NULL'})`)
       .order('created_at', { ascending: false });
 
-    // Step 3: Background filter
-    if (background?.length > 0) {
-      console.log('background check', background);
-      const bgFilter = background
-        .map(val => `background.ilike.%${val}%`)
-        .join(',');
-      console.log('bgFilter', bgFilter);
-      query = query.or(`(${bgFilter})`, { foreignTable: 'About' });
-      console.log('query', query);
-    }
-
-    // Step 4: Religion filter
-    if (religion?.length > 0) {
-      console.log('religion check', religion);  
-      const religionFilter = religion
-        .map(val => `religion.ilike.%${val}%`)
-        .join(',');
-      console.log('religionFilter', religionFilter);
-      query = query.or(`(${religionFilter})`, { foreignTable: 'About' });
-      console.log('query', query);
-    }
-
-    // Step 5: Execute query
-    const { data, error } = await query;
-    console.log('data', data);
     if (error) throw error;
 
-    // Step 6: Manual filters
-    const distanceThresholds = [distance || 50, 100, 250, 500, 1000, 1500];
-    const limit = 100;
-    const offset = page * limit;
-
-    let matches = [];
-    for (let i = 0; i < distanceThresholds.length && matches.length < 1; i++) {
-      const threshold = distanceThresholds[i];
-      const filtered = data.filter(profile => {
-        if (blockedByIds.includes(profile.userId)) return false;
-
-        const age = getAge(profile.dob);
-        if (age < ageMin || age > ageMax) return false;
-
-        if (
-          profile.latitude != null &&
-          profile.longitude != null &&
-          latitude != null &&
-          longitude != null
-        ) {
-          const miles = getDistanceMiles(
-            latitude,
-            longitude,
-            profile.latitude,
-            profile.longitude,
-          );
-          return miles <= threshold;
-        }
-
-        return true; // keep if no location filter
-      });
-
-      if (filtered.length > 0) {
-        matches = filtered.slice(offset, offset + limit);
-      }
-    }
-
-    return res.status(200).json({ success: true, matches });
+    return res.status(200).json({ success: true, matches: data });
   } catch (err) {
-    console.error('❌ Match query error:', err);
+    console.error('❌ Simplified Match query error:', err);
     return res.status(500).json({ error: 'Failed to fetch matches' });
   }
 };
