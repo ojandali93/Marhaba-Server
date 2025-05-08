@@ -62,7 +62,20 @@ export const grabAllUsers = async (req, res) => {
 };
 
 export const getMatches = async (req, res) => {
-  const { userId } = req.body;
+  const {
+    userId,
+    ageMin,
+    ageMax,
+    gender,
+    distance,
+    background,
+    religion,
+    latitude,
+    longitude,
+    page = 0,
+  } = req.body;
+
+  console.log('req.body', req.body);
 
   console.log('✅ Basic Match Query for userId:', userId);
 
@@ -80,8 +93,7 @@ export const getMatches = async (req, res) => {
     // Step 2: Get all users excluding the current user and those who blocked them
     const { data, error } = await supabase
       .from('Profile')
-      .select('*, About(*), Career(*),  Core(*), Future(*), Lifestyle(*), Love(*), Notifications(*), Photos(*), Preferences(*), Prompts(*), Survey(*), Tags(*), Time(*), Values(*)')
-
+      .select('*, About(*), Anger(*), Attachment(*), Career(*), Communication(*), Core(*), Emotions(*), Future(*), Lifestyle(*), Love(*), Notifications(*), Photos(*), Preferences(*), Prompts(*), Survey(*), Tags(*), Time(*), Values(*)')
       .neq('userId', userId)
       .not('userId', 'in', `(${blockedByIds.join(',') || 'NULL'})`)
       .order('created_at', { ascending: false });
