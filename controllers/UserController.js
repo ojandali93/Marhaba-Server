@@ -75,6 +75,17 @@ export const getMatches = async (req, res) => {
     page = 0,
   } = req.body;
 
+  console.log('userId', userId);
+  console.log('ageMin', ageMin);
+  console.log('ageMax', ageMax);
+  console.log('gender', gender);
+  console.log('distance', distance);
+  console.log('background', background);
+  console.log('religion', religion);
+  console.log('latitude', latitude);
+  console.log('longitude', longitude);
+  console.log('page', page);
+
   try {
     // Step 1: Get users who blocked the current user
     const { data: blockedBy, error: blockError } = await supabase
@@ -86,20 +97,34 @@ export const getMatches = async (req, res) => {
 
     const blockedByIds = blockedBy.map(row => row.blockerId);
 
-    // Step 2: Fetch potential matches (excluding self)
-    const { data, error } = await supabase
+    // Step 2: Fetch potential matches (excluding self and blocked)
+    let query = supabase
       .from('Profiles')
-      .select('*, About(*) Career(*), Core(*), Future(*), Lifestyle(*), Love(*), Notifications(*), Photos(*), Preferences(*), Prompts(*), Survey(*), Tags(*), Time(*), Values(*)')
+      .select(
+        '*, About(*), Career(*), Core(*), Future(*), Lifestyle(*), Love(*), Notifications(*), Photos(*), Preferences(*), Prompts(*), Survey(*), Tags(*), Time(*), Values(*)',
+      )
       .neq('userId', userId)
       .eq('gender', gender)
-      .eq('religion', religion)
-      .in('background', background)
-      .order('created_at', { ascending: false });
+      .not('userId', 'in', `(${blockedByIds.join(',')})`);
+
+    // Use .overlaps for array filters
+    if (background?.length) {
+      query = query.overlaps('About.background', background);
+    }
+
+    if (religion?.length) {
+      query = query.overlaps('About.religion', religion);
+    }
+
+    // Sort by most recent
+    query = query.order('created_at', { ascending: false });
+
+    const { data, error } = await query;
 
     if (error) throw error;
 
-    // Step 3: Apply manual filters (distance, age, blocked users)
-    const distanceThresholds = [50, 100, 250, 500, 1000, 1500]; // Miles
+    // Step 3: Manual filters (age, distance)
+    const distanceThresholds = [distance || 50, 100, 250, 500, 1000, 1500]; // Miles
     const limit = 100;
     const offset = page * limit;
 
@@ -122,7 +147,7 @@ export const getMatches = async (req, res) => {
             latitude,
             longitude,
             profile.latitude,
-            profile.longitude
+            profile.longitude,
           );
           return miles <= threshold;
         }
@@ -142,11 +167,29 @@ export const getMatches = async (req, res) => {
   }
 };
 
-// Helper to calculate age from dob
+// Utility functions
 const getAge = dob => {
   const birthDate = new Date(dob);
-  const ageDiff = Date.now() - birthDate.getTime();
-  return Math.floor(ageDiff / (1000 * 60 * 60 * 24 * 365.25));
+  const today = new Date();
+  let age = today.getFullYear() - birthDate.getFullYear();
+  const m = today.getMonth() - birthDate.getMonth();
+  if (m < 0 || (m === 0 && today.getDate() < birthDate.getDate())) {
+    age--;
+  }
+  return age;
+};
+
+const getDistanceMiles = (lat1, lon1, lat2, lon2) => {
+  const R = 3958.8; // Radius of Earth in miles
+  const dLat = ((lat2 - lat1) * Math.PI) / 180;
+  const dLon = ((lon2 - lon1) * Math.PI) / 180;
+  const a =
+    Math.sin(dLat / 2) ** 2 +
+    Math.cos((lat1 * Math.PI) / 180) *
+      Math.cos((lat2 * Math.PI) / 180) *
+      Math.sin(dLon / 2) ** 2;
+  const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+  return R * c;
 };
 
 
