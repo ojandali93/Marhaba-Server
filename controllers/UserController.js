@@ -61,8 +61,6 @@ export const grabAllUsers = async (req, res) => {
   }
 };
 
-import { getDistanceMiles } from '../../utils/locationUtils';
-
 const getAgeFromDOB = dob => {
   const birthDate = new Date(dob);
   const today = new Date();
