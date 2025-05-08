@@ -132,7 +132,7 @@ export const unblockUser = async (req, res) => {
 
   try {
     // 1. Remove block record
-    const { data, error } = await supabase.from('Blocks').delete()
+    const { data, error } = await supabase.from('Blocked').delete()
       .eq(`blockerId`, blocker_id)
       .eq(`blockedId`, blocked_id);
 
