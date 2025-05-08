@@ -2,8 +2,6 @@ import { v4 as uuidv4 } from 'uuid';
 import { supabase } from '../services/SupabaseClient.js';
 import multer from 'multer';
 
-import { supabase } from '../services/SupabaseClient.js';
-
 export const createUserAccount = async (req, res) => {
   try {
     const { email, password, name } = req.body;
