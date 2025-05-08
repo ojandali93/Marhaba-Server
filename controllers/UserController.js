@@ -174,17 +174,23 @@ export const getMatches = async (req, res) => {
       filtered = filtered.filter(profile => {
         const about = Array.isArray(profile.About) ? profile.About[0] : profile.About;
         if (!about || !about.background) return false;
-
+    
         let userBackground = about.background;
-        if (typeof userBackground === 'string') {
+    
+        if (Array.isArray(userBackground)) {
+          // already an array
+        } else if (typeof userBackground === 'string') {
           try {
-            userBackground = JSON.parse(userBackground);
+            const parsed = JSON.parse(userBackground);
+            userBackground = Array.isArray(parsed) ? parsed : [userBackground];
           } catch (err) {
-            console.warn('Invalid user background JSON:', userBackground);
-            return false;
+            // Not JSON - treat as single background string
+            userBackground = [userBackground];
           }
+        } else {
+          return false;
         }
-
+    
         return arrayIntersects(userBackground, background);
       });
     }
