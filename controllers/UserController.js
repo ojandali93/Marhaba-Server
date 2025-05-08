@@ -75,18 +75,20 @@ export const getMatches = async (req, res) => {
     page = 0,
   } = req.body;
 
-  console.log('userId', userId);
-  console.log('ageMin', ageMin);
-  console.log('ageMax', ageMax);
-  console.log('gender', gender);
-  console.log('distance', distance);
-  console.log('background', background);
-  console.log('religion', religion);
-  console.log('latitude', latitude);
-  console.log('longitude', longitude);
-  console.log('page', page);
-
   try {
+    console.log('✅ Match request:', {
+      userId,
+      ageMin,
+      ageMax,
+      gender,
+      distance,
+      background,
+      religion,
+      latitude,
+      longitude,
+      page,
+    });
+
     // Step 1: Get users who blocked the current user
     const { data: blockedBy, error: blockError } = await supabase
       .from('Blocked')
@@ -97,7 +99,7 @@ export const getMatches = async (req, res) => {
 
     const blockedByIds = blockedBy.map(row => row.blockerId);
 
-    // Step 2: Fetch potential matches (excluding self and blocked)
+    // Step 2: Start building the query
     let query = supabase
       .from('Profile')
       .select(
@@ -107,24 +109,28 @@ export const getMatches = async (req, res) => {
       .eq('gender', gender)
       .not('userId', 'in', `(${blockedByIds.join(',')})`);
 
-    // Use .overlaps for array filters
-    if (background?.length) {
-      query = query.overlaps('About.background', background);
+    // Apply filters manually for background and religion (string match)
+    if (background?.length > 0) {
+      query = query.or(
+        background.map(val => `About.background.ilike.%${val}%`).join(','),
+        { foreignTable: 'About' },
+      );
     }
 
-    if (religion?.length) {
-      query = query.overlaps('About.religion', religion);
+    if (religion?.length > 0) {
+      query = query.or(
+        religion.map(val => `About.religion.ilike.%${val}%`).join(','),
+        { foreignTable: 'About' },
+      );
     }
 
-    // Sort by most recent
     query = query.order('created_at', { ascending: false });
 
     const { data, error } = await query;
-
     if (error) throw error;
 
-    // Step 3: Manual filters (age, distance)
-    const distanceThresholds = [distance || 50, 100, 250, 500, 1000, 1500]; // Miles
+    // Step 3: Manual filtering (age and distance)
+    const distanceThresholds = [distance || 50, 100, 250, 500, 1000, 1500];
     const limit = 100;
     const offset = page * limit;
 
@@ -166,6 +172,7 @@ export const getMatches = async (req, res) => {
     return res.status(500).json({ error: 'Failed to fetch matches' });
   }
 };
+
 
 // Utility functions
 const getAge = dob => {
