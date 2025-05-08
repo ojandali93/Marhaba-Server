@@ -61,23 +61,18 @@ export const grabAllUsers = async (req, res) => {
   }
 };
 
+import { getDistanceMiles } from '../../utils/locationUtils'; // assumes you have or will create this utility
+
 export const getMatches = async (req, res) => {
   const {
     userId,
-    ageMin,
-    ageMax,
-    gender,
     distance,
-    background,
-    religion,
     latitude,
     longitude,
-    page = 0,
   } = req.body;
 
   console.log('req.body', req.body);
-
-  console.log('✅ Basic Match Query for userId:', userId);
+  console.log('✅ Match Query for userId:', userId, 'with distance:', distance);
 
   try {
     // Step 1: Get users who blocked the current user
@@ -87,26 +82,82 @@ export const getMatches = async (req, res) => {
       .eq('blockedId', userId);
 
     if (blockError) throw blockError;
-
     const blockedByIds = blockedBy.map(row => row.blockerId);
 
-    // Step 2: Get all users excluding the current user and those who blocked them
-    const { data, error } = await supabase
+    // Step 2: Get all other users
+    const { data: allProfiles, error } = await supabase
       .from('Profile')
-      .select('*, About(*), Anger(*), Attachment(*), Career(*), Communication(*), Core(*), Emotions(*), Future(*), Lifestyle(*), Love(*), Notifications(*), Photos(*), Preferences(*), Prompts(*), Survey(*), Tags(*), Time(*), Values(*)')
+      .select(`
+        *,
+        About(*),
+        Anger(*),
+        Attachment(*),
+        Career(*),
+        Communication(*),
+        Core(*),
+        Emotions(*),
+        Future(*),
+        Lifestyle(*),
+        Love(*),
+        Notifications(*),
+        Photos(*),
+        Preferences(*),
+        Prompts(*),
+        Survey(*),
+        Tags(*),
+        Time(*),
+        Values(*)
+      `)
       .neq('userId', userId)
       .not('userId', 'in', `(${blockedByIds.join(',') || 'NULL'})`)
       .order('created_at', { ascending: false });
 
     if (error) throw error;
 
-    return res.status(200).json({ success: true, matches: data });
+    // Step 3: Filter by distance (if lat/lng available)
+    let filtered = allProfiles;
+
+    if (latitude != null && longitude != null && distance) {
+      filtered = allProfiles.filter(profile => {
+        if (
+          profile.latitude != null &&
+          profile.longitude != null
+        ) {
+          const miles = getDistanceMiles(
+            latitude,
+            longitude,
+            profile.latitude,
+            profile.longitude
+          );
+          return miles <= distance;
+        }
+        return false;
+      });
+    }
+
+    return res.status(200).json({ success: true, matches: filtered });
   } catch (err) {
-    console.error('❌ Simplified Match query error:', err);
+    console.error('❌ Match query error:', err);
     return res.status(500).json({ error: 'Failed to fetch matches' });
   }
 };
 
+
+export function getDistanceMiles(lat1, lon1, lat2, lon2) {
+  const toRad = x => (x * Math.PI) / 180;
+
+  const R = 3958.8; // Radius of Earth in miles
+  const dLat = toRad(lat2 - lat1);
+  const dLon = toRad(lon2 - lon1);
+  const a =
+    Math.sin(dLat / 2) ** 2 +
+    Math.cos(toRad(lat1)) *
+      Math.cos(toRad(lat2)) *
+      Math.sin(dLon / 2) ** 2;
+
+  const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+  return R * c;
+}
 
 // Utility functions
 const getAge = dob => {
