@@ -204,7 +204,7 @@ export const createUserTraits = async (req, res) => {
 
 export const createUserPreferences = async (req, res) => {
   try {
-    const { userId, gender,  distance, religion, sect, views, ageMin, ageMax } = req.body;
+    const { userId, gender,  distance, religion, sect, views, ageMin, ageMax, background } = req.body;
     console.log('userId:', userId); 
     console.log('gender:', gender);
 
@@ -218,7 +218,8 @@ export const createUserPreferences = async (req, res) => {
       sect,
       views,
       ageMax,
-      ageMin
+      ageMin,
+      background
     }])
     .select();
 
