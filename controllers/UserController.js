@@ -61,6 +61,95 @@ export const grabAllUsers = async (req, res) => {
   }
 };
 
+export const getMatches = async (req, res) => {
+  const {
+    userId,
+    ageMin,
+    ageMax,
+    gender,
+    distance,
+    background,
+    religion,
+    latitude,
+    longitude,
+    page = 0,
+  } = req.body;
+
+  try {
+    // Step 1: Get users who blocked the current user
+    const { data: blockedBy, error: blockError } = await supabase
+      .from('Blocked')
+      .select('blockerId')
+      .eq('blockedId', userId);
+
+    if (blockError) throw blockError;
+
+    const blockedByIds = blockedBy.map(row => row.blockerId);
+
+    // Step 2: Fetch potential matches (excluding self)
+    const { data, error } = await supabase
+      .from('Profiles')
+      .select('*, About(*) Career(*), Core(*), Future(*), Lifestyle(*), Love(*), Notifications(*), Photos(*), Preferences(*), Prompts(*), Survey(*), Tags(*), Time(*), Values(*)')
+      .neq('userId', userId)
+      .eq('gender', gender)
+      .eq('religion', religion)
+      .in('background', background)
+      .order('created_at', { ascending: false });
+
+    if (error) throw error;
+
+    // Step 3: Apply manual filters (distance, age, blocked users)
+    const distanceThresholds = [50, 100, 250, 500, 1000, 1500]; // Miles
+    const limit = 100;
+    const offset = page * limit;
+
+    let matches = [];
+    for (let i = 0; i < distanceThresholds.length && matches.length < 1; i++) {
+      const threshold = distanceThresholds[i];
+      const filtered = data.filter(profile => {
+        if (blockedByIds.includes(profile.userId)) return false;
+
+        const age = getAge(profile.dob);
+        if (age < ageMin || age > ageMax) return false;
+
+        if (
+          profile.latitude != null &&
+          profile.longitude != null &&
+          latitude != null &&
+          longitude != null
+        ) {
+          const miles = getDistanceMiles(
+            latitude,
+            longitude,
+            profile.latitude,
+            profile.longitude
+          );
+          return miles <= threshold;
+        }
+
+        return false;
+      });
+
+      if (filtered.length > 0) {
+        matches = filtered.slice(offset, offset + limit);
+      }
+    }
+
+    return res.status(200).json({ success: true, matches });
+  } catch (err) {
+    console.error('❌ Match query error:', err);
+    return res.status(500).json({ error: 'Failed to fetch matches' });
+  }
+};
+
+// Helper to calculate age from dob
+const getAge = dob => {
+  const birthDate = new Date(dob);
+  const ageDiff = Date.now() - birthDate.getTime();
+  return Math.floor(ageDiff / (1000 * 60 * 60 * 24 * 365.25));
+};
+
+
 export const likeProfile = async (req, res) => {
   const {
     userId,
