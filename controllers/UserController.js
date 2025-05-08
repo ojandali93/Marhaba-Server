@@ -88,10 +88,9 @@ export const getMatches = async (req, res) => {
     ageMin,
     ageMax,
     gender,
-    background,
+    // background — removed for now
   } = req.body;
 
-  console.log('req.body', req.body);
   console.log('✅ Match Query for userId:', userId, 'with distance:', distance);
 
   try {
@@ -134,15 +133,12 @@ export const getMatches = async (req, res) => {
 
     if (error) throw error;
 
+    // Step 3: Filter by distance, age, and gender
     let filtered = allProfiles;
 
-    // ✅ Filter by distance
     if (latitude != null && longitude != null && distance) {
       filtered = filtered.filter(profile => {
-        if (
-          profile.latitude != null &&
-          profile.longitude != null
-        ) {
+        if (profile.latitude != null && profile.longitude != null) {
           const miles = getDistanceMiles(
             latitude,
             longitude,
@@ -155,7 +151,6 @@ export const getMatches = async (req, res) => {
       });
     }
 
-    // ✅ Filter by age
     if (ageMin != null && ageMax != null) {
       filtered = filtered.filter(profile => {
         if (!profile.dob) return false;
@@ -164,35 +159,8 @@ export const getMatches = async (req, res) => {
       });
     }
 
-    // ✅ Filter by gender
     if (gender) {
       filtered = filtered.filter(profile => profile.gender === gender);
-    }
-
-    // ✅ Filter by background
-    if (background?.length) {
-      filtered = filtered.filter(profile => {
-        const about = Array.isArray(profile.About) ? profile.About[0] : profile.About;
-        if (!about || !about.background) return false;
-    
-        let userBackground = about.background;
-    
-        if (Array.isArray(userBackground)) {
-          // already an array
-        } else if (typeof userBackground === 'string') {
-          try {
-            const parsed = JSON.parse(userBackground);
-            userBackground = Array.isArray(parsed) ? parsed : [userBackground];
-          } catch (err) {
-            // Not JSON - treat as single background string
-            userBackground = [userBackground];
-          }
-        } else {
-          return false;
-        }
-    
-        return arrayIntersects(userBackground, background);
-      });
     }
 
     return res.status(200).json({ success: true, matches: filtered });
@@ -201,6 +169,7 @@ export const getMatches = async (req, res) => {
     return res.status(500).json({ error: 'Failed to fetch matches' });
   }
 };
+
 
 export function getDistanceMiles(lat1, lon1, lat2, lon2) {
   const toRad = x => (x * Math.PI) / 180;
