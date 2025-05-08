@@ -88,7 +88,7 @@ export const getMatches = async (req, res) => {
 
     const blockedByIds = blockedBy.map(row => row.blockerId);
 
-    // Step 2: Build initial profile query
+    // Step 2: Base query
     let query = supabase
       .from('Profile')
       .select(
@@ -99,27 +99,27 @@ export const getMatches = async (req, res) => {
       .not('userId', 'in', `(${blockedByIds.join(',') || 'NULL'})`)
       .order('created_at', { ascending: false });
 
-    // Step 3: Add background filter (uses foreignTable "About")
+    // Step 3: Background filter
     if (background?.length > 0) {
       const bgFilter = background
         .map(val => `background.ilike.%${val}%`)
         .join(',');
-      query = query.or(bgFilter, { foreignTable: 'About' });
+      query = query.or(`(${bgFilter})`, { foreignTable: 'About' });
     }
 
-    // Step 4: Add religion filter (uses foreignTable "About")
+    // Step 4: Religion filter
     if (religion?.length > 0) {
       const religionFilter = religion
         .map(val => `religion.ilike.%${val}%`)
         .join(',');
-      query = query.or(religionFilter, { foreignTable: 'About' });
+      query = query.or(`(${religionFilter})`, { foreignTable: 'About' });
     }
 
+    // Step 5: Execute query
     const { data, error } = await query;
-
     if (error) throw error;
 
-    // Step 5: Manual filtering (age & distance)
+    // Step 6: Manual filters
     const distanceThresholds = [distance || 50, 100, 250, 500, 1000, 1500];
     const limit = 100;
     const offset = page * limit;
@@ -148,7 +148,7 @@ export const getMatches = async (req, res) => {
           return miles <= threshold;
         }
 
-        return false;
+        return true; // keep if no location filter
       });
 
       if (filtered.length > 0) {
@@ -162,7 +162,6 @@ export const getMatches = async (req, res) => {
     return res.status(500).json({ error: 'Failed to fetch matches' });
   }
 };
-
 
 
 // Utility functions
