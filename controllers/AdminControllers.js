@@ -166,16 +166,30 @@ export const reportUser = async (req, res) => {
 
 export const getBlockedUsers = async (req, res) => {
   const { userId } = req.params;
+  console.log('userId', userId);
 
   try {
     const { data, error } = await supabase
       .from('Blocked')
-      .select('*, About(*), Core(*), Lifestyle(*), Notifications(*), Photos(*), Preferences(*)')
+      .select(`
+        *,
+        blockedId:Profiles (
+          *,
+          About(*),
+          Core(*),
+          Lifestyle(*),
+          Notifications(*),
+          Photos(*),
+          Preferences(*)
+        )
+      `)
       .eq('blockerId', userId);
 
     if (error) throw error;
+
     return res.status(200).json({ success: true, data });
   } catch (error) {
+    console.error('❌ Error fetching blocked users:', error);
     return res.status(500).json({ error: 'Failed to get blocked users' });
   }
-}
+};
