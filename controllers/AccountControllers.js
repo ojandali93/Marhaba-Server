@@ -37,6 +37,25 @@ export const createUserAccount = async (req, res) => {
   }
 };
 
+export const checkUserEmail = async (req, res) => {
+  try {
+    const { email } = req.body;
+    const { data: signupUser, error: signUpError } = await await supabase
+    .from('Profile')
+    .select('email')
+    .eq('email', email)
+
+    if (signupUser) {
+      return res.status(200).json({ success: true, data: signupUser });
+    } else {
+      return res.status(200).json({ error: 'User ID not returned' });
+    }
+  } catch (error) {
+    console.error('❌ Server error:', error.message);
+    return res.status(500).json({ error: 'Failed to create user' });
+  }
+};
+
 export const createUserProfile = async (req, res) => {
   try {
     const { userId,  email, name, dob, gender, height, fcmToken, approved, tier, longitude, latitude, phone, visibility } = req.body;
