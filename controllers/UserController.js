@@ -72,6 +72,13 @@ const getAgeFromDOB = dob => {
   return age;
 };
 
+const arrayIntersects = (userValues, filterValues) => {
+  if (!Array.isArray(filterValues) || !Array.isArray(userValues)) return false;
+
+  const userSet = new Set(userValues.map(v => v.toLowerCase().trim()));
+  return filterValues.some(v => userSet.has(v.toLowerCase().trim()));
+};
+
 export const getMatches = async (req, res) => {
   const {
     userId,
@@ -80,7 +87,8 @@ export const getMatches = async (req, res) => {
     longitude,
     ageMin,
     ageMax,
-    gender, // ✅ include gender from req.body
+    gender,
+    background,
   } = req.body;
 
   console.log('req.body', req.body);
@@ -126,7 +134,6 @@ export const getMatches = async (req, res) => {
 
     if (error) throw error;
 
-    // Step 3: Filter by distance, age, and gender
     let filtered = allProfiles;
 
     // ✅ Filter by distance
@@ -162,14 +169,32 @@ export const getMatches = async (req, res) => {
       filtered = filtered.filter(profile => profile.gender === gender);
     }
 
+    // ✅ Filter by background
+    if (background?.length) {
+      filtered = filtered.filter(profile => {
+        const about = Array.isArray(profile.About) ? profile.About[0] : profile.About;
+        if (!about || !about.background) return false;
+
+        let userBackground = about.background;
+        if (typeof userBackground === 'string') {
+          try {
+            userBackground = JSON.parse(userBackground);
+          } catch (err) {
+            console.warn('Invalid user background JSON:', userBackground);
+            return false;
+          }
+        }
+
+        return arrayIntersects(userBackground, background);
+      });
+    }
+
     return res.status(200).json({ success: true, matches: filtered });
   } catch (err) {
     console.error('❌ Match query error:', err);
     return res.status(500).json({ error: 'Failed to fetch matches' });
   }
 };
-
-
 
 export function getDistanceMiles(lat1, lon1, lat2, lon2) {
   const toRad = x => (x * Math.PI) / 180;
