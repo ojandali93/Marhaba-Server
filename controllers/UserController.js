@@ -99,7 +99,7 @@ export const getMatches = async (req, res) => {
 
     // Step 2: Fetch potential matches (excluding self and blocked)
     let query = supabase
-      .from('Profiles')
+      .from('Profile')
       .select(
         '*, About(*), Career(*), Core(*), Future(*), Lifestyle(*), Love(*), Notifications(*), Photos(*), Preferences(*), Prompts(*), Survey(*), Tags(*), Time(*), Values(*)',
       )
