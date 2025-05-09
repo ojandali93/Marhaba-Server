@@ -55,9 +55,9 @@ export const loginUser = async (req, res) => {
     }
 
     return res.status(200).json({
-      message: 'Login successful',
-      session,
-      userId: user.id,
+      session: signInData.session,
+      userId: signInData.user.id,
+      user: signInData.user, // 👈 Make sure this is returned
     });
   } catch (err) {
     console.error('❌ Server error:', err.message);
