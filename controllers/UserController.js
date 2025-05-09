@@ -642,3 +642,40 @@ export const updateViewed = async (req, res) => {
     res.status(500).json({ success: false, error: 'Server error' });
   }
 };
+
+export const resetUserPassword = async (req, res) => {
+  try {
+    const { email, oldPassword, newPassword } = req.body;
+
+    if (!email || !oldPassword || !newPassword) {
+      return res.status(400).json({ error: 'Missing required fields' });
+    }
+
+    // Step 1: Log in user to verify old password is correct
+    const { data: signInData, error: signInError } = await supabase.auth.signInWithPassword({
+      email,
+      password: oldPassword,
+    });
+
+    if (signInError || !signInData.session) {
+      return res.status(401).json({ error: 'Old password is incorrect' });
+    }
+
+    const accessToken = signInData.session.access_token;
+
+    // Step 2: Use access token to update password
+    const { data: updateData, error: updateError } = await supabase.auth.updateUser(
+      { password: newPassword },
+      { accessToken } // ensure user is authenticated
+    );
+
+    if (updateError) {
+      return res.status(400).json({ error: updateError.message });
+    }
+
+    return res.status(200).json({ success: true, message: 'Password updated successfully' });
+  } catch (error) {
+    console.error('❌ Reset password error:', error.message);
+    return res.status(500).json({ error: 'Server error while resetting password' });
+  }
+};
