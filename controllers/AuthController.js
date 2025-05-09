@@ -119,19 +119,17 @@ export const verifyEmail = async (req, res) => {
 
 export const confirmPasswordReset = async (req, res) => {
   try {
-    const { token, email, newPassword } = req.body;
+    const { hash, newPassword } = req.body;
 
-    if (!token || !email || !newPassword) {
+    if (!hash || !newPassword) {
       return res.status(400).json({ error: 'Missing required fields' });
     }
 
-    // Step 1: Exchange token for session
-    const { data: sessionData, error: sessionError } = await supabase.auth.exchangeCodeForSession(token);
+    const { data: sessionData, error: sessionError } = await supabase.auth.exchangeCodeForSession(hash);
     if (sessionError) {
       return res.status(400).json({ error: 'Invalid or expired token' });
     }
 
-    // Step 2: Update password
     const { error: updateError } = await supabase.auth.updateUser({ password: newPassword });
     if (updateError) {
       return res.status(400).json({ error: updateError.message });
