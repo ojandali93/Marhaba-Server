@@ -655,7 +655,7 @@ export const sendResetPasswordEmail = async (req, res) => {
       type: 'recovery',
       email,
       options: {
-        redirectTo: 'https://marhabahapp.github.io/VerifyEmailPage/',
+        redirectTo: 'https://marhabahapp.github.io/ResetPassword/',
       },
     });
 
