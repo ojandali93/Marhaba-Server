@@ -652,7 +652,7 @@ export const sendResetPasswordEmail = async (req, res) => {
     }
 
     const { data, error } = await supabase.auth.admin.generateLink({
-      type: 'signup', // or 'recovery'
+      type: 'recovery', // or 'recovery'
       email,
       options: {
         redirectTo: 'https://marhabahapp.github.io/ResetPassword/',
