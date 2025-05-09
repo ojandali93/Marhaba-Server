@@ -28,10 +28,7 @@ export const loginUser = async (req, res) => {
       return res.status(400).json({ error: 'Missing email or password' });
     }
 
-    const { data, error } = await supabase.auth.signInWithPassword({
-      email,
-      password,
-    });
+    const { data, error } = await supabase.auth.signInWithPassword({ email, password });
 
     if (error) {
       console.error('❌ Login error:', error.message);
@@ -39,31 +36,30 @@ export const loginUser = async (req, res) => {
     }
 
     const { session, user } = data;
-    const jtoken = jwt.sign(user, process.env.JWT_SECRET);
 
-    // ✅ Store the token in the Profiles table
-    console.log('id for storing token:', user.id);
+    const jtoken = jwt.sign(user, process.env.JWT_SECRET);
     console.log('✅ Storing token in Profiles table:', jtoken);
+
     const { error: updateError } = await supabase
       .from('Profile')
-      .update({ jwtToken: jtoken }) // use the correct column name
+      .update({ jwtToken: jtoken })
       .eq('userId', user.id);
 
     if (updateError) {
       console.error('❌ Error saving token to profile:', updateError.message);
-      // Don’t block login if this fails — continue
     }
 
     return res.status(200).json({
-      session: signInData.session,
-      userId: signInData.user.id,
-      user: signInData.user, // 👈 Make sure this is returned
+      session,
+      userId: user.id,
+      user: user,
     });
   } catch (err) {
     console.error('❌ Server error:', err.message);
     return res.status(500).json({ error: 'Server error during login' });
   }
 };
+
 
 // controllers/AuthController.js
 
