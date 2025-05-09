@@ -652,27 +652,19 @@ export const sendResetPasswordEmail = async (req, res) => {
     }
 
     const { data, error } = await supabase.auth.admin.generateLink({
-      type: 'recovery', // or 'recovery'
+      type: 'recovery',
       email,
       options: {
         redirectTo: 'https://marhabahapp.github.io/ResetPassword/',
-        // ⬇️ SendGrid-specific email option
-        // Disables link wrapping
-        data: {
-          suppress_click_tracking: true,
-        },
       },
     });
 
     if (error) {
-      console.error('❌ Failed to generate reset password link:', error.message);
+      console.error('❌ Supabase error:', error.message);
       return res.status(400).json({ error: error.message });
     }
 
-    return res.status(200).json({
-      success: true,
-      message: 'Password reset email sent successfully',
-    });
+    return res.status(200).json({ success: true, message: 'Email sent' });
   } catch (err) {
     console.error('❌ Server error:', err.message);
     return res.status(500).json({ error: 'Internal server error' });
