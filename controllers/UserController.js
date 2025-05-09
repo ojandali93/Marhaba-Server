@@ -651,13 +651,9 @@ export const sendResetPasswordEmail = async (req, res) => {
       return res.status(400).json({ error: 'Email is required' });
     }
 
-    const { data, error } = await supabase.auth.admin.generateLink({
-      type: 'recovery',
-      email,
-      options: {
-        redirectTo: 'https://marhabahapp.github.io/ResetPassword/',
-      },
-    });
+    const { data, error } = await supabase.auth.resetPasswordForEmail(email, {
+      redirectTo: 'https://marhabahapp.github.io/ResetPassword/',
+    })
 
     if (error) {
       console.error('❌ Supabase error:', error.message);
