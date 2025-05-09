@@ -643,39 +643,33 @@ export const updateViewed = async (req, res) => {
   }
 };
 
-export const resetUserPassword = async (req, res) => {
+export const sendResetPasswordEmail = async (req, res) => {
   try {
-    const { email, oldPassword, newPassword } = req.body;
+    const { email } = req.body;
 
-    if (!email || !oldPassword || !newPassword) {
-      return res.status(400).json({ error: 'Missing required fields' });
+    if (!email) {
+      return res.status(400).json({ error: 'Email is required' });
     }
 
-    // Step 1: Log in user to verify old password is correct
-    const { data: signInData, error: signInError } = await supabase.auth.signInWithPassword({
+    const { data, error } = await supabase.auth.admin.generateLink({
+      type: 'recovery',
       email,
-      password: oldPassword,
+      options: {
+        redirectTo: 'https://marhabahapp.github.io/VerifyEmailPage/',
+      },
     });
 
-    if (signInError || !signInData.session) {
-      return res.status(401).json({ error: 'Old password is incorrect' });
+    if (error) {
+      console.error('❌ Failed to generate reset password link:', error.message);
+      return res.status(400).json({ error: error.message });
     }
 
-    const accessToken = signInData.session.access_token;
-
-    // Step 2: Use access token to update password
-    const { data: updateData, error: updateError } = await supabase.auth.updateUser(
-      { password: newPassword },
-      { accessToken } // ensure user is authenticated
-    );
-
-    if (updateError) {
-      return res.status(400).json({ error: updateError.message });
-    }
-
-    return res.status(200).json({ success: true, message: 'Password updated successfully' });
-  } catch (error) {
-    console.error('❌ Reset password error:', error.message);
-    return res.status(500).json({ error: 'Server error while resetting password' });
+    return res.status(200).json({
+      success: true,
+      message: 'Password reset email sent successfully',
+    });
+  } catch (err) {
+    console.error('❌ Server error:', err.message);
+    return res.status(500).json({ error: 'Internal server error' });
   }
 };
