@@ -4,6 +4,7 @@ import { blockUser, getBlockedUsers, reportUser, unblockUser } from '../controll
 
 const router = Router();
 
+router.post('/requestResetPassword', sendResetPasswordEmail);
 router.get('/allUsers', grabAllUsers);
 router.post('/getMatches', getMatches);
 router.post('/interaction', likeProfile);
@@ -17,7 +18,6 @@ router.put('/updateVisibility', updateVisibility);
 router.put('/updateViewed', updateViewed);
 router.post('/blockUser', blockUser);
 router.post('/unblockUser', unblockUser);
-router.post('/requestResetPassword', sendResetPasswordEmail);
 router.post('/reportUser', reportUser);
 router.get('/liked/:userId', getUserInteractions);
 router.get('/weeklyStats/:userId', getWeeklyInteractionStats);
