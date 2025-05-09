@@ -89,3 +89,30 @@ export const logoutUser = async (req, res) => {
     return res.status(500).json({ error: 'Server error during logout' });
   }
 };
+
+
+export const verifyEmail = async (req, res) => {
+  try {
+    const { token, email } = req.body;
+
+    if (!token || !email) {
+      return res.status(400).json({ error: 'Missing token or email' });
+    }
+
+    const { data, error } = await supabase.auth.verifyOtp({
+      email,
+      token,
+      type: 'signup',
+    });
+
+    if (error) {
+      console.error('❌ Email verification failed:', error.message);
+      return res.status(400).json({ error: error.message });
+    }
+
+    return res.status(200).json({ success: true, message: 'Email verified' });
+  } catch (err) {
+    console.error('❌ Server error during verification:', err.message);
+    return res.status(500).json({ error: 'Server error verifying email' });
+  }
+};
