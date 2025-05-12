@@ -60,8 +60,6 @@ export const createUserProfile = async (req, res) => {
   try {
     const { userId,  email, fcmToken, approved, tier, longitude, latitude, visibility, agreements } = req.body;
 
-    console.log('req.body:', req.body);
-
     const { data: profileData, error: profileError } = await supabase
     .from('Profile')
     .insert([{
@@ -81,8 +79,6 @@ export const createUserProfile = async (req, res) => {
       agreements,
     }])
     .select();
-    console.log('profileData:', profileData);
-    console.log('profileError:', profileError);
 
     if (profileError) {
       return res.status(400).json({ error: profileError.message });
@@ -132,28 +128,24 @@ export const createNotifications = async (req, res) => {
 
 export const createUserAbout = async (req, res) => {
   try {
-    const { userId, lookingFor,  background, religion, sect, views, smoke, drink, hasKids, wantsKids, timeline, travel } = req.body;
+    const { userId, name, email, phone, dob, gender, height, background } = req.body;
 
     const { data: aboutData, error: aboutError } = await supabase
     .from('About')
     .insert([{
       userId,
-      lookingFor,
+      name,
+      email,
+      phone,
+      dob,
+      gender,
+      height,
       background,
-      religion, 
-      sect,
-      views,
-      smoke,
-      drink,
-      hasKids, 
-      wantsKids,
-      timeline,
-      travel
     }])
     .select();
 
     if (aboutError) {
-      return res.status(400).json({ error: aboutError.message });
+      return res.status(400).json({ error: aboutError });
     }
 
     if (aboutData) {
