@@ -333,7 +333,7 @@ export const createUserRelationships = async (req, res) => {
 
 export const createUserCareer = async (req, res) => {
   try {
-    const { userId, job,  company, site, location, education, fiveYear } = req.body;
+    const { userId, job,  company, industry, relocate, site, education, updated_at } = req.body;
 
     const { data: careerData, error: careerError } = await supabase
     .from('Career')
@@ -342,9 +342,10 @@ export const createUserCareer = async (req, res) => {
       job,
       company,
       site, 
-      location,
-      fiveYear,
-      education
+      industry,
+      relocate,
+      education,
+      updated_at
     }])
     .select();
 
