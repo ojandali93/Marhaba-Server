@@ -257,6 +257,41 @@ export const createReligion = async (req, res) => {
   }
 };
 
+export const createUserCore = async (req, res) => {
+  try {
+    const { userId, family, faith, ambition, career, conflicts, independence, decisions, politics, updated_at } = req.body;
+
+    const { data: coreData, error: coreError } = await supabase
+    .from('Core')
+    .insert([{
+      userId,
+      family,
+      faith,
+      ambition,
+      career,
+      conflicts,
+      independence,
+      decisions,
+      politics,
+      updated_at
+    }])
+    .select();
+
+    if (coreError) {
+      return res.status(400).json({ error: coreError });
+    }
+
+    if (coreData) {
+      return res.status(200).json({ success: true, data: coreData });
+    } else {
+      return res.status(500).json({ error: coreError });
+    }
+
+  } catch (error) {
+    return res.status(500).json({ error: 'Failed to create user' });
+  }
+};
+
 export const createUserCareer = async (req, res) => {
   try {
     const { userId, job,  company, site, location, education, fiveYear } = req.body;
@@ -630,41 +665,6 @@ export const uploadImage = [
     }
   },
 ];
-
-export const createUserCore = async (req, res) => {
-  try {
-    const { userId, family, faith,  ambition, career, honest, transparent, trust, politics, social } = req.body;
-
-    const { data: preferencesData, error: preferencesError } = await supabase
-    .from('Core')
-    .insert([{
-      userId,
-      family,
-      faith,
-      ambition,
-      career,
-      honest,
-      transparent,
-      trust,
-      politics,
-      social
-    }])
-    .select();
-
-    if (preferencesError) {
-      return res.status(400).json({ error: aboutError.preferencesError });
-    }
-
-    if (preferencesData) {
-      return res.status(200).json({ success: true, data: preferencesData });
-    } else {
-      return res.status(500).json({ error: preferencesError });
-    }
-
-  } catch (error) {
-    return res.status(500).json({ error: 'Failed to create user' });
-  }
-};
 
 export const createUserEmotions = async (req, res) => {
   try {
