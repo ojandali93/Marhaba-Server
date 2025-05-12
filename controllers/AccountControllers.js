@@ -277,6 +277,9 @@ export const createUserCore = async (req, res) => {
     }])
     .select();
 
+    console.log('coreData:', coreData); 
+    console.log('coreError:', coreError);
+
     if (coreError) {
       return res.status(400).json({ error: coreError });
     }
