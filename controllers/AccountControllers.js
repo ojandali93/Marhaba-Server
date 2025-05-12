@@ -81,6 +81,8 @@ export const createUserProfile = async (req, res) => {
       agreement,
     }])
     .select();
+    console.log('profileData:', profileData);
+    console.log('profileError:', profileError);
 
     if (profileError) {
       return res.status(400).json({ error: profileError.message });
