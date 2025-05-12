@@ -303,7 +303,7 @@ export const createUserRelationships = async (req, res) => {
     .from('Relationships')
     .insert([{
       userId,
-      commStyle,
+      communication: commStyle,
       loveLanguages,
       values,
       time,
