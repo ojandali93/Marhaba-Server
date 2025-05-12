@@ -295,6 +295,37 @@ export const createUserCore = async (req, res) => {
   }
 };
 
+export const createUserRelationships = async (req, res) => {
+  try {
+    const { userId, commStyle, loveLanguages, values, time, updated_at } = req.body;
+
+    const { data: relationshipsData, error: relationshipsError } = await supabase
+    .from('Relationships')
+    .insert([{
+      userId,
+      commStyle,
+      loveLanguages,
+      values,
+      time,
+      updated_at
+    }])
+    .select();
+
+    if (relationshipsError) {
+      return res.status(400).json({ error: relationshipsError });
+    }
+
+    if (relationshipsData) {
+      return res.status(200).json({ success: true, data: relationshipsData });
+    } else {
+      return res.status(500).json({ error: relationshipsError });
+    }
+
+  } catch (error) {
+    return res.status(500).json({ error: 'Failed to create user' });
+  }
+};
+
 export const createUserCareer = async (req, res) => {
   try {
     const { userId, job,  company, site, location, education, fiveYear } = req.body;

@@ -1,5 +1,5 @@
 import express from 'express';
-import { updateUserProfile, createCommunicationStyles, createCoreValues, createLoveLanguage, createTimePriorities, createUserAbout, createUserAccount, createUserAnger, createUserAttachment, createUserCareer, createUserCore, createUserEitherOr, createUserEmotions, createUserFuture, createUserLifestyle, createUserPhotos, createUserPreferences, createUserProfile, createUserPrompts, createUserTraits, editUserPhotos, uploadImage, updateUserAbout, updateUserCore, updateuserLifestyle, updateUserFuture, updateUserCareer, updateUserPrompts, updateUserTags, updateSurvey, createNotifications, checkUserEmail, createIntent, createHabits, createReligion } from '../controllers/AccountControllers.js';
+import { updateUserProfile, createCommunicationStyles, createCoreValues, createLoveLanguage, createTimePriorities, createUserAbout, createUserAccount, createUserAnger, createUserAttachment, createUserCareer, createUserCore, createUserEitherOr, createUserEmotions, createUserFuture, createUserLifestyle, createUserPhotos, createUserPreferences, createUserProfile, createUserPrompts, createUserTraits, editUserPhotos, uploadImage, updateUserAbout, updateUserCore, updateuserLifestyle, updateUserFuture, updateUserCareer, updateUserPrompts, updateUserTags, updateSurvey, createNotifications, checkUserEmail, createIntent, createHabits, createReligion, createUserRelationships } from '../controllers/AccountControllers.js';
 
 const router = express.Router();
 
@@ -11,6 +11,7 @@ router.post('/createTraits', createUserTraits);
 router.post('/createIntent', createIntent);
 router.post('/createHabits', createHabits);
 router.post('/createReligion', createReligion);
+router.post('/createRelationships', createUserRelationships);
 router.post('/createPreferences', createUserPreferences);
 router.post('/createSurvey', createUserEitherOr);
 router.post('/createPrompts', createUserPrompts);
