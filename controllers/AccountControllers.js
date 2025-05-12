@@ -311,6 +311,9 @@ export const createUserRelationships = async (req, res) => {
     }])
     .select();
 
+    console.log('relationshipsData:', relationshipsData); 
+    console.log('relationshipsError:', relationshipsError);
+
     if (relationshipsError) {
       return res.status(400).json({ error: relationshipsError });
     }
