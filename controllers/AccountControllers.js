@@ -159,6 +159,40 @@ export const createUserAbout = async (req, res) => {
   }
 };
 
+export const createIntent = async (req, res) => {
+  try {
+    const { userId, intentions, timeline, marriage, marriageStatus, longDistance, relocate, firstStep, familyInvolvement } = req.body;
+
+    const { data: intentData, error: intentError } = await supabase
+    .from('Intent')
+    .insert([{
+      userId,
+      intentions,
+      timeline,
+      marriage,
+      marriageStatus,
+      longDistance,
+      relocate,
+      firstStep,
+      familyInvolvement,
+    }])
+    .select();
+
+    if (intentError) {
+      return res.status(400).json({ error: intentError });
+    }
+
+    if (intentData) {
+      return res.status(200).json({ success: true, data: intentData });
+    } else {
+      return res.status(500).json({ error: intentError });
+    }
+
+  } catch (error) {
+    return res.status(500).json({ error: 'Failed to create user' });
+  }
+};
+
 export const createUserCareer = async (req, res) => {
   try {
     const { userId, job,  company, site, location, education, fiveYear } = req.body;
