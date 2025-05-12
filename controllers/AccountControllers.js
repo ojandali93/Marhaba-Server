@@ -58,7 +58,7 @@ export const checkUserEmail = async (req, res) => {
 
 export const createUserProfile = async (req, res) => {
   try {
-    const { userId,  email, fcmToken, approved, tier, longitude, latitude, visibility, agreement } = req.body;
+    const { userId,  email, fcmToken, approved, tier, longitude, latitude, visibility, agreements } = req.body;
 
     console.log('req.body:', req.body);
 
@@ -78,7 +78,7 @@ export const createUserProfile = async (req, res) => {
       admin: false,
       passHash: '',
       pinHash: '',
-      agreement,
+      agreements,
     }])
     .select();
     console.log('profileData:', profileData);
