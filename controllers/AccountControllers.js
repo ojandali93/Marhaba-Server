@@ -299,6 +299,8 @@ export const createUserRelationships = async (req, res) => {
   try {
     const { userId, commStyle, loveLanguages, values, time, updated_at } = req.body;
 
+    console.log('userId:', userId);
+
     const { data: relationshipsData, error: relationshipsError } = await supabase
     .from('Relationships')
     .insert([{
