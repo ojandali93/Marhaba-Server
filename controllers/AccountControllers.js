@@ -800,18 +800,18 @@ export const createUserLifestyle = async (req, res) => {
 
 export const createUserFuture = async (req, res) => {
   try {
-    const { userId, marriage, children, career, finances, pace, live } = req.body;
+    const { userId, career, finances, pace, live, fiveYears, updated_at } = req.body;
 
     const { data: preferencesData, error: preferencesError } = await supabase
     .from('Future')
     .insert([{
       userId,
-      marriage,
-      children,
       career,
       finances,
       pace,
       live,
+      fiveYears,
+      updated_at
     }])
     .select();
 
