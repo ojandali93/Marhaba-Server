@@ -192,6 +192,40 @@ export const createIntent = async (req, res) => {
   }
 };
 
+export const createHabits = async (req, res) => {
+  try {
+    const { userId, smoking, drinking, hasKids, wantsKids, sleep, excersize, diet, updated_at } = req.body;
+
+    const { data: habitsData, error: habitsError } = await supabase
+    .from('Habits')
+    .insert([{
+      userId,
+      smoking,
+      drinking,
+      hasKids,
+      wantsKids,
+      sleep,
+      excersize,
+      diet,
+      updated_at,
+    }])
+    .select();
+
+    if (habitsError) {
+      return res.status(400).json({ error: habitsError });
+    }
+
+    if (habitsData) {
+      return res.status(200).json({ success: true, data: habitsData });
+    } else {
+      return res.status(500).json({ error: habitsError });
+    }
+
+  } catch (error) {
+    return res.status(500).json({ error: 'Failed to create user' });
+  }
+};
+
 export const createUserCareer = async (req, res) => {
   try {
     const { userId, job,  company, site, location, education, fiveYear } = req.body;
