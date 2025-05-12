@@ -226,6 +226,37 @@ export const createHabits = async (req, res) => {
   }
 };
 
+export const createReligion = async (req, res) => {
+  try {
+    const { userId, religion, sect, practicing, openness, updated_at } = req.body;
+
+    const { data: religionData, error: religionError } = await supabase
+    .from('Religion')
+    .insert([{
+      userId,
+      religion,
+      sect,
+      practicing,
+      openness,
+      updated_at,
+    }])
+    .select();
+
+    if (religionError) {
+      return res.status(400).json({ error: religionError });
+    }
+
+    if (religionData) {
+      return res.status(200).json({ success: true, data: religionData });
+    } else {
+      return res.status(500).json({ error: religionError });
+    }
+
+  } catch (error) {
+    return res.status(500).json({ error: 'Failed to create user' });
+  }
+};
+
 export const createUserCareer = async (req, res) => {
   try {
     const { userId, job,  company, site, location, education, fiveYear } = req.body;
