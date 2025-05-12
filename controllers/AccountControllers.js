@@ -60,6 +60,8 @@ export const createUserProfile = async (req, res) => {
   try {
     const { userId,  email, fcmToken, approved, tier, longitude, latitude, visibility, agreement } = req.body;
 
+    console.log('req.body:', req.body);
+
     const { data: profileData, error: profileError } = await supabase
     .from('Profile')
     .insert([{
