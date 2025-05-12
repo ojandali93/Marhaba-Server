@@ -161,7 +161,7 @@ export const createUserAbout = async (req, res) => {
 
 export const createIntent = async (req, res) => {
   try {
-    const { userId, intentions, timeline, marriage, marriageStatus, longDistance, relocate, firstStep, familyInvolvement } = req.body;
+    const { userId, intentions, timeline, marriage, marriageStatus, longDistance, relocate, firstStep } = req.body;
 
     const { data: intentData, error: intentError } = await supabase
     .from('Intent')
@@ -174,7 +174,6 @@ export const createIntent = async (req, res) => {
       longDistance,
       relocate,
       firstStep,
-      familyInvolvement,
     }])
     .select();
 
