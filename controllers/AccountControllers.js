@@ -58,24 +58,25 @@ export const checkUserEmail = async (req, res) => {
 
 export const createUserProfile = async (req, res) => {
   try {
-    const { userId,  email, name, dob, gender, height, fcmToken, approved, tier, longitude, latitude, phone, visibility } = req.body;
+    const { userId,  email, fcmToken, approved, tier, longitude, latitude, visibility, agreement } = req.body;
 
     const { data: profileData, error: profileError } = await supabase
     .from('Profile')
     .insert([{
       userId,
       email,
-      name, 
-      dob,
-      gender,
-      height,
       fcmToken,
       approved,
       tier,
       longitude,
       latitude,
-      phone,
-      visibility
+      tutorial: true,
+      visibility,
+      jwtToken: null,
+      admin: false,
+      passHash: '',
+      pinHash: '',
+      agreement,
     }])
     .select();
 
