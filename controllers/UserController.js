@@ -114,6 +114,8 @@ export const getMatches = async (req, res) => {
 
     if (error) throw error;
 
+    console.log('allProfiles:', allProfiles);
+
     // Step 3: Filter by distance, age, and gender
     let filtered = allProfiles;
 
@@ -140,9 +142,13 @@ export const getMatches = async (req, res) => {
       });
     }
 
+    console.log('filtered:', filtered);
+
     if (gender) {
       filtered = filtered.filter(profile => profile.gender === gender);
     }
+
+    console.log('filtered 2:', filtered);
 
     return res.status(200).json({ success: true, matches: filtered });
   } catch (err) {
