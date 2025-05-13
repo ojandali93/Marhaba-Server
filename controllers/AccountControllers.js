@@ -1013,6 +1013,7 @@ export const updateUserCareer = async (req, res) => {
     const { userId, job,  company, site, relocate, education, industry } = req.body;
      
     console.log(req.body);
+    console.log('industry:', industry);
     
     const { data, error } = await supabase
       .from('Career')
