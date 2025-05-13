@@ -867,6 +867,9 @@ export const updateUserProfile = async (req, res) => {
       .update({ name, phone, height })
       .eq('userId', userId)
       .select();
+
+    console.log('data:', data);
+    console.log('error:', error);
     
     if (error) {
       return res.status(400).json({ error: error.message });
