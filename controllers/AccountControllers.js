@@ -1012,6 +1012,7 @@ export const updateUserCareer = async (req, res) => {
   try {
     const { userId, job,  company, site, relocate, education, industry } = req.body;
      
+    console.log(req.body);
     
     const { data, error } = await supabase
       .from('Career')
@@ -1022,6 +1023,9 @@ export const updateUserCareer = async (req, res) => {
     if (error) {
       return res.status(400).json({ error: error.message });
     }
+
+    console.log('data:', data);  
+    console.log('error:', error);
 
     return res.status(200).json({ success: true, data, data });
   } catch (error) {
