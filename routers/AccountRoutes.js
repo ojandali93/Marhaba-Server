@@ -35,12 +35,12 @@ router.put('/updateIntent', updateUserIntent);
 router.put('/updateReligion', updateUserReligion);
 router.put('/updateCore', updateUserCore);
 router.put('/updateRelationships', updateUserRelationships);
+router.put('/updateCareer', updateUserCareer);
 
 
 router.put('/updateAbout', updateUserAbout);
 router.put('/updateLifestyle', updateuserLifestyle);
 router.put('/updateFuture', updateUserFuture);
-router.put('/updateCareer', updateUserCareer);
 router.put('/updatePrompts', updateUserPrompts);
 router.put('/updateTags', updateUserTags);
 router.put('/updateSurvey', updateSurvey);
