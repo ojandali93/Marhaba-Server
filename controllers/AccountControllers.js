@@ -861,10 +861,10 @@ export const createUserAnger = async (req, res) => {
 
 export const updateUserProfile = async (req, res) => {
   try {
-    const { userId, name, gender, height, smoke, drink, hasKid } = req.body;
+    const { userId, name, phone, height } = req.body;
     const { data, error } = await supabase
       .from('Profile')
-      .update({ name, gender, height })
+      .update({ name, phone, height })
       .eq('userId', userId)
       .select();
     
@@ -872,18 +872,7 @@ export const updateUserProfile = async (req, res) => {
       return res.status(400).json({ error: error.message });
     }
 
-    const { data: aboutData, error: aboutError } = await supabase
-      .from('About')
-      .update({ smoke, drink, hasKids: hasKid })
-      .eq('userId', userId)
-      .select();
-
-    if (aboutError) {
-      console.log(aboutError);
-      return res.status(400).json({ error: aboutError.message });
-    }
-
-    return res.status(200).json({ success: true, data, aboutData });
+    return res.status(200).json({ success: true, data });
   } catch (error) {
     return res.status(500).json({ error: 'Failed to update user profile' });
   }

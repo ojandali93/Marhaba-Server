@@ -24,11 +24,8 @@ router.post('/createTime', createTimePriorities);
 router.post('/createValues', createCoreValues);
 router.post('/upoadImage', uploadImage);
 router.post('/createCore', createUserCore);
-router.post('/createEmotions', createUserEmotions);
-router.post('/createAttachment', createUserAttachment);
 router.post('/createLifestyle', createUserLifestyle);
 router.post('/createFuture', createUserFuture);
-router.post('/createAnger', createUserAnger);
 router.post('/createNotifications', createNotifications);
 
 router.put('/updatePhotos', editUserPhotos);
