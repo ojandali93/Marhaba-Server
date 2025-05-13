@@ -988,6 +988,26 @@ export const updateUserCore = async (req, res) => {
   }
 };
 
+export const updateUserRelationships = async (req, res) => {
+  try {
+    const { userId, communication, loveLanguages, values, time } = req.body;
+    
+    const { data, error } = await supabase
+      .from('Relationships')
+      .update({ communication, loveLanguages, values, time })
+      .eq('userId', userId)
+      .select();
+    
+    if (error) {
+      return res.status(400).json({ error: error.message });
+    }
+
+    return res.status(200).json({ success: true, data, data });
+  } catch (error) {
+    return res.status(500).json({ error: 'Failed to update user profile' });
+  }
+};
+
 export const updateuserLifestyle = async (req, res) => {
   try {
     const { userId, travel, social, health, finances, living } = req.body;
