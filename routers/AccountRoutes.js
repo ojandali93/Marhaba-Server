@@ -1,5 +1,5 @@
 import express from 'express';
-import { updateUserProfile, createCommunicationStyles, createCoreValues, createLoveLanguage, createTimePriorities, createUserAbout, createUserAccount, createUserAnger, createUserAttachment, createUserCareer, createUserCore, createUserEitherOr, createUserEmotions, createUserFuture, createUserLifestyle, createUserPhotos, createUserPreferences, createUserProfile, createUserPrompts, createUserTraits, editUserPhotos, uploadImage, updateUserAbout, updateUserCore, updateuserLifestyle, updateUserFuture, updateUserCareer, updateUserPrompts, updateUserTags, updateSurvey, createNotifications, checkUserEmail, createIntent, createHabits, createReligion, createUserRelationships, updateUserBackground, updateUserIntent } from '../controllers/AccountControllers.js';
+import { updateUserProfile, createCommunicationStyles, createCoreValues, createLoveLanguage, createTimePriorities, createUserAbout, createUserAccount, createUserAnger, createUserAttachment, createUserCareer, createUserCore, createUserEitherOr, createUserEmotions, createUserFuture, createUserLifestyle, createUserPhotos, createUserPreferences, createUserProfile, createUserPrompts, createUserTraits, editUserPhotos, uploadImage, updateUserAbout, updateUserCore, updateuserLifestyle, updateUserFuture, updateUserCareer, updateUserPrompts, updateUserTags, updateSurvey, createNotifications, checkUserEmail, createIntent, createHabits, createReligion, createUserRelationships, updateUserBackground, updateUserIntent, updateUserReligion } from '../controllers/AccountControllers.js';
 
 const router = express.Router();
 
@@ -32,6 +32,7 @@ router.put('/updatePhotos', editUserPhotos);
 router.put('/updateProfile', updateUserProfile);
 router.put('/updateBackground', updateUserBackground);
 router.put('/updateIntent', updateUserIntent);
+router.put('/updateReligion', updateUserReligion);
 
 router.put('/updateAbout', updateUserAbout);
 router.put('/updateCore', updateUserCore);

@@ -925,6 +925,28 @@ export const updateUserIntent = async (req, res) => {
   }
 };
 
+export const updateUserReligion = async (req, res) => {
+  try {
+    const { userId, religion, sect, practicing, openness } = req.body;
+    const { data, error } = await supabase
+      .from('Religion')
+      .update({ religion, sect, practicing, openness })
+      .eq('userId', userId)
+      .select();
+
+    console.log('data:', data);
+    console.log('error:', error);
+    
+    if (error) {
+      return res.status(400).json({ error: error.message });
+    }
+
+    return res.status(200).json({ success: true, data });
+  } catch (error) {
+    return res.status(500).json({ error: 'Failed to update user profile' });
+  }
+};
+
 export const updateUserAbout = async (req, res) => {
   try {
     const { userId, lookingFor, background, religion, sect, views, timeline, travel, wantsKids } = req.body;
