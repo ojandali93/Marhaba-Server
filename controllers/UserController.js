@@ -137,7 +137,7 @@ export const getMatches = async (req, res) => {
     if (ageMin != null && ageMax != null) {
       filtered = filtered.filter(profile => {
         if (!profile.dob) return false;
-        const age = getAgeFromDOB(profile.dob);
+        const age = getAgeFromDOB(profile.About[0].dob);
         return age >= ageMin && age <= ageMax;
       });
     }
@@ -145,7 +145,7 @@ export const getMatches = async (req, res) => {
     console.log('filtered:', filtered);
 
     if (gender) {
-      filtered = filtered.filter(profile => profile.gender === gender);
+      filtered = filtered.filter(profile => profile.About[0].gender === gender);
     }
 
     console.log('filtered 2:', filtered);
