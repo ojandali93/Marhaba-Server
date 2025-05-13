@@ -114,8 +114,6 @@ export const getMatches = async (req, res) => {
 
     if (error) throw error;
 
-    console.log('allProfiles:', allProfiles);
-
     // Step 3: Filter by distance, age, and gender
     let filtered = allProfiles;
 
@@ -136,7 +134,7 @@ export const getMatches = async (req, res) => {
 
     if (ageMin != null && ageMax != null) {
       filtered = filtered.filter(profile => {
-        if (!profile.dob) return false;
+        if (!profile.About[0].dob) return false;
         const age = getAgeFromDOB(profile.About[0].dob);
         return age >= ageMin && age <= ageMax;
       });
