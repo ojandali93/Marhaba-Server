@@ -33,9 +33,9 @@ router.put('/updateProfile', updateUserProfile);
 router.put('/updateBackground', updateUserBackground);
 router.put('/updateIntent', updateUserIntent);
 router.put('/updateReligion', updateUserReligion);
+router.put('/updateCore', updateUserCore);
 
 router.put('/updateAbout', updateUserAbout);
-router.put('/updateCore', updateUserCore);
 router.put('/updateLifestyle', updateuserLifestyle);
 router.put('/updateFuture', updateUserFuture);
 router.put('/updateCareer', updateUserCareer);

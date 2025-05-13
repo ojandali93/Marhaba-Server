@@ -970,12 +970,11 @@ export const updateUserAbout = async (req, res) => {
 
 export const updateUserCore = async (req, res) => {
   try {
-    const { userId, family, faith,  ambition, career, honest, transparent, trust, politics, social } = req.body;
-     
+    const { userId, family, faith,  ambition, careerVsFamily, conflicts, independence, decisions, politics } = req.body;
     
     const { data, error } = await supabase
       .from('Core')
-      .update({ family, faith,  ambition, career, honest, transparent, trust, politics, social })
+      .update({ family, faith,  ambition, career: careerVsFamily, conflicts, independence, decisions, politics })
       .eq('userId', userId)
       .select();
     
