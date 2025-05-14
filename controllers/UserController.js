@@ -304,6 +304,28 @@ export const approvedInteraction = async (req, res) => {
   }
 };
 
+
+export const removeInteraction = async (req, res) => {
+  try {
+    const { id } = req.body;
+
+    const { data, error } = await supabase
+      .from('Interactions')
+      .delete()
+      .eq('id', id)
+      .select()
+
+    if (error) {
+      console.error('Error fetching interactions:', error);
+      return res.status(500).json({ error: error });
+    }
+    return res.status(200).json({ success: true, data });
+  } catch (error) {
+    console.error('Server error:', error);
+    return res.status(500).json({ error: 'Server error occurred' });
+  }
+};
+
 export const updateInteraction = async (req, res) => {
   try {
     const { 
