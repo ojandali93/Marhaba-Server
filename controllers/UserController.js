@@ -540,9 +540,10 @@ export const filterProfiles = async (req, res) => {
     });
 
     const match = (val, arr) => {
-      if (!arr?.length) return true;
+      const arrSafe = Array.isArray(arr) ? arr : [arr]; // Ensure it's an array
+      if (!arrSafe.length) return true;
       if (val === null || val === undefined) return false;
-      return arr.some(
+      return arrSafe.some(
         item => item.toLowerCase().trim() === val.toLowerCase().trim()
       );
     };
