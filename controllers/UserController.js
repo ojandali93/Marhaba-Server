@@ -90,8 +90,6 @@ export const getMatches = async (req, res) => {
     gender,
   } = req.body;
 
-  console.log('🔍 Match debug start for userId:', userId);
-
   try {
     // STEP 1: Blocked users
     const { data: blockedBy, error: blockError } = await supabase
@@ -101,7 +99,6 @@ export const getMatches = async (req, res) => {
 
     if (blockError) throw blockError;
     const blockedByIds = blockedBy.map(row => row.blockerId);
-    console.log('⛔ Blocked by:', blockedByIds);
 
     // STEP 2: Fetch all profiles
     const { data: allProfiles, error } = await supabase
@@ -112,7 +109,6 @@ export const getMatches = async (req, res) => {
       .order('created_at', { ascending: false });
 
     if (error) throw error;
-    console.log('👥 Profiles fetched:', allProfiles.length);
 
     let afterDistance = allProfiles;
     let afterAge = [];
@@ -133,7 +129,6 @@ export const getMatches = async (req, res) => {
         return false;
       });
     }
-    console.log('📍 After distance filter:', afterDistance.length);
 
     // STEP 4: Filter by age
     if (ageMin != null && ageMax != null) {
@@ -146,7 +141,6 @@ export const getMatches = async (req, res) => {
     } else {
       afterAge = afterDistance;
     }
-    console.log('🎂 After age filter:', afterAge.length);
 
     // STEP 5: Filter by gender
     if (gender) {
@@ -156,7 +150,6 @@ export const getMatches = async (req, res) => {
     } else {
       afterGender = afterAge;
     }
-    console.log('🚻 After gender filter:', afterGender.length);
 
     return res.status(200).json({
       success: true,
@@ -502,8 +495,6 @@ export const filterProfiles = async (req, res) => {
       distance,
     } = req.body;
 
-    console.log('🔍 Request Body:', req.body);
-
     const now = new Date();
 
     // Step 1: Fetch all other profiles
@@ -517,13 +508,8 @@ export const filterProfiles = async (req, res) => {
     if (error) return res.status(500).json({ error: 'Failed to fetch profiles.' });
     if (!allProfiles) return res.status(200).json({ success: true, data: [] });
 
-    console.log('✅ Total profiles fetched:', allProfiles.length);
 
     let remaining = allProfiles;
-
-    const logStep = (label, before, after) => {
-      console.log(`🔹 ${label} — ${before} → ${after} (${before - after} removed)`);
-    };
 
     const applyFilter = (label, fn) => {
       const before = remaining.length;
