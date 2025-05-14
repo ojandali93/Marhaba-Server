@@ -531,7 +531,25 @@ export const filterProfiles = async (req, res) => {
       logStep(label, before, remaining.length);
     };
 
+    const match = (val, arr) => {
+      const arrSafe = Array.isArray(arr) ? arr : [arr];
+      if (!arrSafe.length) return true;
+      if (val === null || val === undefined) return false;
+
+      // If val is array (e.g. JSON stringified list of backgrounds), check for any match
+      if (Array.isArray(val)) {
+        return val.some(v =>
+          arrSafe.some(a => a.toLowerCase().trim() === v.toLowerCase().trim())
+        );
+      }
+
+      return arrSafe.some(
+        a => a.toLowerCase().trim() === val.toLowerCase().trim()
+      );
+    };
+
     applyFilter('Valid About Section', (p) => Array.isArray(p.About) && p.About[0]);
+
     applyFilter('Valid Age Range', (p) => {
       const about = p.About[0];
       if (!about?.dob || !ageMin || !ageMax) return true;
@@ -539,17 +557,18 @@ export const filterProfiles = async (req, res) => {
       return age >= ageMin && age <= ageMax;
     });
 
-    const match = (val, arr) => {
-      const arrSafe = Array.isArray(arr) ? arr : [arr]; // Ensure it's an array
-      if (!arrSafe.length) return true;
-      if (val === null || val === undefined) return false;
-      return arrSafe.some(
-        item => item.toLowerCase().trim() === val.toLowerCase().trim()
-      );
-    };
-
     applyFilter('Gender', (p) => match(p.About[0]?.gender, gender));
-    applyFilter('Background', (p) => match(p.About[0]?.background, background));
+
+    applyFilter('Background', (p) => {
+      try {
+        const raw = p.About[0]?.background;
+        const val = typeof raw === 'string' ? JSON.parse(raw) : raw;
+        return match(val, background);
+      } catch {
+        return false;
+      }
+    });
+
     applyFilter('Religion', (p) => match(p.Religion[0]?.religion, religion));
     applyFilter('Sect', (p) => match(p.Religion[0]?.sect, sect));
     applyFilter('Practicing Views', (p) => match(p.Religion[0]?.practicing, views));
@@ -561,10 +580,10 @@ export const filterProfiles = async (req, res) => {
     applyFilter('Timeline', (p) => match(p.Intent[0]?.timeline, timeline));
     applyFilter('Relocate', (p) => match(p.Intent[0]?.relocate, relocate));
 
-    // Distance filter
-    const R = 6371;
+    // ✅ Distance filter (miles using Haversine formula)
+    const R = 3958.8;
     const final = distance && latitude && longitude
-      ? filtered.filter((p) => {
+      ? remaining.filter((p) => {
           if (!p.latitude || !p.longitude) return false;
           const dLat = (p.latitude - latitude) * (Math.PI / 180);
           const dLon = (p.longitude - longitude) * (Math.PI / 180);
@@ -574,18 +593,20 @@ export const filterProfiles = async (req, res) => {
               Math.cos(p.latitude * (Math.PI / 180)) *
               Math.sin(dLon / 2) ** 2;
           const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-          return R * c <= distance;
+          const dist = R * c;
+          return dist <= distance;
         })
-      : filtered;
+      : remaining;
 
-    console.log('final', final);
+    console.log('✅ Final filtered profiles:', final.length);
 
     return res.status(200).json({ success: true, data: final });
   } catch (err) {
-    console.log('error', err);
+    console.log('❌ Server Error:', err);
     return res.status(500).json({ error: 'Server crashed.' });
   }
 };
+
 
 export const updateNotifications = async (req, res) => {
   try {
