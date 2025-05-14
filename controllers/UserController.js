@@ -106,7 +106,7 @@ export const getMatches = async (req, res) => {
     // STEP 2: Fetch all profiles
     const { data: allProfiles, error } = await supabase
       .from('Profile')
-      .select('*, About(*), Preferences(*), Photos(*)') // adjust as needed
+      .select('*, About(*), Career(*), Core(*), Future(*), Habits(*), Intent(*), Notifications(*),  Photos(*), Preferences(*), Prompts(*), Relationships(*), Religion(*), Socials(*), Survey(*), Tags(*)')
       .neq('userId', userId)
       .not('userId', 'in', `(${blockedByIds.join(',') || 'NULL'})`)
       .order('created_at', { ascending: false });
