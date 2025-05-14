@@ -502,61 +502,63 @@ export const filterProfiles = async (req, res) => {
       distance,
     } = req.body;
 
-    console.log('request body', req.body);
+    console.log('🔍 Request Body:', req.body);
 
     const now = new Date();
 
-    let { data, error } = await supabase
+    // Step 1: Fetch all other profiles
+    let { data: allProfiles, error } = await supabase
       .from('Profile')
       .select(`
-        *, About(*), Career(*), Core(*), Future(*), Habits(*), Intent(*), Notifications(*),  Photos(*), Preferences(*), Prompts(*), Relationships(*), Religion(*), Socials(*), Survey(*), Tags(*)
+        *, About(*), Career(*), Core(*), Future(*), Habits(*), Intent(*), Notifications(*), Photos(*), Preferences(*), Prompts(*), Relationships(*), Religion(*), Socials(*), Survey(*), Tags(*)
       `)
       .neq('userId', userId);
 
-    if (error) {
-      return res.status(500).json({ error: 'Failed to fetch profiles.' });
-    }
+    if (error) return res.status(500).json({ error: 'Failed to fetch profiles.' });
+    if (!allProfiles) return res.status(200).json({ success: true, data: [] });
 
-    if (!data) {
-      return res.status(200).json({ success: true, data: [] });
-    }
+    console.log('✅ Total profiles fetched:', allProfiles.length);
 
-    const filtered = data.filter((profile) => {
-      const about = Array.isArray(profile.About) ? profile.About[0] : profile.About;
-      const religions = Array.isArray(profile.Religion) ? profile.Religion[0] : profile.Religion;
-      const habits = Array.isArray(profile.Habits) ? profile.Habits[0] : profile.Habits;
-      const intent = Array.isArray(profile.Intent) ? profile.Intent[0] : profile.Intent;
-      if (!about) return false;
+    let remaining = allProfiles;
 
-      // Age check using DOB
-      if (about.dob && ageMin && ageMax) {
-        const age = now.getFullYear() - new Date(about.dob).getFullYear();
-        if (age < ageMin || age > ageMax) return false;
-      }
+    const logStep = (label, before, after) => {
+      console.log(`🔹 ${label} — ${before} → ${after} (${before - after} removed)`);
+    };
 
-      const match = (val, arr) => {
-        if (!arr?.length) return true;
-        if (val === null || val === undefined) return false;
-        return arr.some(
-          item => item.toLowerCase().trim() === val.toLowerCase().trim()
-        );
-      };
+    const applyFilter = (label, fn) => {
+      const before = remaining.length;
+      remaining = remaining.filter(fn);
+      logStep(label, before, remaining.length);
+    };
 
-      return (
-        match(about.gender, gender) &&
-        match(about.background, background) &&
-        match(religions.religion, religion) &&
-        match(religions.sect, sect) &&
-        match(religions.practicing, views) &&
-        match(habits.drink, drink) &&
-        match(habits.smoke, smoke) &&
-        match(habits.hasKids, hasKids) &&
-        match(habits.wantsKids, wantsKids) &&
-        match(intent.lookingFor, lookingFor) &&
-        match(intent.timeline, timeline) &&
-        match(intent.relocate, relocate)
-      );
+    applyFilter('Valid About Section', (p) => Array.isArray(p.About) && p.About[0]);
+    applyFilter('Valid Age Range', (p) => {
+      const about = p.About[0];
+      if (!about?.dob || !ageMin || !ageMax) return true;
+      const age = now.getFullYear() - new Date(about.dob).getFullYear();
+      return age >= ageMin && age <= ageMax;
     });
+
+    const match = (val, arr) => {
+      if (!arr?.length) return true;
+      if (val === null || val === undefined) return false;
+      return arr.some(
+        item => item.toLowerCase().trim() === val.toLowerCase().trim()
+      );
+    };
+
+    applyFilter('Gender', (p) => match(p.About[0]?.gender, gender));
+    applyFilter('Background', (p) => match(p.About[0]?.background, background));
+    applyFilter('Religion', (p) => match(p.Religion[0]?.religion, religion));
+    applyFilter('Sect', (p) => match(p.Religion[0]?.sect, sect));
+    applyFilter('Practicing Views', (p) => match(p.Religion[0]?.practicing, views));
+    applyFilter('Drinking', (p) => match(p.Habits[0]?.drink, drink));
+    applyFilter('Smoking', (p) => match(p.Habits[0]?.smoke, smoke));
+    applyFilter('Has Kids', (p) => match(p.Habits[0]?.hasKids, hasKids));
+    applyFilter('Wants Kids', (p) => match(p.Habits[0]?.wantsKids, wantsKids));
+    applyFilter('Looking For', (p) => match(p.Intent[0]?.lookingFor, lookingFor));
+    applyFilter('Timeline', (p) => match(p.Intent[0]?.timeline, timeline));
+    applyFilter('Relocate', (p) => match(p.Intent[0]?.relocate, relocate));
 
     // Distance filter
     const R = 6371;
