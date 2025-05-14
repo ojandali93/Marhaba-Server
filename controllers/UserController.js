@@ -577,8 +577,11 @@ export const filterProfiles = async (req, res) => {
         })
       : filtered;
 
+    console.log('final', final);
+
     return res.status(200).json({ success: true, data: final });
   } catch (err) {
+    console.log('error', err);
     return res.status(500).json({ error: 'Server crashed.' });
   }
 };
