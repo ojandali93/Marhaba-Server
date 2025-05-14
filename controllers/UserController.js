@@ -297,6 +297,40 @@ export const approvedInteraction = async (req, res) => {
   }
 };
 
+// Controller
+export const deleteUserAccount = async (req, res) => {
+  const { userId } = req.body;
+
+  if (!userId) {
+    return res.status(400).json({ error: 'Missing userId' });
+  }
+
+  try {
+    // 1. Delete the user from Supabase Auth
+    const { error: authError } = await supabase.auth.admin.deleteUser(userId);
+    if (authError) {
+      console.error('❌ Failed to delete from auth:', authError.message);
+      return res.status(500).json({ error: 'Failed to delete from authentication' });
+    }
+
+    // 2. Delete profile and associated data (optional cascade)
+    const { error: profileError } = await supabase
+      .from('Profile')
+      .delete()
+      .eq('userId', userId);
+
+    if (profileError) {
+      console.error('❌ Failed to delete profile:', profileError.message);
+      return res.status(500).json({ error: 'Failed to delete user profile' });
+    }
+
+    return res.status(200).json({ success: true, message: 'Account deleted successfully' });
+  } catch (err) {
+    console.error('❌ Server error:', err);
+    return res.status(500).json({ error: 'Server error while deleting account' });
+  }
+};
+
 
 export const removeInteraction = async (req, res) => {
   try {

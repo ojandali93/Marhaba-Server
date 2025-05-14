@@ -1,11 +1,12 @@
 import { Router } from 'express';
-import { approvedInteraction, updateViewed, CheckUserMatchStatus, filterProfiles, getUserInteractions, getWeeklyInteractionStats, grabAllUsers, grabSingleProfile, likeProfile, updateInteraction, updateNotifications, updateUserLocation, updateUserTutorial, updateVisibility, getMatches, sendResetPasswordEmail, removeInteraction } from '../controllers/UserController.js';
+import { approvedInteraction, updateViewed, CheckUserMatchStatus, filterProfiles, getUserInteractions, getWeeklyInteractionStats, grabAllUsers, grabSingleProfile, likeProfile, updateInteraction, updateNotifications, updateUserLocation, updateUserTutorial, updateVisibility, getMatches, sendResetPasswordEmail, removeInteraction, deleteUserAccount } from '../controllers/UserController.js';
 import { blockUser, getBlockedUsers, reportUser, unblockUser } from '../controllers/AdminControllers.js';
 
 const router = Router();
 
 router.post('/requestResetPassword', sendResetPasswordEmail);
 router.get('/allUsers', grabAllUsers);
+router.delete('/account/delete', deleteUserAccount);
 router.post('/getMatches', getMatches);
 router.post('/interaction', likeProfile);
 router.put('/approved', approvedInteraction);
