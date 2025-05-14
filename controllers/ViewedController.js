@@ -30,44 +30,10 @@ import { supabase } from "../services/SupabaseClient.js";
         .select(`
           *, 
           viewerProfile:viewer ( 
-            *,
-            About(*),
-            Anger(*),
-            Attachment(*),
-            Career(*),
-            Communication(*),
-            Core(*),
-            Emotions(*),
-            Future(*),
-            Lifestyle(*),
-            Love(*),
-            Photos(*),
-            Preferences(*),
-            Prompts(*),
-            Survey(*),
-            Tags(*),
-            Time(*),
-            Values(*)
+            *, About(*), Career(*), Core(*), Future(*), Habits(*), Intent(*), Notifications(*),  Photos(*), Preferences(*), Prompts(*), Relationships(*), Religion(*), Socials(*), Survey(*), Tags(*)
           ),
           ViewedProfile:viewed ( 
-            *,
-            About(*),
-            Anger(*),
-            Attachment(*),
-            Career(*),
-            Communication(*),
-            Core(*),
-            Emotions(*),
-            Future(*),
-            Lifestyle(*),
-            Love(*),
-            Photos(*),
-            Preferences(*),
-            Prompts(*),
-            Survey(*),
-            Tags(*),
-            Time(*),
-            Values(*)
+            *, About(*), Career(*), Core(*), Future(*), Habits(*), Intent(*), Notifications(*),  Photos(*), Preferences(*), Prompts(*), Relationships(*), Religion(*), Socials(*), Survey(*), Tags(*)
           )
         `)
         .eq('viewer', viewer)
