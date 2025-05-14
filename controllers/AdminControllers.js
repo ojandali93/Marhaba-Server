@@ -4,7 +4,7 @@ export const grabPendingProfiles = async (req, res) => {
   try {
     const { data, error } = await supabase
       .from('Profile') // your table name
-      .select('*, About(*), Anger(*), Attachment(*), Career(*), Communication(*), Core(*), Emotions(*), Future(*), Lifestyle(*), Love(*), Notifications(*), Photos(*), Preferences(*), Prompts(*), Survey(*), Tags(*), Time(*), Values(*)')
+      .select('*, About(*), Career(*), Core(*), Future(*), Habits(*), Intent(*), Notifications(*),  Photos(*), Preferences(*), Prompts(*), Relationships(*), Religion(*), Socials(*), Survey(*), Tags(*)')
       .in('approved', ['review', 'resubmit']);
     
     if (error) throw error;
