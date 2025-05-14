@@ -502,6 +502,8 @@ export const filterProfiles = async (req, res) => {
       distance,
     } = req.body;
 
+    console.log('request body', req.body);
+
     const now = new Date();
 
     let { data, error } = await supabase
@@ -521,11 +523,14 @@ export const filterProfiles = async (req, res) => {
 
     const filtered = data.filter((profile) => {
       const about = Array.isArray(profile.About) ? profile.About[0] : profile.About;
+      const religions = Array.isArray(profile.Religion) ? profile.Religion[0] : profile.Religion;
+      const habits = Array.isArray(profile.Habits) ? profile.Habits[0] : profile.Habits;
+      const intent = Array.isArray(profile.Intent) ? profile.Intent[0] : profile.Intent;
       if (!about) return false;
 
       // Age check using DOB
-      if (profile.dob && ageMin && ageMax) {
-        const age = now.getFullYear() - new Date(profile.dob).getFullYear();
+      if (about.dob && ageMin && ageMax) {
+        const age = now.getFullYear() - new Date(about.dob).getFullYear();
         if (age < ageMin || age > ageMax) return false;
       }
 
@@ -538,18 +543,18 @@ export const filterProfiles = async (req, res) => {
       };
 
       return (
-        match(profile.gender, gender?.length ? [gender] : []) &&
+        match(about.gender, gender) &&
         match(about.background, background) &&
-        match(about.religion, religion) &&
-        match(about.sect, sect) &&
-        match(about.views, views) &&
-        match(about.drink, drink) &&
-        match(about.smoke, smoke) &&
-        match(about.hasKids, hasKids) &&
-        match(about.wantsKids, wantsKids) &&
-        match(about.lookingFor, lookingFor) &&
-        match(about.timeline, timeline) &&
-        match(about.relocate, relocate)
+        match(religions.religion, religion) &&
+        match(religions.sect, sect) &&
+        match(religions.practicing, views) &&
+        match(habits.drink, drink) &&
+        match(habits.smoke, smoke) &&
+        match(habits.hasKids, hasKids) &&
+        match(habits.wantsKids, wantsKids) &&
+        match(intent.lookingFor, lookingFor) &&
+        match(intent.timeline, timeline) &&
+        match(intent.relocate, relocate)
       );
     });
 
