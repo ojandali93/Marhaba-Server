@@ -5,7 +5,7 @@ dotenv.config();
 
 const apnProvider = new apn.Provider({
   token: {
-    key: path.resolve('assets/AuthKey_96AY4FV874.p8'), // Put your actual key filename
+    key: path.resolve('../AuthKey_96AY4FV874.p8'), // Put your actual key filename
     keyId: process.env.APN_KEY_ID,
     teamId: process.env.APN_TEAM_ID,
   },
