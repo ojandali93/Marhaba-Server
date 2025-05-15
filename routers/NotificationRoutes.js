@@ -31,7 +31,7 @@ router.post('/send', async (req, res) => {
 
   try {
     const result = await sendPush(token, title, body);
-    console.log('📤 Push result:', result);
+    console.log('📤 Push result:', result?.failed[0].response);
 
     if (result?.failed?.length > 0) {
       const fail = result.failed[0];
