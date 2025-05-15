@@ -33,6 +33,7 @@ router.post('/send', async (req, res) => {
 
   console.log(result);
   if (result.failed.length > 0) {
+    console.log(result.failed[0].response);
     return res.status(500).json({ error: 'Failed to send push' });
   }
 
