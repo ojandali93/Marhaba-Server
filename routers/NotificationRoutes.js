@@ -33,18 +33,6 @@ router.post('/send', async (req, res) => {
     const result = await sendPush(token, title, body);
     console.log('📤 APNs result:', JSON.stringify(result, null, 2));
 
-    const criticalFailures = result?.failed?.filter(
-      f => f.error || f.response?.reason !== 'Unregistered'
-    );
-
-    if (criticalFailures?.length > 0) {
-      const fail = criticalFailures[0];
-      return res.status(403).json({
-        error: 'Push notification failed',
-        reason: fail.response?.reason || fail.error?.message || 'Unknown error',
-      });
-    }
-
     return res.status(200).json({ success: true });
   } catch (err) {
     console.error('❌ Push route error:', err);
