@@ -8,6 +8,8 @@ const router = Router();
 router.post('/store-device-token', async (req, res) => {
   const { userId, token } = req.body;
 
+  console.log(userId, token);
+
   if (!userId) {
     return res.status(400).json({ error: 'Missing userId' });
   }
