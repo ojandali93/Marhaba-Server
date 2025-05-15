@@ -282,7 +282,7 @@ export const approvedInteraction = async (req, res) => {
 
     const { data, error } = await supabase
       .from('Interactions')
-      .update({ viewed: true, approved: true })
+      .update({ viewed: true, approved: true, targetInteraction: 'liked', approved_at: new Date() })
       .eq('id', id)
       .select()
 
