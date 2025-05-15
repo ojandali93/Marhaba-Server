@@ -17,6 +17,8 @@ import userRoutes from './routers/UserRoutes.js';
 import ViewedRoutes from './routers/ViewedRoutes.js';
 import ConversationRoutes from './routers/ConversationRoutes.js';
 import AdminRoutes from './routers/AdminRoutes.js';
+import NotificationRoutes from './routers/NotificationRoutes.js';
+
 dotenv.config();
 
 const app = express();
@@ -54,6 +56,7 @@ app.use('/api/user', userRoutes);
 app.use('/api/conversation', ConversationRoutes);
 app.use('/api/viewed', ViewedRoutes);
 app.use('/api/admin', AdminRoutes);
+app.use('/api/notifications', NotificationRoutes);
 
 // Health check
 app.get('/health', (req, res) => res.send('✅ Marhaba backend is running'));

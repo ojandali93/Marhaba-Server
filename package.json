@@ -20,6 +20,7 @@
   "homepage": "https://github.com/ojandali93/Marhaba-Server#readme",
   "dependencies": {
     "@supabase/supabase-js": "^2.49.4",
+    "apn": "^2.2.0",
     "body-parser": "^2.2.0",
     "compression": "^1.8.0",
     "cors": "^2.8.5",
