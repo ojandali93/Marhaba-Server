@@ -8,8 +8,8 @@ const router = Router();
 router.post('/store-device-token', async (req, res) => {
   const { userId, token } = req.body;
 
-  if (!userId || !token) {
-    return res.status(400).json({ error: 'Missing userId or token' });
+  if (!userId) {
+    return res.status(400).json({ error: 'Missing userId' });
   }
 
   const { error } = await supabase
