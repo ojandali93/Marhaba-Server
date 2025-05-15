@@ -1,7 +1,8 @@
 import { sendPush } from '../utils/apn.js';
 import { supabase } from '../services/SupabaseClient.js';
+import { Router } from 'express';
 
-const router = express.Router();
+const router = Router();
 
 // Store device token
 router.post('/store-device-token', async (req, res) => {
