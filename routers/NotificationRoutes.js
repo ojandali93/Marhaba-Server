@@ -27,20 +27,16 @@ router.post('/store-device-token', async (req, res) => {
 
 // Trigger push
 router.post('/send', async (req, res) => {
-  const { userId, title, body } = req.body;
+  const { token, title, body } = req.body;
 
-  const { data, error } = await supabase
-    .from('Profile')
-    .select('apnToken')
-    .eq('userId', userId)
-    .single();
+  const result = await sendPush(token, title, body);
 
-  if (error || !data?.apnToken) {
-    return res.status(404).json({ error: 'APNs token not found' });
+  console.log(result);
+  if (result.failed.length > 0) {
+    return res.status(500).json({ error: 'Failed to send push' });
   }
 
-  await sendPush(data.apnToken, title, body);
-  return res.status(200).json({ success: true });
+  return res.status(200).json({ success: true, result });
 });
 
 export default router;
