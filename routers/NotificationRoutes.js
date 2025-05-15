@@ -29,15 +29,24 @@ router.post('/store-device-token', async (req, res) => {
 router.post('/send', async (req, res) => {
   const { token, title, body } = req.body;
 
-  const result = await sendPush(token, title, body);
+  try {
+    const result = await sendPush(token, title, body);
+    console.log('📤 Push result:', result);
 
-  console.log(result);
-  if (result.failed.length > 0) {
-    console.log(result.failed[0].response);
-    return res.status(500).json({ error: 'Failed to send push' });
+    if (result?.failed?.length > 0) {
+      const fail = result.failed[0];
+      console.log('❌ Failed push response:', fail.response || fail.error);
+      return res.status(403).json({
+        error: 'Failed to send push notification',
+        reason: fail.response?.reason || fail.error?.message || 'Unknown error',
+      });
+    }
+
+    return res.status(200).json({ success: true });
+  } catch (err) {
+    console.error('❌ Push route error:', err);
+    return res.status(500).json({ error: 'Internal server error' });
   }
-
-  return res.status(200).json({ success: true, result });
 });
 
 export default router;

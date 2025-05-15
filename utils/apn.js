@@ -30,8 +30,9 @@ export const sendPush = async (deviceToken, title, body) => {
 
   try {
     const result = await apnProvider.send(notification, deviceToken);
-    console.log('📤 Push result:', result);
+    return result;
   } catch (err) {
-    console.error('❌ APNs push error:', err);
+    console.error('❌ Error sending push:', err);
+    return { sent: [], failed: [{ device: deviceToken, error: err }] };
   }
 };
