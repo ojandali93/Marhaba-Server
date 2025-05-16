@@ -1,6 +1,7 @@
 import { Router } from 'express';
 import { approvedInteraction, updateViewed, CheckUserMatchStatus, filterProfiles, getUserInteractions, getWeeklyInteractionStats, grabAllUsers, grabSingleProfile, likeProfile, updateInteraction, updateNotifications, updateUserLocation, updateUserTutorial, updateVisibility, getMatches, sendResetPasswordEmail, removeInteraction, deleteUserAccount } from '../controllers/UserController.js';
 import { blockUser, getBlockedUsers, reportUser, unblockUser } from '../controllers/AdminControllers.js';
+import { updateShowBadge } from '../controllers/ConversationController.js';
 
 const router = Router();
 
@@ -10,6 +11,7 @@ router.delete('/account/delete', deleteUserAccount);
 router.post('/getMatches', getMatches);
 router.post('/interaction', likeProfile);
 router.put('/approved', approvedInteraction);
+router.put('/showBadge', updateShowBadge);
 router.put('/location', updateUserLocation);
 router.put('/tutorial', updateUserTutorial);
 router.put('/updateInteraction', updateInteraction);

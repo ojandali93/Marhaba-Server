@@ -203,3 +203,24 @@ export const updateInactvie = async (req, res) => {
     return res.status(500).json({ error: 'Failed to update last message' });
   }
 };
+
+
+export const updateShowBadge = async (req, res) => {
+  const { userId, show } = req.body;
+
+  try {
+    const { error } = await supabase
+      .from('Profile')
+      .update({
+        showPro: show
+      })
+      .eq('userId', userId); 
+
+    if (error) throw error;
+
+    return res.status(200).json({ success: true });
+  } catch (err) {
+    console.error('❌ Error updating last message:', err);
+    return res.status(500).json({ error: 'Failed to update last message' });
+  }
+};
