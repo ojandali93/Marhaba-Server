@@ -161,3 +161,45 @@ export const updateConversationLastMessage = async (req, res) => {
     return res.status(500).json({ error: 'Failed to update last message' });
   }
 };
+
+
+export const updateActive = async (req, res) => {
+  const { userId, conversationId } = req.body;
+
+  try {
+    const { error } = await supabase
+      .from('Profile')
+      .update({
+        activeChat: conversationId,
+      })
+      .eq('userId', userId); 
+
+    if (error) throw error;
+
+    return res.status(200).json({ success: true });
+  } catch (err) {
+    console.error('❌ Error updating last message:', err);
+    return res.status(500).json({ error: 'Failed to update last message' });
+  }
+};
+
+
+export const updateInactvie = async (req, res) => {
+  const { userId } = req.body;
+
+  try {
+    const { error } = await supabase
+      .from('Profile')
+      .update({
+        activeChat: null
+      })
+      .eq('userId', userId); 
+
+    if (error) throw error;
+
+    return res.status(200).json({ success: true });
+  } catch (err) {
+    console.error('❌ Error updating last message:', err);
+    return res.status(500).json({ error: 'Failed to update last message' });
+  }
+};
