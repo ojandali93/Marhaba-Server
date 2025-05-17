@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import { approvedInteraction, updateViewed, CheckUserMatchStatus, filterProfiles, getUserInteractions, getWeeklyInteractionStats, grabAllUsers, grabSingleProfile, likeProfile, updateInteraction, updateNotifications, updateUserLocation, updateUserTutorial, updateVisibility, getMatches, sendResetPasswordEmail, removeInteraction, deleteUserAccount } from '../controllers/UserController.js';
+import { approvedInteraction, updateViewed, CheckUserMatchStatus, filterProfiles, getUserInteractions, getWeeklyInteractionStats, grabAllUsers, grabSingleProfile, likeProfile, updateInteraction, updateNotifications, updateUserLocation, updateUserTutorial, updateVisibility, getMatches, sendResetPasswordEmail, removeInteraction, deleteUserAccount, updateSocials } from '../controllers/UserController.js';
 import { blockUser, getBlockedUsers, reportUser, unblockUser } from '../controllers/AdminControllers.js';
 import { updateShowBadge } from '../controllers/ConversationController.js';
 
@@ -14,6 +14,7 @@ router.put('/approved', approvedInteraction);
 router.put('/showBadge', updateShowBadge);
 router.put('/location', updateUserLocation);
 router.put('/tutorial', updateUserTutorial);
+router.put('/socials', updateSocials)
 router.put('/updateInteraction', updateInteraction);
 router.post('/filterProfiles', filterProfiles);
 router.put('/updateNotifications', updateNotifications);
