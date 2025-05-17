@@ -714,7 +714,7 @@ export const updateSocials = async (req, res) => {
 
   try {
     const { error } = await supabase
-      .from('Socials')
+      .from('Social')
       .upsert(
         [
           {
