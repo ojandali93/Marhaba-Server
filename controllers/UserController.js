@@ -5,7 +5,7 @@ export const grabSingleProfile = async (req, res) => {
     const { userId } = req.params;
     const { data: profileData, error: profileError } = await supabase
     .from('Profile')
-    .select('*, About(*), Career(*), Core(*), Future(*), Habits(*), Intent(*), Notifications(*),  Photos(*), Preferences(*), Prompts(*), Relationships(*), Religion(*), Socials(*), Survey(*), Tags(*)')
+    .select('*, About(*), Career(*), Core(*), Future(*), Habits(*), Intent(*), Notifications(*),  Photos(*), Preferences(*), Prompts(*), Relationships(*), Religion(*), Social(*), Survey(*), Tags(*)')
     .eq('userId', userId)
 
     if (profileError) {
@@ -34,7 +34,7 @@ export const grabAllUsers = async (req, res) => {
   try {
     const { data: profileData, error: profileError } = await supabase
     .from('Profile')
-    .select('*, About(*), Career(*), Core(*), Future(*), Habits(*), Intent(*), Notifications(*),  Photos(*), Preferences(*), Prompts(*), Relationships(*), Religion(*), Socials(*), Survey(*), Tags(*)')
+    .select('*, About(*), Career(*), Core(*), Future(*), Habits(*), Intent(*), Notifications(*),  Photos(*), Preferences(*), Prompts(*), Relationships(*), Religion(*), Social(*), Survey(*), Tags(*)')
     .order('created_at', { ascending: false });
 
 
@@ -103,7 +103,7 @@ export const getMatches = async (req, res) => {
     // STEP 2: Fetch all profiles
     const { data: allProfiles, error } = await supabase
       .from('Profile')
-      .select('*, About(*), Career(*), Core(*), Future(*), Habits(*), Intent(*), Notifications(*),  Photos(*), Preferences(*), Prompts(*), Relationships(*), Religion(*), Socials(*), Survey(*), Tags(*)')
+      .select('*, About(*), Career(*), Core(*), Future(*), Habits(*), Intent(*), Notifications(*),  Photos(*), Preferences(*), Prompts(*), Relationships(*), Religion(*), Social(*), Survey(*), Tags(*)')
       .neq('userId', userId)
       .not('userId', 'in', `(${blockedByIds.join(',') || 'NULL'})`)
       .order('created_at', { ascending: false });
@@ -259,7 +259,7 @@ export const getUserInteractions = async (req, res) => {
       .select(`
         *, 
         likerProfile:userId ( 
-          *, About(*), Career(*), Core(*), Future(*), Habits(*), Intent(*), Notifications(*),  Photos(*), Preferences(*), Prompts(*), Relationships(*), Religion(*), Socials(*), Survey(*), Tags(*)
+          *, About(*), Career(*), Core(*), Future(*), Habits(*), Intent(*), Notifications(*),  Photos(*), Preferences(*), Prompts(*), Relationships(*), Religion(*), Social(*), Survey(*), Tags(*)
         )
       `)
       .eq('targetUserId', userId)
@@ -535,7 +535,7 @@ export const filterProfiles = async (req, res) => {
     let { data: allProfiles, error } = await supabase
       .from('Profile')
       .select(`
-        *, About(*), Career(*), Core(*), Future(*), Habits(*), Intent(*), Notifications(*), Photos(*), Preferences(*), Prompts(*), Relationships(*), Religion(*), Socials(*), Survey(*), Tags(*)
+        *, About(*), Career(*), Core(*), Future(*), Habits(*), Intent(*), Notifications(*), Photos(*), Preferences(*), Prompts(*), Relationships(*), Religion(*), Social(*), Survey(*), Tags(*)
       `)
       .neq('userId', userId);
 
