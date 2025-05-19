@@ -365,6 +365,37 @@ export const createUserCareer = async (req, res) => {
   }
 };
 
+export const createUserSocial = async (req, res) => {
+  try {
+    const { userId } = req.body;
+
+    const { data: socialData, error: socialError } = await supabase
+    .from('Social')
+    .insert([{
+      userId,
+      instagram: null,
+      facebook: null,
+      twitter: null,
+      tiktok: null,
+      linkedin: null
+    }])
+    .select();
+
+    if (socialError) {
+      return res.status(400).json({ error: aboutError.socialError });
+    }
+
+    if (socialData) {
+      return res.status(200).json({ success: true, data: socialData });
+    } else {
+      return res.status(500).json({ error: socialError });
+    }
+
+  } catch (error) {
+    return res.status(500).json({ error: 'Failed to create user' });
+  }
+};
+
 export const createUserTraits = async (req, res) => {
   try {
     const { userId, traits } = req.body;

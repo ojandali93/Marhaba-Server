@@ -1,5 +1,5 @@
 import express from 'express';
-import { updateUserProfile, createCommunicationStyles, createCoreValues, createLoveLanguage, createTimePriorities, createUserAbout, createUserAccount, createUserAnger, createUserAttachment, createUserCareer, createUserCore, createUserEitherOr, createUserEmotions, createUserFuture, createUserLifestyle, createUserPhotos, createUserPreferences, createUserProfile, createUserPrompts, createUserTraits, editUserPhotos, uploadImage, updateUserAbout, updateUserCore, updateuserLifestyle, updateUserFuture, updateUserCareer, updateUserPrompts, updateUserTags, updateSurvey, createNotifications, checkUserEmail, createIntent, createHabits, createReligion, createUserRelationships, updateUserBackground, updateUserIntent, updateUserReligion, updateUserRelationships } from '../controllers/AccountControllers.js';
+import { updateUserProfile, createCommunicationStyles, createCoreValues, createLoveLanguage, createTimePriorities, createUserAbout, createUserAccount, createUserAnger, createUserAttachment, createUserCareer, createUserCore, createUserEitherOr, createUserEmotions, createUserFuture, createUserLifestyle, createUserPhotos, createUserPreferences, createUserProfile, createUserPrompts, createUserTraits, editUserPhotos, uploadImage, updateUserAbout, updateUserCore, updateuserLifestyle, updateUserFuture, updateUserCareer, updateUserPrompts, updateUserTags, updateSurvey, createNotifications, checkUserEmail, createIntent, createHabits, createReligion, createUserRelationships, updateUserBackground, updateUserIntent, updateUserReligion, updateUserRelationships, createUserSocial } from '../controllers/AccountControllers.js';
 
 const router = express.Router();
 
@@ -27,6 +27,7 @@ router.post('/createCore', createUserCore);
 router.post('/createLifestyle', createUserLifestyle);
 router.post('/createFuture', createUserFuture);
 router.post('/createNotifications', createNotifications);
+router.post('/createSocial', createUserSocial);
 
 router.put('/updatePhotos', editUserPhotos);
 router.put('/updateProfile', updateUserProfile);
