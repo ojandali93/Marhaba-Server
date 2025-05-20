@@ -529,9 +529,12 @@ export const filterProfiles = async (req, res) => {
       distance,
     } = req.body;
 
+    console.log('📥 Incoming Filter Request:', JSON.stringify(req.body, null, 2));
+
     const now = new Date();
 
     // Step 1: Fetch all other profiles
+    console.log('📡 Fetching profiles from Supabase...');
     let { data: allProfiles, error } = await supabase
       .from('Profile')
       .select(`
@@ -539,16 +542,28 @@ export const filterProfiles = async (req, res) => {
       `)
       .neq('userId', userId);
 
-    if (error) return res.status(500).json({ error: 'Failed to fetch profiles.' });
-    if (!allProfiles) return res.status(200).json({ success: true, data: [] });
+    if (error) {
+      console.error('❌ Supabase fetch error:', error.message);
+      return res.status(500).json({ error: 'Failed to fetch profiles.' });
+    }
 
+    if (!allProfiles) {
+      console.log('⚠️ No profiles found.');
+      return res.status(200).json({ success: true, data: [] });
+    }
 
     let remaining = allProfiles;
 
     const applyFilter = (label, fn) => {
-      const before = remaining.length;
-      remaining = remaining.filter(fn);
-      logStep(label, before, remaining.length);
+      try {
+        const before = remaining.length;
+        remaining = remaining.filter(fn);
+        const after = remaining.length;
+        console.log(`🔎 Filter [${label}]: ${before} → ${after}`);
+      } catch (e) {
+        console.error(`❌ Error during filter [${label}]:`, e.message);
+        throw new Error(`Filter failed: ${label}`);
+      }
     };
 
     const match = (val, arr) => {
@@ -556,15 +571,20 @@ export const filterProfiles = async (req, res) => {
       if (!arrSafe.length) return true;
       if (val === null || val === undefined) return false;
 
-      // If val is array (e.g. JSON stringified list of backgrounds), check for any match
       if (Array.isArray(val)) {
         return val.some(v =>
-          arrSafe.some(a => a.toLowerCase().trim() === v.toLowerCase().trim())
+          arrSafe.some(a =>
+            typeof a === 'string' && typeof v === 'string' &&
+            a.toLowerCase().trim() === v.toLowerCase().trim()
+          )
         );
       }
 
       return arrSafe.some(
-        a => a.toLowerCase().trim() === val.toLowerCase().trim()
+        a =>
+          typeof a === 'string' &&
+          typeof val === 'string' &&
+          a.toLowerCase().trim() === val.toLowerCase().trim()
       );
     };
 
@@ -584,7 +604,8 @@ export const filterProfiles = async (req, res) => {
         const raw = p.About[0]?.background;
         const val = typeof raw === 'string' ? JSON.parse(raw) : raw;
         return match(val, background);
-      } catch {
+      } catch (err) {
+        console.error('❌ Failed to parse background JSON:', p.About[0]?.background);
         return false;
       }
     });
@@ -600,32 +621,37 @@ export const filterProfiles = async (req, res) => {
     applyFilter('Timeline', (p) => match(p.Intent[0]?.timeline, timeline));
     applyFilter('Relocate', (p) => match(p.Intent[0]?.relocate, relocate));
 
-    // ✅ Distance filter (miles using Haversine formula)
-    const R = 3958.8;
-    const final = distance && latitude && longitude
-      ? remaining.filter((p) => {
-          if (!p.latitude || !p.longitude) return false;
-          const dLat = (p.latitude - latitude) * (Math.PI / 180);
-          const dLon = (p.longitude - longitude) * (Math.PI / 180);
-          const a =
-            Math.sin(dLat / 2) ** 2 +
-            Math.cos(latitude * (Math.PI / 180)) *
-              Math.cos(p.latitude * (Math.PI / 180)) *
-              Math.sin(dLon / 2) ** 2;
-          const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-          const dist = R * c;
-          return dist <= distance;
-        })
-      : remaining;
+    // ✅ Distance filter (Haversine formula)
+    if (distance && latitude && longitude) {
+      const R = 3958.8; // Earth radius in miles
+      const before = remaining.length;
 
-    console.log('✅ Final filtered profiles:', final.length);
+      remaining = remaining.filter((p) => {
+        if (!p.latitude || !p.longitude) return false;
+        const dLat = (p.latitude - latitude) * (Math.PI / 180);
+        const dLon = (p.longitude - longitude) * (Math.PI / 180);
+        const a =
+          Math.sin(dLat / 2) ** 2 +
+          Math.cos(latitude * (Math.PI / 180)) *
+            Math.cos(p.latitude * (Math.PI / 180)) *
+            Math.sin(dLon / 2) ** 2;
+        const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+        const dist = R * c;
+        return dist <= distance;
+      });
 
-    return res.status(200).json({ success: true, data: final });
+      console.log(`📍 Distance Filter: ${before} → ${remaining.length}`);
+    }
+
+    console.log('✅ Final result count:', remaining.length);
+    return res.status(200).json({ success: true, data: remaining });
   } catch (err) {
-    console.log('❌ Server Error:', err);
-    return res.status(500).json({ error: 'Server crashed.' });
+    console.error('❌ Server Error:', err.message);
+    console.error(err.stack);
+    return res.status(500).json({ error: err.message || 'Server crashed.' });
   }
 };
+
 
 
 export const updateNotifications = async (req, res) => {
