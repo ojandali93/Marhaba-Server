@@ -141,6 +141,8 @@ export const confirmPasswordReset = async (req, res) => {
 export const verifyAndUpdatePassword = async (req, res) => {
   const { email, currentPassword, newPassword } = req.body;
 
+console.log(email, currentPassword, newPassword);
+  
   if (!email || !currentPassword || !newPassword) {
     return res.status(400).json({ error: 'Missing required fields.' });
   }
