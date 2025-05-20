@@ -137,3 +137,41 @@ export const confirmPasswordReset = async (req, res) => {
     return res.status(500).json({ error: 'Server error during password reset' });
   }
 };
+
+export const verifyAndUpdatePassword = async (req, res) => {
+  const { email, currentPassword, newPassword } = req.body;
+
+  if (!email || !currentPassword || !newPassword) {
+    return res.status(400).json({ error: 'Missing required fields.' });
+  }
+
+  try {
+    // Step 1: Re-authenticate user with current password
+    const { data: authData, error: signInError } = await supabase.auth.signInWithPassword({
+      email,
+      password: currentPassword,
+    });
+
+    if (signInError || !authData.user) {
+      console.error('❌ Invalid credentials:', signInError?.message);
+      return res.status(401).json({ error: 'Invalid email or password.' });
+    }
+
+    const userId = authData.user.id;
+
+    // Step 2: Update password using admin privileges
+    const { data, error: updateError } = await supabase.auth.admin.updateUserById(userId, {
+      password: newPassword,
+    });
+
+    if (updateError) {
+      console.error('❌ Password update failed:', updateError.message);
+      return res.status(500).json({ error: 'Failed to update password.' });
+    }
+
+    return res.status(200).json({ success: true, message: 'Password updated successfully.' });
+  } catch (err) {
+    console.error('❌ Server error:', err.message);
+    return res.status(500).json({ error: 'Server error. Please try again.' });
+  }
+};
