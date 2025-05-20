@@ -509,34 +509,52 @@ export const createUserEitherOr = async (req, res) => {
 export const createUserPrompts = async (req, res) => {
   try {
     const { userId, prompts } = req.body;
+
+    console.log('📥 Incoming prompts:', prompts);
+    console.log('📥 Incoming userId:', userId);
+
     let parsedPrompts;
+
     try {
       parsedPrompts = typeof prompts === 'string' ? JSON.parse(prompts) : prompts;
     } catch (e) {
+      console.error('❌ Failed to parse prompts:', e.message);
       return res.status(400).json({ error: 'Invalid prompts format. Must be an array.' });
     }
+
     if (!Array.isArray(parsedPrompts)) {
+      console.error('❌ Prompts is not an array:', parsedPrompts);
       return res.status(400).json({ error: 'Prompts must be an array of { prompt, response }' });
     }
+
+    if (parsedPrompts.length === 0) {
+      console.log('ℹ️ Empty prompts array received. Skipping insert.');
+      return res.status(200).json({ success: true, data: [] });
+    }
+
     const insertData = parsedPrompts.map(item => ({
       userId,
       prompt: item.prompt,
       response: item.response,
     }));
+
     const { data: insertedPrompts, error: insertError } = await supabase
       .from('Prompts')
       .insert(insertData)
       .select();
+
     if (insertError) {
       console.error('❌ Supabase insert error:', insertError.message);
       return res.status(400).json({ error: insertError.message });
     }
+
     return res.status(200).json({ success: true, data: insertedPrompts });
   } catch (error) {
     console.error('❌ Server error:', error.message);
     return res.status(500).json({ error: 'Failed to save prompts' });
   }
 };
+
 
 export const createUserPhotos = async (req, res) => {
   try {
