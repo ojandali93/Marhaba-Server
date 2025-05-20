@@ -510,16 +510,29 @@ export const createUserPrompts = async (req, res) => {
   try {
     const { userId, prompts } = req.body;
 
-    console.log('📥 Incoming prompts:', prompts);
-    console.log('📥 Incoming userId:', userId);
-
     let parsedPrompts;
+
+    // Allow null to mean "no prompts, store null"
+    if (prompts === null) {
+      console.log('ℹNull prompts received — storing single null record');
+      const { data, error } = await supabase
+        .from('Prompts')
+        .insert([{ userId, prompt: null, response: null }])
+        .select();
+
+      if (error) {
+        console.error('❌ Supabase insert error:', error.message);
+        return res.status(400).json({ error: error.message });
+      }
+
+      return res.status(200).json({ success: true, data });
+    }
 
     try {
       parsedPrompts = typeof prompts === 'string' ? JSON.parse(prompts) : prompts;
     } catch (e) {
       console.error('❌ Failed to parse prompts:', e.message);
-      return res.status(400).json({ error: 'Invalid prompts format. Must be an array.' });
+      return res.status(400).json({ error: 'Invalid prompts format. Must be an array or null.' });
     }
 
     if (!Array.isArray(parsedPrompts)) {
@@ -554,6 +567,7 @@ export const createUserPrompts = async (req, res) => {
     return res.status(500).json({ error: 'Failed to save prompts' });
   }
 };
+
 
 
 export const createUserPhotos = async (req, res) => {
