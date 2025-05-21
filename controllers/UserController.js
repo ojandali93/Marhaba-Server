@@ -75,8 +75,8 @@ const getAgeFromDOB = dob => {
 const arrayIntersects = (userValues, filterValues) => {
   if (!Array.isArray(filterValues) || !Array.isArray(userValues)) return false;
 
-  const userSet = new Set(userValues.map(v => v..trim()));
-  return filterValues.some(v => userSet.has(v..trim()));
+  const userSet = new Set(userValues.map(v => v.trim()));
+  return filterValues.some(v => userSet.has(v.trim()));
 };
 
 export const getMatches = async (req, res) => {
