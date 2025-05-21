@@ -91,7 +91,7 @@ export const getMatches = async (req, res) => {
   } = req.body;
 
   try {
-    // STEP 1: Blocked users
+    // Step 1: Get users who blocked the current user
     const { data: blockedBy, error: blockError } = await supabase
       .from('Blocked')
       .select('blockerId')
@@ -100,22 +100,33 @@ export const getMatches = async (req, res) => {
     if (blockError) throw blockError;
     const blockedByIds = blockedBy.map(row => row.blockerId);
 
-    // STEP 2: Fetch all profiles
+    // Step 2: Get users already interacted with
+    const { data: interactions, error: interactionError } = await supabase
+      .from('Interactions')
+      .select('userId, targetUserId')
+      .or(`userId.eq.${userId},targetUserId.eq.${userId}`);
+
+    if (interactionError) throw interactionError;
+
+    const interactedUserIds = new Set();
+    interactions.forEach(i => {
+      if (i.userId !== userId) interactedUserIds.add(i.userId);
+      if (i.targetUserId !== userId) interactedUserIds.add(i.targetUserId);
+    });
+
+    // Step 3: Fetch profiles excluding blocked and interacted
     const { data: allProfiles, error } = await supabase
       .from('Profile')
-      .select('*, About(*), Career(*), Core(*), Future(*), Habits(*), Intent(*), Notifications(*),  Photos(*), Preferences(*), Prompts(*), Relationships(*), Religion(*), Social(*), Survey(*), Tags(*)')
+      .select('*, About(*), Career(*), Core(*), Future(*), Habits(*), Intent(*), Notifications(*), Photos(*), Preferences(*), Prompts(*), Relationships(*), Religion(*), Social(*), Survey(*), Tags(*)')
       .neq('userId', userId)
-      .not('userId', 'in', `(${blockedByIds.join(',') || 'NULL'})`)
+      .not('userId', 'in', `(${[...blockedByIds, ...interactedUserIds].join(',') || 'NULL'})`)
       .order('created_at', { ascending: false });
 
     if (error) throw error;
 
+    // Step 4: Distance Filter
     let afterDistance = allProfiles;
-    let afterAge = [];
-    let afterGender = [];
-
-    // STEP 3: Filter by distance
-    if (latitude != null && longitude != null && distance) {
+    if (latitude && longitude && distance) {
       afterDistance = allProfiles.filter(profile => {
         if (profile.latitude && profile.longitude) {
           const miles = getDistanceMiles(
@@ -130,7 +141,8 @@ export const getMatches = async (req, res) => {
       });
     }
 
-    // STEP 4: Filter by age
+    // Step 5: Age Filter
+    let afterAge = afterDistance;
     if (ageMin != null && ageMax != null) {
       afterAge = afterDistance.filter(profile => {
         const dob = profile?.About?.[0]?.dob;
@@ -138,17 +150,14 @@ export const getMatches = async (req, res) => {
         const age = getAgeFromDOB(dob);
         return age >= ageMin && age <= ageMax;
       });
-    } else {
-      afterAge = afterDistance;
     }
 
-    // STEP 5: Filter by gender
+    // Step 6: Gender Filter
+    let afterGender = afterAge;
     if (gender) {
       afterGender = afterAge.filter(
         profile => profile?.About?.[0]?.gender === gender
       );
-    } else {
-      afterGender = afterAge;
     }
 
     return res.status(200).json({
@@ -166,6 +175,7 @@ export const getMatches = async (req, res) => {
     return res.status(500).json({ error: 'Failed to fetch match debug data' });
   }
 };
+
 
 
 export function getDistanceMiles(lat1, lon1, lat2, lon2) {
