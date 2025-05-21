@@ -263,6 +263,7 @@ export const getUserInteractions = async (req, res) => {
         )
       `)
       .eq('targetUserId', userId)
+      .neq('userInteraction', 'disliked')
       .order('created_at', { ascending: false });
 
     if (error) {
