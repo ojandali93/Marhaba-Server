@@ -34,51 +34,55 @@ export const grabSingleEvent = async (req, res) => {
     const { eventId } = req.params;
 
     const { data: eventData, error: eventError } = await supabase
-      .from('Events')
-      .select(`
+  .from('Events')
+  .select(`
+    *,
+    Event_Attend(*),
+    Event_Posts(
+      *,
+      userId(
         *,
-        Event_Attend(*),
-        Event_Posts(*, User(
-          *,
-          About(*),
-          Career(*),
-          Core(*),
-          Future(*),
-          Habits(*),
-          Intent(*),
-          Notifications(*),
-          Photos(*),
-          Preferences(*),
-          Prompts(*),
-          Relationships(*),
-          Religion(*),
-          Social(*),
-          Survey(*),
-          Tags(*)
-        ),
-        Event_Rsvp(
-          userId(
-            *,
-            About(*),
-            Career(*),
-            Core(*),
-            Future(*),
-            Habits(*),
-            Intent(*),
-            Notifications(*),
-            Photos(*),
-            Preferences(*),
-            Prompts(*),
-            Relationships(*),
-            Religion(*),
-            Social(*),
-            Survey(*),
-            Tags(*)
-          )
-        )
-      `)
-      .eq('id', eventId)
-      .single();
+        About(*),
+        Career(*),
+        Core(*),
+        Future(*),
+        Habits(*),
+        Intent(*),
+        Notifications(*),
+        Photos(*),
+        Preferences(*),
+        Prompts(*),
+        Relationships(*),
+        Religion(*),
+        Social(*),
+        Survey(*),
+        Tags(*)
+      )
+    ),
+    Event_Rsvp(
+      *,
+      userId(
+        *,
+        About(*),
+        Career(*),
+        Core(*),
+        Future(*),
+        Habits(*),
+        Intent(*),
+        Notifications(*),
+        Photos(*),
+        Preferences(*),
+        Prompts(*),
+        Relationships(*),
+        Religion(*),
+        Social(*),
+        Survey(*),
+        Tags(*)
+      )
+    )
+  `)
+  .eq('id', eventId)
+  .single();
 
     if (eventError) {
       console.error('❌ Supabase error:', eventError);
