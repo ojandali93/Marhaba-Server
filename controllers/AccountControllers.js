@@ -1247,8 +1247,8 @@ export const updateSurvey = async (req, res) => {
 export const updateViews = async (req, res) => {
   try {
     const { userId, view } = req.body;
-    console.log(req.body);
-    
+    console.log(userId);
+    console.log(view);
     const { data, error } = await supabase
       .from('Profile')
       .update({ mainView: view })
