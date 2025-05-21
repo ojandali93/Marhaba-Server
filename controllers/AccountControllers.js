@@ -1254,6 +1254,8 @@ export const updateViews = async (req, res) => {
       .update({ mainView: view })
       .eq('userId', userId)
       .select();
+
+    console.log(data);
     
     if (error) {
       console.log(error);
