@@ -38,7 +38,24 @@ export const grabSingleEvent = async (req, res) => {
       .select(`
         *,
         Event_Attend(*),
-        Event_Posts(*),
+        Event_Posts(*, User(
+          *,
+          About(*),
+          Career(*),
+          Core(*),
+          Future(*),
+          Habits(*),
+          Intent(*),
+          Notifications(*),
+          Photos(*),
+          Preferences(*),
+          Prompts(*),
+          Relationships(*),
+          Religion(*),
+          Social(*),
+          Survey(*),
+          Tags(*)
+        ),
         Event_Rsvp(
           userId(
             *,
