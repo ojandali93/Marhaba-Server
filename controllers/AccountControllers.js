@@ -1243,3 +1243,27 @@ export const updateSurvey = async (req, res) => {
     return res.status(500).json({ error: 'Failed to update user profile' });
   }
 };
+
+export const updateViews = async (req, res) => {
+  try {
+    const { userId, view } = req.body;
+     
+    
+    const { data, error } = await supabase
+      .from('Profile')
+      .update({ mainView: view })
+      .eq('userId', userId)
+      .select();
+    
+    if (error) {
+      console.log(error);
+      console.log(error.message);
+      return res.status(400).json({ error: error.message });
+    }
+
+    return res.status(200).json({ success: true, data, data });
+  } catch (error) {
+    return res.status(500).json({ error: 'Failed to update user profile' });
+  }
+};
+
