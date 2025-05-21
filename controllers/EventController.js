@@ -4,7 +4,7 @@ export const grabEvents = async (req, res) => {
   try {
     const { data: eventData, error: eventError } = await supabase
     .from('Events')
-    .select('*')
+    .select('*, Event_Attend(*), Event_Posts(*), Event_Rsvp(*)')
     .order('created_at', { ascending: false });
 
     if (eventError) {
