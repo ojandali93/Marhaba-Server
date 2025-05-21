@@ -32,11 +32,36 @@ export const grabEvents = async (req, res) => {
 export const grabSingleEvent = async (req, res) => {
   try {
     const { eventId } = req.params;
+
     const { data: eventData, error: eventError } = await supabase
-    .from('Events')
-    .select('*, Event_Attend(*), Event_Posts(*), Event_Rsvp(*)')
-    .eq('id', eventId)
-    .single();
+      .from('Events')
+      .select(`
+        *,
+        Event_Attend(*),
+        Event_Posts(*),
+        Event_Rsvp(
+          userId(
+            *,
+            About(*),
+            Career(*),
+            Core(*),
+            Future(*),
+            Habits(*),
+            Intent(*),
+            Notifications(*),
+            Photos(*),
+            Preferences(*),
+            Prompts(*),
+            Relationships(*),
+            Religion(*),
+            Social(*),
+            Survey(*),
+            Tags(*)
+          )
+        )
+      `)
+      .eq('id', eventId)
+      .single();
 
     if (eventError) {
       console.error('❌ Supabase error:', eventError);
@@ -44,12 +69,12 @@ export const grabSingleEvent = async (req, res) => {
     }
 
     if (!eventData) {
-      return res.status(404).json({ error: 'Events not found.' });
+      return res.status(404).json({ error: 'Event not found.' });
     }
 
     return res.status(200).json({ success: true, data: eventData });
 
-  }catch (error) {
+  } catch (error) {
     console.error('❌ Server internal error:', error);
     return res.status(500).json({
       error: {
