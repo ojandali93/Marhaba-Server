@@ -147,13 +147,13 @@ export const unblockUser = async (req, res) => {
 
 
 export const reportUser = async (req, res) => {
-  const { reporterId, reportedId, reason } = req.body;
+  const { reporterId, reportedId, postId, reason } = req.body;
 
   try {
     // 1. Insert report into Reports table
     const { data, error } = await supabase
       .from('Reports')
-      .insert([{ reporterId, reportedId, reason }]);
+      .insert([{ reporterId, reportedId, postId, reason }]);
 
     if (error) throw error;
 
