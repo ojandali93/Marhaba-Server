@@ -210,7 +210,7 @@ export const createEventAttend = async (req, res) => {
 };
 
 export const createEventCheckin = async (req, res) => {
-  const { eventId } = req.body;
+  const { eventId, userId } = req.body;
   try {
     const { data: eventData, error: eventError } = await supabase
       .from('Event_Attend')
