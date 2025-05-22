@@ -89,7 +89,8 @@ export const grabFilteredEventPosts = async (req, res) => {
         *,
         userId (
           *,
-          About(*)
+          About(*),
+          Photos(*)
         )
       `)
       .eq('eventId', eventId);
