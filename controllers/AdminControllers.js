@@ -193,3 +193,24 @@ export const getBlockedUsers = async (req, res) => {
     return res.status(500).json({ error: 'Failed to get blocked users' });
   }
 };
+
+
+export const grabAllAdmins = async (req, res) => {
+  try {
+    const { data, error } = await supabase
+      .from('Profile')
+      .select('*')
+      .eq('admin', true)
+      .not('passHash', 'is', null)
+      .not('passHash', 'eq', '')
+      .not('pinHash', 'is', null)
+      .not('pinHash', 'eq', '');
+
+    if (error) throw error;
+
+    return res.status(200).json({ success: true, data });
+  } catch (error) {
+    console.error('❌ Error fetching admin profiles:', error);
+    return res.status(500).json({ error: 'Failed to get admin profiles' });
+  }
+};
