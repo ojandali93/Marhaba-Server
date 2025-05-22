@@ -149,7 +149,14 @@ export const grabEventRsvp = async (req, res) => {
   try {
     const { data: eventData, error: eventError } = await supabase
       .from('Event_Rsvp')
-      .select('*')
+      .select(`
+        *,
+        userId (
+          *,
+          About(*),
+          Photos(*)
+        )
+      `)
       .eq('eventId', eventId);
 
     if (eventError) {
@@ -175,7 +182,14 @@ export const createEventAttend = async (req, res) => {
   try {
     const { data: eventData, error: eventError } = await supabase
       .from('Event_Attend')
-      .select('*')
+      .select(`
+        *,
+        userId (
+          *,
+          About(*),
+          Photos(*)
+        )
+      `)
       .eq('eventId', eventId);
 
     if (eventError) {
