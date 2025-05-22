@@ -7,6 +7,7 @@ router.post('/createEventPost', createEventPost);
 router.post('/eventPosts', grabFilteredEventPosts);
 router.post('/eventRsvp', grabEventRsvp);
 router.post('/eventAttend', createEventAttend);
+router.post('/createCheckin', createEventAttend);
 router.get('/:eventId', grabSingleEvent);
 router.get('/', grabEvents);
 export default router;
