@@ -1,5 +1,5 @@
 import express from 'express';
-import { approveProfile, grabAllAdmins, grabPendingProfiles, rejectProfile, reSubmitProfile, reviewInfo } from '../controllers/AdminControllers.js';
+import { approveProfile, grabAllAdmins, grabPendingProfiles, rejectProfile, reSubmitProfile, reviewInfo, sendNotificationToAllAdmins } from '../controllers/AdminControllers.js';
 
 const router = express.Router();
 
@@ -9,5 +9,5 @@ router.post('/rejectProfile', rejectProfile);
 router.put('/reSubmitProfile', reSubmitProfile);
 router.get('/reviewInfo/:userId', reviewInfo);
 router.get('/grabAllAdmin', grabAllAdmins);
-
+router.post('/sendNotificationToAllAdmins', sendNotificationToAllAdmins);
 export default router; 

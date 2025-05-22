@@ -214,3 +214,34 @@ export const grabAllAdmins = async (req, res) => {
     return res.status(500).json({ error: 'Failed to get admin profiles' });
   }
 };
+
+export const sendNotificationToAllAdmins = async () => {
+  try {
+    // Step 1: Fetch all valid admin profiles
+    const { data: admins, error } = await supabase
+      .from('Profile')
+      .select('userId, apnToken') // only grab the field you need for notifications
+      .eq('admin', true)
+      .not('passHash', 'is', null)
+      .not('passHash', 'eq', '')
+      .not('pinHash', 'is', null)
+      .not('pinHash', 'eq', '');
+
+    if (error) {
+      console.error('❌ Failed to fetch admins:', error.message);
+      return;
+    }
+
+    // Step 2: Send notification to each admin
+    for (const admin of admins) {
+      const result = await sendPush(admin.apnToken, 'New Account Created', 'A new profile needs to be reviewed and approved.');
+      console.log('📤 APNs result:', JSON.stringify(result, null, 2));
+    }
+
+    console.log('✅ Notifications sent to all admins');
+    return res.status(200).json({ success: true, message: 'Notifications sent to all admins' });
+  } catch (err) {
+    console.error('❌ Error sending notifications:', err.message);
+    return res.status(500).json({ error: 'Failed to send notifications to all admins' });
+  }
+};
