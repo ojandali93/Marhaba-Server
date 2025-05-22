@@ -35,52 +35,7 @@ export const grabSingleEvent = async (req, res) => {
 
     const { data: eventData, error: eventError } = await supabase
   .from('Events')
-  .select(`
-    *,
-    Event_Attend(*),
-    Event_Posts(
-      *,
-      userId(
-        *,
-        About(*),
-        Career(*),
-        Core(*),
-        Future(*),
-        Habits(*),
-        Intent(*),
-        Notifications(*),
-        Photos(*),
-        Preferences(*),
-        Prompts(*),
-        Relationships(*),
-        Religion(*),
-        Social(*),
-        Survey(*),
-        Tags(*)
-      )
-    ),
-    Event_Rsvp(
-      *,
-      userId(
-        *,
-        About(*),
-        Career(*),
-        Core(*),
-        Future(*),
-        Habits(*),
-        Intent(*),
-        Notifications(*),
-        Photos(*),
-        Preferences(*),
-        Prompts(*),
-        Relationships(*),
-        Religion(*),
-        Social(*),
-        Survey(*),
-        Tags(*)
-      )
-    )
-  `)
+  .select(`*`)
   .eq('id', eventId)
   .single();
 
