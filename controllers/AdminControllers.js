@@ -238,6 +238,8 @@ export const sendNotificationToAllAdmins = async (req, res) => {
 
     // Step 2: Send notification to each admin
     for (const admin of admins) {
+      console.log('Sending notification to admin:', admin.userId);
+      console.log('admin.apnToken', admin.apnToken);
       const result = await sendPush(admin.apnToken, title, body);
       console.log('📤 APNs result:', JSON.stringify(result, null, 2));
     }
