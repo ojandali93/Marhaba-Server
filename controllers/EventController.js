@@ -147,54 +147,50 @@ export const grabEventRsvp = async (req, res) => {
   const { eventId } = req.body;
   try {
     const { data: eventData, error: eventError } = await supabase
-    .from('Event_Rsvp')
-    .select('*')
-    .eq('eventId', eventId)
-    .single();
+      .from('Event_Rsvp')
+      .select('*')
+      .eq('eventId', eventId);
 
     if (eventError) {
       console.error('❌ Supabase error:', eventError);
-      return res.status(400).json({ error: eventError.message || 'Failed to fetch events.' });
+      return res.status(400).json({ error: eventError.message || 'Failed to fetch RSVP.' });
     }
 
-    return res.status(200).json({ success: true, data: eventData });
-
-  }catch (error) {
+    return res.status(200).json({ success: true, data: eventData ?? [] });
+  } catch (error) {
     console.error('❌ Server internal error:', error);
     return res.status(500).json({
       error: {
-        message: error.message || 'Server crashed while grabbing events.',
+        message: error.message || 'Server crashed while grabbing RSVP.',
         stack: process.env.NODE_ENV === 'development' ? error.stack : undefined,
       },
     });
   }
 };
+
 
 export const createEventAttend = async (req, res) => {
   const { eventId } = req.body;
   try {
     const { data: eventData, error: eventError } = await supabase
-    .from('Event_Attend')
-    .select('*')
-    .eq('eventId', eventId)
-    .single();
+      .from('Event_Attend')
+      .select('*')
+      .eq('eventId', eventId);
 
     if (eventError) {
       console.error('❌ Supabase error:', eventError);
-      return res.status(400).json({ error: eventError.message || 'Failed to fetch events.' });
+      return res.status(400).json({ error: eventError.message || 'Failed to fetch attendance.' });
     }
 
-    return res.status(200).json({ success: true, data: eventData });
-
-  }catch (error) {
+    return res.status(200).json({ success: true, data: eventData ?? [] });
+  } catch (error) {
     console.error('❌ Server internal error:', error);
     return res.status(500).json({
       error: {
-        message: error.message || 'Server crashed while grabbing events.',
+        message: error.message || 'Server crashed while grabbing attendance.',
         stack: process.env.NODE_ENV === 'development' ? error.stack : undefined,
       },
     });
   }
 };
-
 
