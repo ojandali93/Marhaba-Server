@@ -106,6 +106,62 @@ export const grabSingleEvent = async (req, res) => {
   }
 };
 
+export const grabFilteredEventPosts = async (req, res) => {
+  try {
+    const { userId: currentUserId, eventId: eventId } = req.body;
+
+    if (!eventId || !currentUserId) {
+      return res.status(400).json({ error: 'Missing eventId or userId' });
+    }
+
+    // Step 1: Get userIds who have blocked the current user
+    const { data: blockedBy, error: blockedError } = await supabase
+      .from('Blocked')
+      .select('blockerId')
+      .eq('blockedId', currentUserId);
+
+    if (blockedError) {
+      console.error('❌ Error fetching blocked users:', blockedError);
+      return res.status(500).json({ error: 'Failed to fetch blocked users' });
+    }
+
+    const blockedIds = blockedBy.map(row => row.blockerId);
+
+    // Step 2: Fetch posts with profile + about info
+    const { data: posts, error: postsError } = await supabase
+      .from('Event_Posts')
+      .select(`
+        *,
+        userId (
+          *,
+          About(*)
+        )
+      `)
+      .eq('eventId', eventId);
+
+    if (postsError) {
+      console.error('❌ Error fetching posts:', postsError);
+      return res.status(500).json({ error: 'Failed to fetch posts' });
+    }
+
+    // Step 3: Filter out posts from users who blocked the current user
+    const visiblePosts = posts.filter(post => {
+      return !blockedIds.includes(post.userId?.id);
+    });
+
+    return res.status(200).json({ success: true, posts: visiblePosts });
+  } catch (error) {
+    console.error('❌ Server error:', error);
+    return res.status(500).json({
+      error: {
+        message: error.message || 'Unexpected server error',
+        stack: process.env.NODE_ENV === 'development' ? error.stack : undefined,
+      },
+    });
+  }
+};
+
+
 export const createEventPost = async (req, res) => {
   const { eventId, userId, caption, image } = req.body;
   try {
