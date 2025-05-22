@@ -177,7 +177,7 @@ export const grabEventRsvp = async (req, res) => {
 };
 
 
-export const createEventAttend = async (req, res) => {
+export const grabEventAttend = async (req, res) => {
   const { eventId } = req.body;
   try {
     const { data: eventData, error: eventError } = await supabase
