@@ -1,4 +1,6 @@
 import { supabase } from '../services/SupabaseClient.js';
+import { sendPush } from '../utils/apn.js';
+
 
 export const grabPendingProfiles = async (req, res) => {
   try {
