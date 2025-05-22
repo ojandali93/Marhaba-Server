@@ -215,7 +215,9 @@ export const grabAllAdmins = async (req, res) => {
   }
 };
 
-export const sendNotificationToAllAdmins = async () => {
+export const sendNotificationToAllAdmins = async (req, res) => {
+  const { title, body } = req.body;
+
   try {
     // Step 1: Fetch all valid admin profiles
     const { data: admins, error } = await supabase
@@ -234,7 +236,7 @@ export const sendNotificationToAllAdmins = async () => {
 
     // Step 2: Send notification to each admin
     for (const admin of admins) {
-      const result = await sendPush(admin.apnToken, 'New Account Created', 'A new profile needs to be reviewed and approved.');
+      const result = await sendPush(admin.apnToken, title, body);
       console.log('📤 APNs result:', JSON.stringify(result, null, 2));
     }
 
