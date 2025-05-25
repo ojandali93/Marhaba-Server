@@ -82,7 +82,7 @@ Return only a **valid array of JSON objects**, one for each profile.
 
   try {
     const completion = await openai.chat.completions.create({
-      model: 'gpt-4',
+      model: 'gpt-4.1',
       temperature: 0.85,
       messages: [
         {
