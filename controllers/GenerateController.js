@@ -1,3 +1,4 @@
+import openai from '../utils/open.js';
 export const generateProfilePrompt = async (req, res) => {
   const { description, count = 1 } = req.body;
 
