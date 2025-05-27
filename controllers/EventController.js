@@ -152,9 +152,7 @@ export const grabEventRsvp = async (req, res) => {
       .select(`
         *,
         userId (
-          *,
-          About(*),
-          Photos(*)
+          *, About(*), Career(*), Core(*), Future(*), Habits(*), Intent(*), Notifications(*),  Photos(*), Preferences(*), Prompts(*), Relationships(*), Religion(*), Social(*), Survey(*), Tags(*)
         )
       `)
       .eq('eventId', eventId);
