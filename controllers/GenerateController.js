@@ -18,6 +18,7 @@ Each profile should include these fields with values selected only from the allo
 - name
 - date_of_birth
 - gender
+- email
 - height (between 4’6’’ and 6’8’’)
 - background (array of up to 2 countries)
 - intentions: ['Friendship', 'Connect with Community', 'Something Serious', 'Marriage']
