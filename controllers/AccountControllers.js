@@ -509,15 +509,34 @@ export const createUserEitherOr = async (req, res) => {
 export const createUserPrompts = async (req, res) => {
   try {
     const { userId, prompts } = req.body;
-
-    let parsedPrompts;
-
-    // Allow null to mean "no prompts, store null"
     if (prompts === null) {
       console.log('ℹNull prompts received — storing single null record');
       const { data, error } = await supabase
         .from('Prompts')
-        .insert([{ userId, prompt: null, response: null }])
+        .insert([
+          { 
+            userId,  
+            t_who: prompts.t_who,
+            t_makes_me: prompts.t_makes_me,
+            t_weekends: prompts.t_weekends,
+            t_friends: prompts.t_friends,
+            t_master: prompts.t_master,
+            t_make_time: prompts.t_make_time,
+            t_daily: prompts.t_daily,
+            t_love: prompts.t_love,
+            t_faith: prompts.t_faith,
+            t_appreciate: prompts.t_appreciate,
+            t_lifestyle: prompts.t_lifestyle,
+            t_refuse: prompts.t_refuse,
+            t_show: prompts.t_show,
+            t_grow: prompts.t_grow,
+            t_life: prompts.t_life,
+            t_moment: prompts.t_moment,
+            t_deep: prompts.t_deep,
+            t_partner: prompts.t_partner,
+            t_lifelong: prompts.t_lifelong
+          }
+        ])
         .select();
 
       if (error) {
@@ -527,41 +546,6 @@ export const createUserPrompts = async (req, res) => {
 
       return res.status(200).json({ success: true, data });
     }
-
-    try {
-      parsedPrompts = typeof prompts === 'string' ? JSON.parse(prompts) : prompts;
-    } catch (e) {
-      console.error('❌ Failed to parse prompts:', e.message);
-      return res.status(400).json({ error: 'Invalid prompts format. Must be an array or null.' });
-    }
-
-    if (!Array.isArray(parsedPrompts)) {
-      console.error('❌ Prompts is not an array:', parsedPrompts);
-      return res.status(400).json({ error: 'Prompts must be an array of { prompt, response }' });
-    }
-
-    if (parsedPrompts.length === 0) {
-      console.log('ℹ️ Empty prompts array received. Skipping insert.');
-      return res.status(200).json({ success: true, data: [] });
-    }
-
-    const insertData = parsedPrompts.map(item => ({
-      userId,
-      prompt: item.prompt,
-      response: item.response,
-    }));
-
-    const { data: insertedPrompts, error: insertError } = await supabase
-      .from('Prompts')
-      .insert(insertData)
-      .select();
-
-    if (insertError) {
-      console.error('❌ Supabase insert error:', insertError.message);
-      return res.status(400).json({ error: insertError.message });
-    }
-
-    return res.status(200).json({ success: true, data: insertedPrompts });
   } catch (error) {
     console.error('❌ Server error:', error.message);
     return res.status(500).json({ error: 'Failed to save prompts' });
