@@ -507,10 +507,12 @@ export const createUserEitherOr = async (req, res) => {
 };
 
 export const createUserPrompts = async (req, res) => {
+  const { userId, prompts } = req.body;
+  
   try {
-    const { userId, prompts } = req.body;
-    if (prompts === null) {
-      console.log('ℹNull prompts received — storing single null record');
+    if (!userId || typeof prompts !== 'object') {
+      return res.status(400).json({ error: 'Invalid request' });
+    } else {
       const { data, error } = await supabase
         .from('Prompts')
         .insert([
