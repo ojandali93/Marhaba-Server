@@ -88,6 +88,7 @@ export const createUserProfile = async (req, res) => {
     }
 
     if (profileData) {
+      console.log('profileData:', profileData);
       return res.status(200).json({ success: true, data: profileData });
     } else {
       return res.status(500).json({ error: profileError });
