@@ -59,6 +59,7 @@ export const checkUserEmail = async (req, res) => {
 export const createUserProfile = async (req, res) => {
   try {
     const { userId, name,  email, fcmToken, approved, tier, longitude, latitude, visibility, agreements } = req.body;
+    console.log('userId:', userId);
 
     const { data: profileData, error: profileError } = await supabase
     .from('Profile')
