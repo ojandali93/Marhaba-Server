@@ -153,9 +153,9 @@ export const getMatches = async (req, res) => {
     console.log(`📦 Fetched ${compatibilityWithProfiles.length} total profiles`);
 
     // STEP 4: Distance Filter
-    let afterDistance = allProfiles;
+    let afterDistance = compatibilityWithProfiles;
     if (latitude != null && longitude != null && distance) {
-      afterDistance = allProfiles.filter(profile => {
+      afterDistance = compatibilityWithProfiles.filter(profile => {
         if (profile.latitude && profile.longitude) {
           const miles = getDistanceMiles(
             latitude,
@@ -212,7 +212,7 @@ export const getMatches = async (req, res) => {
     return res.status(200).json({
       success: true,
       breakdown: {
-        totalFetched: allProfiles.length,
+        totalFetched: compatibilityWithProfiles.length,
         afterDistance: afterDistance.length,
         afterAge: afterAge.length,
         afterGender: afterGender.length,
