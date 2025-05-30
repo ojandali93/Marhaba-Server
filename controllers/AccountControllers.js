@@ -869,6 +869,7 @@ export const createUserFuture = async (req, res) => {
     .select();
 
     if (preferencesError) {
+      console.log('future error:', preferencesError);
       return res.status(400).json({ error: aboutError.preferencesError });
     }
 
