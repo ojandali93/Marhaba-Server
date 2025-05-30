@@ -158,12 +158,13 @@ export const getMatches = async (req, res) => {
     let afterDistance = compatibilityWithProfiles;
     if (latitude != null && longitude != null && distance) {
       afterDistance = compatibilityWithProfiles.filter(profile => {
-        if (profile.latitude && profile.longitude) {
+        const user = profile.user2Profile;
+        if (user?.latitude && user?.longitude) {
           const miles = getDistanceMiles(
             latitude,
             longitude,
-            profile.latitude,
-            profile.longitude
+            user.latitude,
+            user.longitude
           );
           return miles <= distance;
         }
@@ -179,7 +180,8 @@ export const getMatches = async (req, res) => {
     let afterAge = [];
     if (ageMin != null && ageMax != null) {
       afterAge = afterDistance.filter(profile => {
-        const dob = profile?.About?.[0]?.dob;
+        const user = profile.user2Profile;
+        const dob = user?.About?.[0]?.dob;
         if (!dob) return false;
         const age = getAgeFromDOB(dob);
         return age >= ageMin && age <= ageMax;
