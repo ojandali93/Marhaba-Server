@@ -90,16 +90,6 @@ export const getMatches = async (req, res) => {
     gender,
   } = req.body;
 
-  console.log('📥 Incoming Match Filter Request:', {
-    userId,
-    distance,
-    latitude,
-    longitude,
-    ageMin,
-    ageMax,
-    gender,
-  });
-
   try {
     // STEP 1: Blocked users
     const { data: blockedBy, error: blockError } = await supabase
@@ -130,22 +120,39 @@ export const getMatches = async (req, res) => {
     ]);
 
     // STEP 3: Fetch all profiles
-    const { data: allProfiles, error } = await supabase
-      .from('Profile')
-      .select(
-        '*, About(*), Career(*), Core(*), Future(*), Habits(*), Intent(*), Notifications(*),  Photos(*), Preferences(*), Prompts(*), Relationships(*), Religion(*), Social(*), Survey(*), Tags(*)'
-      )
-      .neq('userId', userId)
-      .not(
-        'userId',
-        'in',
-        `(${[...blockedByIds, ...interactedUserIds].join(',') || 'NULL'})`
-      )
-      .order('created_at', { ascending: false });
+    const { data: compatibilityWithProfiles, error } = await supabase
+      .from('CompatibilityScores')
+      .select(`
+        score,
+        user2,
+        user2Profile: user2 ( 
+          *, 
+          About(*), 
+          Career(*), 
+          Core(*), 
+          Future(*), 
+          Habits(*), 
+          Intent(*), 
+          Intentions(*),
+          Notifications(*), 
+          Photos(*), 
+          Preferences(*), 
+          Profile(*),
+          Prompts(*), 
+          Relationships(*), 
+          Religion(*), 
+          Social(*), 
+          Survey(*), 
+          Tags(*) 
+        )
+      `)
+      .eq('user1', userId)
+      .not('user2', 'in', `(${[...blockedByIds, ...interactedUserIds].join(',') || 'NULL'})`)
+      .order('score', { ascending: false })
 
     if (error) throw error;
 
-    console.log(`📦 Fetched ${allProfiles.length} total profiles`);
+    console.log(`📦 Fetched ${compatibilityWithProfiles.length} total profiles`);
 
     // STEP 4: Distance Filter
     let afterDistance = allProfiles;
