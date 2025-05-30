@@ -87,7 +87,6 @@ export const getMatches = async (req, res) => {
     longitude,
     ageMin,
     ageMax,
-    gender,
   } = req.body;
 
   console.log('🔍 Incoming request:', JSON.stringify(req.body, null, 2));
@@ -153,6 +152,7 @@ export const getMatches = async (req, res) => {
     if (error) throw error;
 
     console.log(`📦 Fetched ${compatibilityWithProfiles.length} total profiles`);
+    console.log(compatibilityWithProfiles.data);
 
     // STEP 4: Distance Filter
     let afterDistance = compatibilityWithProfiles;
@@ -192,34 +192,14 @@ export const getMatches = async (req, res) => {
       afterAge = afterDistance;
     }
 
-    // STEP 6: Gender Filter
-    let afterGender = [];
-    if (gender) {
-      afterGender = afterAge.filter(profile => {
-        const profileGender = profile?.About?.[0]?.gender;
-        const match = profileGender === gender;
-        if (!match) {
-          console.log(`🚫 Gender mismatch: expected ${gender}, got ${profileGender}`);
-        }
-        return match;
-      });
-
-      console.log(
-        `⚧️ After gender filter (${gender}): ${afterGender.length} profiles`
-      );
-    } else {
-      afterGender = afterAge;
-    }
-
     return res.status(200).json({
       success: true,
       breakdown: {
         totalFetched: compatibilityWithProfiles.length,
         afterDistance: afterDistance.length,
         afterAge: afterAge.length,
-        afterGender: afterGender.length,
       },
-      matches: afterGender,
+      matches: afterAge,
     });
   } catch (err) {
     console.error('❌ Match debug error:', err);
