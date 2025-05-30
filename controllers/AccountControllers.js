@@ -82,6 +82,7 @@ export const createUserProfile = async (req, res) => {
     .select();
 
     if (profileError) {
+      console.log('profileError:', profileError);
       return res.status(400).json({ error: profileError.message });
     }
 
@@ -508,7 +509,7 @@ export const createUserEitherOr = async (req, res) => {
 
 export const createUserPrompts = async (req, res) => {
   const { userId, prompts } = req.body;
-  
+
   try {
     if (!userId || typeof prompts !== 'object') {
       return res.status(400).json({ error: 'Invalid request' });
