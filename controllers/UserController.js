@@ -152,7 +152,6 @@ export const getMatches = async (req, res) => {
     if (error) throw error;
 
     console.log(`📦 Fetched ${compatibilityWithProfiles.length} total profiles`);
-    console.log(compatibilityWithProfiles);
 
     // STEP 4: Distance Filter
     let afterDistance = compatibilityWithProfiles;
