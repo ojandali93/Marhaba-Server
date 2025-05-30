@@ -136,7 +136,6 @@ export const getMatches = async (req, res) => {
           Notifications(*), 
           Photos(*), 
           Preferences(*), 
-          Profile(*),
           Prompts(*), 
           Relationships(*), 
           Religion(*), 
