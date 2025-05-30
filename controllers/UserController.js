@@ -133,7 +133,6 @@ export const getMatches = async (req, res) => {
           Future(*), 
           Habits(*), 
           Intent(*), 
-          Intentions(*),
           Notifications(*), 
           Photos(*), 
           Preferences(*), 
