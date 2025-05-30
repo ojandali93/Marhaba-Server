@@ -90,6 +90,8 @@ export const getMatches = async (req, res) => {
     gender,
   } = req.body;
 
+  console.log('🔍 Incoming request:', JSON.stringify(req.body, null, 2));
+
   try {
     // STEP 1: Blocked users
     const { data: blockedBy, error: blockError } = await supabase
