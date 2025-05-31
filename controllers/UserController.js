@@ -243,27 +243,21 @@ export const likeProfile = async (req, res) => {
   const {
     userId,
     targetUserId,
-    userInteraction,
-    targetInteraction,
     viewed,
     approved,
     viewed_at,
-    approved_at, 
-    message
+    approved_at
   } = req.body;
   try {
     const { data: likeData, error: likeError } = await supabase
       .from('Interactions')
       .insert([{
         userId,
-        userInteraction,
         targetUserId,
-        targetInteraction,
         viewed,
         approved,
-        approved_at,
-        message,
-        viewed_at
+        viewed_at,
+        approved_at
       }])
       .select();
 
