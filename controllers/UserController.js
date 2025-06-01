@@ -246,7 +246,9 @@ export const likeProfile = async (req, res) => {
     viewed,
     approved,
     viewed_at,
-    approved_at
+    approved_at,
+    userInteraction,
+    targetInteraction
   } = req.body;
   try {
     const { data: likeData, error: likeError } = await supabase
@@ -257,7 +259,9 @@ export const likeProfile = async (req, res) => {
         viewed,
         approved,
         viewed_at,
-        approved_at
+        approved_at,
+        userInteraction,
+        targetInteraction
       }])
       .select();
 
