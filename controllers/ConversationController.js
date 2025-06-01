@@ -224,3 +224,130 @@ export const updateShowBadge = async (req, res) => {
     return res.status(500).json({ error: 'Failed to update last message' });
   }
 };
+
+export const updateLayeredQuestion = async (req, res) => {
+  const { questionId, userId, answer, conversationId, currentQuestionLevel } = req.body;
+
+  try {
+    // 1️⃣ Update this question (set user1Answer or user2Answer)
+    const { data: questionData, error: fetchError } = await supabase
+      .from('LayeredQuestions')
+      .select('*')
+      .eq('id', questionId)
+      .single();
+
+    if (fetchError) throw fetchError;
+
+    const isUser1 = questionData.user1Id === userId;
+    const isUser2 = questionData.user2Id === userId;
+
+    if (!isUser1 && !isUser2) {
+      return res.status(400).json({ error: 'User does not belong to this question.' });
+    }
+
+    const updateFields = isUser1
+      ? { user1Answer: answer, user1AnsweredAt: new Date().toISOString() }
+      : { user2Answer: answer, user2AnsweredAt: new Date().toISOString() };
+
+    const { error: updateError } = await supabase
+      .from('LayeredQuestions')
+      .update(updateFields)
+      .eq('id', questionId);
+
+    if (updateError) throw updateError;
+
+    // 2️⃣ Fetch again to check if BOTH users answered
+    const { data: updatedQuestion, error: refetchError } = await supabase
+      .from('LayeredQuestions')
+      .select('*')
+      .eq('id', questionId)
+      .single();
+
+    if (refetchError) throw refetchError;
+
+    const bothAnswered = updatedQuestion.user1Answer && updatedQuestion.user2Answer;
+
+    if (bothAnswered) {
+      // 3️⃣ Unlock NEXT question if it exists
+      const nextLevel = currentQuestionLevel + 1;
+
+      const { data: nextQuestion, error: nextError } = await supabase
+        .from('LayeredQuestions')
+        .select('*')
+        .eq('conversationId', conversationId)
+        .eq('questionLevel', nextLevel)
+        .single();
+
+      if (nextError && nextError.code !== 'PGRST116') {
+        // PGRST116 = not found, ignore if no next question
+        throw nextError;
+      }
+
+      if (nextQuestion) {
+        const { error: unlockError } = await supabase
+          .from('LayeredQuestions')
+          .update({ locked: false })
+          .eq('id', nextQuestion.id);
+
+        if (unlockError) throw unlockError;
+      }
+    }
+
+    return res.status(200).json({ success: true, bothAnswered });
+  } catch (err) {
+    console.error('❌ Error updating layered question:', err);
+    return res.status(500).json({ error: 'Failed to update layered question' });
+  }
+};
+
+export const closeLayeredQuestions = async (req, res) => {
+  const { conversationId, userId } = req.body;
+
+  try {
+    // 1️⃣ Update all layered questions for this conversation
+    const { error: questionsError } = await supabase
+      .from('LayeredQuestions')
+      .update({
+        closedAt: new Date().toISOString(),
+        closedBy: userId
+      })
+      .eq('conversationId', conversationId);
+
+    if (questionsError) throw questionsError;
+
+    // 2️⃣ Update conversation status
+    const { error: convoError } = await supabase
+      .from('Conversations')
+      .update({
+        status: 'closed',
+        updated_at: new Date().toISOString()
+      })
+      .eq('id', conversationId);
+
+    if (convoError) throw convoError;
+
+    return res.status(200).json({ success: true });
+  } catch (err) {
+    console.error('❌ Error closing layered questions:', err);
+    return res.status(500).json({ error: 'Failed to close layered questions' });
+  }
+};
+
+export const getLayeredQuestions = async (req, res) => {
+  const { conversationId } = req.params;
+
+  try {
+    const { data: questions, error } = await supabase
+      .from('LayeredQuestions')
+      .select('*')
+      .eq('conversationId', conversationId)
+      .order('questionLevel', { ascending: true });
+
+    if (error) throw error;
+
+    return res.status(200).json({ success: true, data: questions });
+  } catch (err) {
+    console.error('❌ Error fetching layered questions:', err);
+    return res.status(500).json({ error: 'Failed to fetch layered questions' });
+  }
+};
