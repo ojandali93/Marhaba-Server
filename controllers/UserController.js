@@ -248,7 +248,9 @@ export const likeProfile = async (req, res) => {
     viewed_at,
     approved_at,
     userInteraction,
-    targetInteraction
+    targetInteraction,
+    userReason,
+    targetReason
   } = req.body;
   try {
     const { data: likeData, error: likeError } = await supabase
@@ -261,7 +263,9 @@ export const likeProfile = async (req, res) => {
         viewed_at,
         approved_at,
         userInteraction,
-        targetInteraction
+        targetInteraction,
+        userReason,
+        targetReason
       }])
       .select();
 
@@ -406,7 +410,8 @@ export const updateInteraction = async (req, res) => {
       approved,
       viewed_at,
       approved_at, 
-      message
+      userReason,
+      targetReason
      } = req.body;
 
     const { data, error } = await supabase
@@ -420,7 +425,8 @@ export const updateInteraction = async (req, res) => {
         approved,
         viewed_at,
         approved_at, 
-        message
+        userReason,
+        targetReason
       })
       .eq('id', id)
       .select()
