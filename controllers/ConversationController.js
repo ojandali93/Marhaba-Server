@@ -273,6 +273,16 @@ export const updateLayeredQuestion = async (req, res) => {
     const bothAnswered = updatedQuestion.user1Answer && updatedQuestion.user2Answer;
 
     if (bothAnswered) {
+
+      const { data: closeData, error: closeError } = await supabase
+        .from('LayeredQuestions')
+        .update({closed_at: new Date().toISOString()})
+        .eq('conversation_id', conversationId)
+        .eq('question_number', currentQuestionLevel)
+        .single();
+
+      if (closeError) throw closeError;
+
       // 3️⃣ Unlock NEXT question if it exists
       const nextLevel = currentQuestionLevel + 1;
 
