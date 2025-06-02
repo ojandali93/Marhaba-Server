@@ -335,7 +335,7 @@ export const closeLayeredQuestions = async (req, res) => {
 
 export const getLayeredQuestions = async (req, res) => {
   const { conversationId } = req.params;
-
+  console.log('the id is', conversationId);
   try {
     const { data: questions, error } = await supabase
       .from('LayeredQuestions')
