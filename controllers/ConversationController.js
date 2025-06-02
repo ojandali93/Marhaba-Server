@@ -279,8 +279,8 @@ export const updateLayeredQuestion = async (req, res) => {
       const { data: nextQuestion, error: nextError } = await supabase
         .from('LayeredQuestions')
         .select('*')
-        .eq('conversationId', conversationId)
-        .eq('questionLevel', nextLevel)
+        .eq('conversation_id', conversationId)
+        .eq('question_number', nextLevel)
         .single();
 
       if (nextError && nextError.code !== 'PGRST116') {
