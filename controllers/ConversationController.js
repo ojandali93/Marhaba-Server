@@ -371,7 +371,7 @@ export const lockConversation = async (req, res) => {
     // Update conversation to locked = true
     const { error: updateError } = await supabase
       .from('Conversations')
-      .update({ locked: true })
+      .update({ status: 'locked' })
       .eq('id', conversationId);
 
     if (updateError) {
