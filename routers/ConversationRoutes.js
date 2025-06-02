@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import { closeLayeredQuestions, createConversation, getConversationmessages, getLayeredQuestions, getUnreadMessages, getUserConversations, markMessagesAsRead, updateActive, updateConversationLastMessage, updateInactvie, updateLayeredQuestion } from '../controllers/ConversationController.js';
+import { closeLayeredQuestions, createConversation, getConversationmessages, getLayeredQuestions, getUnreadMessages, getUserConversations, lockConversation, markMessagesAsRead, updateActive, updateConversationLastMessage, updateInactvie, updateLayeredQuestion } from '../controllers/ConversationController.js';
 
 const router = Router();
 
@@ -14,5 +14,5 @@ router.get('/:userId', getUserConversations);
 router.post('/questions/update', updateLayeredQuestion);
 router.post('/questions/close', closeLayeredQuestions);
 router.get('/questions/:conversationId', getLayeredQuestions);
-
+router.post('/lock', lockConversation);
 export default router;

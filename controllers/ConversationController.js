@@ -357,3 +357,30 @@ export const getLayeredQuestions = async (req, res) => {
     return res.status(500).json({ error: 'Failed to fetch layered questions' });
   }
 };
+
+export const lockConversation = async (req, res) => {
+  const { conversationId } = req.body;
+
+  console.log('🔒 Locking conversation:', conversationId);
+
+  if (!conversationId) {
+    return res.status(400).json({ error: 'Missing conversationId' });
+  }
+
+  try {
+    // Update conversation to locked = true
+    const { error: updateError } = await supabase
+      .from('Conversations')
+      .update({ locked: true })
+      .eq('id', conversationId);
+
+    if (updateError) {
+      throw updateError;
+    }
+
+    return res.status(200).json({ success: true, message: 'Conversation locked' });
+  } catch (err) {
+    console.error('❌ Error locking conversation:', err);
+    return res.status(500).json({ error: 'Failed to lock conversation' });
+  }
+};
