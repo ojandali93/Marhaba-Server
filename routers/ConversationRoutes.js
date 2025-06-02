@@ -5,6 +5,7 @@ const router = Router();
 
 router.post('/create', createConversation);
 router.put('/read', markMessagesAsRead);
+router.post('/lock', lockConversation);
 router.put('/lastMessage', updateConversationLastMessage);
 router.post('/active', updateActive);
 router.post('/inactive', updateInactvie);
@@ -14,5 +15,4 @@ router.get('/:userId', getUserConversations);
 router.post('/questions/update', updateLayeredQuestion);
 router.post('/questions/close', closeLayeredQuestions);
 router.get('/questions/:conversationId', getLayeredQuestions);
-router.post('/lock', lockConversation);
 export default router;
