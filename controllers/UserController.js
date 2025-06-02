@@ -358,7 +358,7 @@ export const updateUserTier = async (req, res) => {
     const { error: updateError } = await supabase
       .from('Profile')
       .update({ tier: tier })
-      .eq('user_id', userId);
+      .eq('userId', userId);
 
     if (updateError) {
       console.error('❌ Failed to update tier:', updateError);
