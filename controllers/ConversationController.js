@@ -243,8 +243,8 @@ export const updateLayeredQuestion = async (req, res) => {
 
     if (fetchError) throw fetchError;
 
-    const isUser1 = questionData.user1Id === userId;
-    const isUser2 = questionData.user2Id === userId;
+    const isUser1 = questionData.user1_id === userId;
+    const isUser2 = questionData.user2_id === userId;
 
     if (!isUser1 && !isUser2) {
       return res.status(400).json({ error: 'User does not belong to this question.' });
