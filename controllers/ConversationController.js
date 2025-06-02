@@ -251,8 +251,8 @@ export const updateLayeredQuestion = async (req, res) => {
     }
 
     const updateFields = isUser1
-      ? { user1Answer: answer, user1AnsweredAt: new Date().toISOString() }
-      : { user2Answer: answer, user2AnsweredAt: new Date().toISOString() };
+      ? { user1_answer: answer, user1_answered: new Date().toISOString() }
+      : { user2_answer: answer, user2_answered: new Date().toISOString() };
 
     const { error: updateError } = await supabase
       .from('LayeredQuestions')
