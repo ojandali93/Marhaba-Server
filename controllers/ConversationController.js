@@ -227,6 +227,11 @@ export const updateShowBadge = async (req, res) => {
 
 export const updateLayeredQuestion = async (req, res) => {
   const { questionId, userId, answer, conversationId, currentQuestionLevel } = req.body;
+  console.log('the question id is', questionId);
+  console.log('the conversation id is', conversationId);
+  console.log('the current question level is', currentQuestionLevel);
+  console.log('the answer is', answer);
+  console.log('the user id is', userId);
 
   try {
     // 1️⃣ Update this question (set user1Answer or user2Answer)
