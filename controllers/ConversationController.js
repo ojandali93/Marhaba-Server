@@ -340,7 +340,7 @@ export const getLayeredQuestions = async (req, res) => {
     const { data: questions, error } = await supabase
       .from('LayeredQuestions')
       .select('*')
-      .eq('id', conversationId)
+      .eq('conversation_id', conversationId)
       .order('question_number', { ascending: true });
 
     if (error) throw error;
