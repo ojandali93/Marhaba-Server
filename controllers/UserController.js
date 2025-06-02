@@ -342,6 +342,38 @@ export const approvedInteraction = async (req, res) => {
   }
 };
 
+// updateTier.js
+
+export const updateUserTier = async (req, res) => {
+  const { userId, tier } = req.body;
+
+  console.log('➡️ Update Tier Request:', { userId, tier });
+
+  if (!userId || !tier) {
+    return res.status(400).json({ success: false, error: 'Missing userId or tier' });
+  }
+
+  try {
+    // Update the Profile table
+    const { error: updateError } = await supabase
+      .from('Profile')
+      .update({ tier: tier })
+      .eq('user_id', userId);
+
+    if (updateError) {
+      console.error('❌ Failed to update tier:', updateError);
+      return res.status(500).json({ success: false, error: 'Failed to update tier' });
+    }
+
+    console.log(`✅ Tier updated for user ${userId} → ${tier}`);
+    return res.status(200).json({ success: true, message: 'Tier updated successfully' });
+  } catch (err) {
+    console.error('❌ Unexpected error:', err);
+    return res.status(500).json({ success: false, error: 'Unexpected server error' });
+  }
+};
+
+
 // Controller
 export const deleteUserAccount = async (req, res) => {
   const { userId } = req.body;
