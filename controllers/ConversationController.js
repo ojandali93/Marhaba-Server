@@ -2,7 +2,7 @@ import { supabase } from '../services/SupabaseClient.js';
 
 export const createConversation = async (req, res) => {
   try {
-    const { userId, userId2, lastMessage, updatedAt } = req.body;
+    const { userId, userId2, lastMessage, status, updatedAt } = req.body;
 
 
     const { data: profileData, error: profileError } = await supabase
@@ -11,6 +11,7 @@ export const createConversation = async (req, res) => {
             user1Id: userId,
             user2Id: userId2,
             lastMessage: lastMessage,
+            status: status,
             updated_at: updatedAt
         })
         .select()
