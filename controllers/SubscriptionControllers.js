@@ -51,7 +51,7 @@ export const verifySubscription = async (req, res) => {
     // Save subscription to your database
     const { data: eventData, error: eventError } = await supabase
       .from('Subscriptions')
-      .insert([{ userId, productId, subscriptionExpirationDate, new Date().toISOString(), latestReceiptInfo }])
+      .insert([{ userId, productId, subscriptionExpirationDate, originalTransactionId: new Date().toISOString(), latestReceiptInfo }])
       .select()
 
     if (eventError) {
