@@ -64,5 +64,5 @@ export const verifySubscription = async (req, res) => {
     console.error('❌ Error verifying receipt:', err);
     return res.status(500).json({ success: false, error: 'Server error' });
   }
-});
+};
 
