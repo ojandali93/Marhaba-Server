@@ -1,48 +1,68 @@
 export const verifySubscription = async (req, res) => {
-  const { userId, receipt, productId } = req.body;
+  const { receiptData, userId, productId } = req.body;
 
-  if (!receipt || !userId || !productId) {
-    return res.status(400).json({ success: false, message: 'Missing required fields.' });
+  if (!receiptData || !userId || !productId) {
+    return res.status(400).json({ success: false, error: 'Missing required fields' });
   }
 
   try {
+    console.log('📥 Verifying receipt for user:', userId);
+    console.log('🔍 Product:', productId);
+
+    // Build request to Apple
     const requestBody = {
-      'receipt-data': receipt,
-      'password': APPLE_SHARED_SECRET,
-      'exclude-old-transactions': true,
+      'receipt-data': receiptData,
+      'password': 'YOUR_SHARED_SECRET', // App-specific shared secret from App Store Connect
+      'exclude-old-transactions': true
     };
 
-    // Step 1: Attempt to verify with production
+    // First try production
     let response = await axios.post(APPLE_PRODUCTION_URL, requestBody, {
-      headers: { 'Content-Type': 'application/json' },
+      headers: { 'Content-Type': 'application/json' }
     });
 
-    // Step 2: If receipt is from sandbox, retry with sandbox endpoint
-    if (response.data.status === 21007) {
+    let responseData = response.data;
+
+    // If receipt is from sandbox, retry with sandbox URL
+    if (responseData.status === 21007) {
+      console.log('🔄 Receipt is from Sandbox, retrying with Sandbox URL...');
       response = await axios.post(APPLE_SANDBOX_URL, requestBody, {
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 'Content-Type': 'application/json' }
       });
+      responseData = response.data;
     }
 
-    const { status, latest_receipt_info } = response.data;
+    // Log the full response for debugging
+    console.log('📦 Apple receipt response:', JSON.stringify(responseData, null, 2));
 
-    if (status === 0 && latest_receipt_info?.length) {
-      const latest = latest_receipt_info[latest_receipt_info.length - 1];
-      const expirationDate = parseInt(latest.expires_date_ms, 10);
-      const now = Date.now();
-
-      const isActive = expirationDate > now;
-      const tier = productId.includes('plus') ? 3 : 2; // Map product ID to tier
-
-      // TODO: Update user tier in DB here
-      console.log(`✅ Subscription active for user ${userId}, tier: ${tier}`);
-
-      return res.json({ success: true, active: isActive, tier, expiration: expirationDate });
-    } else {
-      return res.status(200).json({ success: false, message: 'Invalid or expired receipt.' });
+    if (responseData.status !== 0) {
+      return res.status(400).json({ success: false, error: 'Invalid receipt', appleStatus: responseData.status });
     }
+
+    // You can now parse the latest subscription info
+    const latestReceiptInfo = responseData.latest_receipt_info?.[0] || {};
+
+    const subscriptionExpirationDate = latestReceiptInfo.expires_date_ms
+      ? new Date(parseInt(latestReceiptInfo.expires_date_ms))
+      : null;
+
+    console.log('✅ Subscription expiration:', subscriptionExpirationDate);
+
+    // Save subscription to your database
+    const { data: eventData, error: eventError } = await supabase
+      .from('Subscriptions')
+      .insert([{ userId, productId, subscriptionExpirationDate, new Date().toISOString(), latestReceiptInfo }])
+      .select()
+
+    if (eventError) {
+      console.error('❌ Supabase error:', eventError);
+      return res.status(400).json({ error: eventError.message || 'Failed to save subscription.' });
+    }
+
+    return res.status(200).json({ success: true, subscriptionExpirationDate });
   } catch (err) {
-    console.error('❌ Apple receipt validation error:', err.message);
-    return res.status(500).json({ success: false, message: 'Server error validating receipt.' });
+    console.error('❌ Error verifying receipt:', err);
+    return res.status(500).json({ success: false, error: 'Server error' });
   }
-};
+});
+
