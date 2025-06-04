@@ -5,6 +5,7 @@ import { updateShowBadge } from '../controllers/ConversationController.js';
 
 const router = Router();
 
+router.put('/cancelSubscription', cancelSubscription);
 router.post('/requestResetPassword', sendResetPasswordEmail);
 router.get('/allUsers', grabAllUsers);
 router.delete('/account/delete', deleteUserAccount);
@@ -15,7 +16,6 @@ router.put('/showBadge', updateShowBadge);
 router.put('/location', updateUserLocation);
 router.put('/tutorial', updateUserTutorial);
 router.put('/upgrade', updateUserTier);
-router.put('/cancelSubscription', cancelSubscription);
 router.put('/socials', updateSocials)
 router.put('/updateInteraction', updateInteraction);
 router.post('/filterProfiles', filterProfiles);
