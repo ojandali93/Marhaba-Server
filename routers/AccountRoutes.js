@@ -1,5 +1,5 @@
 import express from 'express';
-import { updateUserProfile, createCommunicationStyles, createCoreValues, createLoveLanguage, createTimePriorities, createUserAbout, createUserAccount, createUserAnger, createUserAttachment, createUserCareer, createUserCore, createUserEitherOr, createUserEmotions, createUserFuture, createUserLifestyle, createUserPhotos, createUserPreferences, createUserProfile, createUserPrompts, createUserTraits, editUserPhotos, uploadImage, updateUserAbout, updateUserCore, updateuserLifestyle, updateUserFuture, updateUserCareer, updateUserPrompts, updateUserTags, updateSurvey, createNotifications, checkUserEmail, createIntent, createHabits, createReligion, createUserRelationships, updateUserBackground, updateUserIntent, updateUserReligion, updateUserRelationships, createUserSocial, updateViews } from '../controllers/AccountControllers.js';
+import { updateUserProfile, createCommunicationStyles, createCoreValues, createLoveLanguage, createTimePriorities, createUserAbout, createUserAccount, createUserAnger, createUserAttachment, createUserCareer, createUserCore, createUserEitherOr, createUserEmotions, createUserFuture, createUserLifestyle, createUserPhotos, createUserPreferences, createUserProfile, createUserPrompts, createUserTraits, editUserPhotos, uploadImage, updateUserAbout, updateUserCore, updateuserLifestyle, updateUserFuture, updateUserCareer, updateUserPrompts, updateUserTags, updateSurvey, createNotifications, checkUserEmail, createIntent, createHabits, createReligion, createUserRelationships, updateUserBackground, updateUserIntent, updateUserReligion, updateUserRelationships, createUserSocial, updateViews, uploadVideo } from '../controllers/AccountControllers.js';
 
 const router = express.Router();
 
@@ -23,6 +23,7 @@ router.post('/createLove', createLoveLanguage);
 router.post('/createTime', createTimePriorities);
 router.post('/createValues', createCoreValues);
 router.post('/upoadImage', uploadImage);
+router.post('/uploadVideo', uploadVideo);
 router.post('/createCore', createUserCore);
 router.post('/createLifestyle', createUserLifestyle);
 router.post('/createFuture', createUserFuture);

@@ -759,6 +759,40 @@ export const uploadImage = [
   },
 ];
 
+export const uploadVideo = [
+  upload.single('file'), // ⬅️ multer handles the incoming file
+
+  async (req, res) => {
+    try {
+      if (!req.file) {
+        return res.status(400).json({ error: 'No file provided.' });
+      }
+
+      const fileBuffer = req.file.buffer;
+      const originalName = req.file.originalname;
+      const uniqueName = `${uuidv4()}_${originalName}`;
+
+      const { data, error } = await supabase.storage
+        .from('profile-videos')
+        .upload(uniqueName, fileBuffer, {
+          contentType: req.file.mimetype,
+        });
+
+      if (error) {
+        console.error('Supabase upload error:', error);
+        return res.status(500).json({ error: 'Failed to upload to storage' });
+      }
+
+      const publicUrl = `https://mxwqscooobwlsdgmxjsa.supabase.co/storage/v1/object/public/profile-videos/${uniqueName}`;
+
+      return res.status(200).json({ success: true, url: publicUrl });
+    } catch (error) {
+      console.error('Server error:', error);
+      return res.status(500).json({ error: 'Internal server error' });
+    }
+  },
+];
+
 export const createUserEmotions = async (req, res) => {
   try {
     const { userId, conflict, apology, stress, emotion } = req.body;
