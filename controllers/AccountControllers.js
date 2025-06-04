@@ -759,8 +759,15 @@ export const uploadImage = [
   },
 ];
 
+const uploadVideoSignle = multer({
+  storage: multer.memoryStorage(), // or diskStorage if you want
+  limits: {
+    fileSize: 50 * 1024 * 1024, // 50 MB → good for 30–60 sec videos
+  },
+});
+
 export const uploadVideo = [
-  upload.single('file'), // ⬅️ multer handles the incoming file
+  uploadVideoSignle.single('file'), // ⬅️ multer handles the incoming file
 
   async (req, res) => {
     try {
