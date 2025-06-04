@@ -30,10 +30,10 @@ import { supabase } from "../services/SupabaseClient.js";
         .select(`
           *, 
           viewerProfile:viewer ( 
-            *, About(*), Career(*), Core(*), Future(*), Habits(*), Intent(*), Notifications(*),  Photos(*), Preferences(*), Prompts(*), Relationships(*), Religion(*), Social(*), Survey(*), Tags(*)
+            *, About(*), Career(*), Core(*), Future(*), Habits(*), Intent(*), Notifications(*),  Photos(*), Preferences(*), Prompts(*), Relationships(*), Religion(*), Social(*), Subscriptions(*), Survey(*), Tags(*)
           ),
           ViewedProfile:viewed ( 
-            *, About(*), Career(*), Core(*), Future(*), Habits(*), Intent(*), Notifications(*),  Photos(*), Preferences(*), Prompts(*), Relationships(*), Religion(*), Social(*), Survey(*), Tags(*)
+            *, About(*), Career(*), Core(*), Future(*), Habits(*), Intent(*), Notifications(*),  Photos(*), Preferences(*), Prompts(*), Relationships(*), Religion(*), Social(*), Subscriptions(*), Survey(*), Tags(*)
           )
         `)
         .eq('viewer', viewer)
@@ -58,10 +58,10 @@ import { supabase } from "../services/SupabaseClient.js";
         .select(`
           *, 
           viewerProfile:viewer ( 
-            *, About(*), Career(*), Core(*), Future(*), Habits(*), Intent(*), Notifications(*),  Photos(*), Preferences(*), Prompts(*), Relationships(*), Religion(*), Social(*), Survey(*), Tags(*)
+            *, About(*), Career(*), Core(*), Future(*), Habits(*), Intent(*), Notifications(*),  Photos(*), Preferences(*), Prompts(*), Relationships(*), Religion(*), Social(*), Subscriptions(*), Survey(*), Tags(*)
           ),
           ViewedProfile:viewed ( 
-            *, About(*), Career(*), Core(*), Future(*), Habits(*), Intent(*), Notifications(*),  Photos(*), Preferences(*), Prompts(*), Relationships(*), Religion(*), Social(*), Survey(*), Tags(*)
+            *, About(*), Career(*), Core(*), Future(*), Habits(*), Intent(*), Notifications(*),  Photos(*), Preferences(*), Prompts(*), Relationships(*), Religion(*), Social(*), Subscriptions(*), Survey(*), Tags(*)
           )
         `)
         .eq('viewed', viewer)
