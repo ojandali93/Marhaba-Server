@@ -851,7 +851,7 @@ export const cancelSubscription = async (req, res) => {
 
   try {
     const { error } = await supabase
-      .from('About')
+      .from('Profile')
       .update({
         tier: 1,
       })
