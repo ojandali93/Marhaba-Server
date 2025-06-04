@@ -845,3 +845,23 @@ export const updateSocials = async (req, res) => {
     return res.status(500).json({ error: 'Failed to update socials' });
   }
 };
+
+export const cancelSubscription = async (req, res) => {
+  const { userId } = req.body;
+
+  try {
+    const { error } = await supabase
+      .from('About')
+      .update({
+        tier: 1,
+      })
+      .eq('userId', userId)
+
+    if (error) throw error;
+
+    return res.status(200).json({ success: true });
+  } catch (err) {
+    console.error('❌ Error updating socials:', err);
+    return res.status(500).json({ error: 'Failed to update socials' });
+  }
+};
