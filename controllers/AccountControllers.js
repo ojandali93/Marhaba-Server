@@ -132,7 +132,7 @@ export const createNotifications = async (req, res) => {
 
 export const createUserAbout = async (req, res) => {
   try {
-    const { userId, name, email, phone, dob, gender, height, background } = req.body;
+    const { userId, name, email, phone, dob, gender, height, background, videoIntro } = req.body;
 
     const { data: aboutData, error: aboutError } = await supabase
     .from('About')
@@ -145,6 +145,7 @@ export const createUserAbout = async (req, res) => {
       gender,
       height,
       background,
+      videoIntro
     }])
     .select();
 
