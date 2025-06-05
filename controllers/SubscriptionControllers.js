@@ -1,5 +1,5 @@
 export const verifySubscription = async (req, res) => {
-  const { receiptData, userId, productId } = req.body;
+  const { transactionDate, userId, productId, transactionId, transactionReceipt } = req.body;
 
   if (!receiptData || !userId || !productId) {
     return res.status(400).json({ success: false, error: 'Missing required fields' });
@@ -62,14 +62,11 @@ export const verifySubscription = async (req, res) => {
       .insert([
         {
           userId,
-          product_id: latestReceiptInfo.product_id || productId,
-          purchase_date: latestReceiptInfo.purchase_date || null,
-          transaction_id: latestReceiptInfo.transaction_id || null,
-          latestReceiptInfo: JSON.stringify(latestReceiptInfo),
-          bundle_id: responseData?.receipt?.bundle_id || null,
-          original_purchase_date: latestReceiptInfo.original_purchase_date || null,
-          quantity: latestReceiptInfo.quantity || '1',
-          expires_date: latestReceiptInfo.expires_date || null
+          productId,
+          transactionDate,
+          transactionId,
+          transactionReceipt,
+          transactionDate: new Date().toISOString()
         }
       ])
       .select();
