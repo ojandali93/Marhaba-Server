@@ -557,16 +557,13 @@ export const getWeeklyInteractionStats = async (req, res) => {
     }
 
     let likesSent = 0;
-    let superLikesSent = 0;
 
     for (const interaction of data) {
       if (interaction.userId === userId) {
         if (interaction.userInteraction === 'liked') likesSent++;
-        else if (interaction.userInteraction === 'super') superLikesSent++;
       }
       if (interaction.targetUserId === userId) {
         if (interaction.targetInteraction === 'liked') likesSent++;
-        else if (interaction.targetInteraction === 'super') superLikesSent++;
       }
     }
 
@@ -574,7 +571,6 @@ export const getWeeklyInteractionStats = async (req, res) => {
       success: true,
       data: {
         likesSentThisWeek: likesSent,
-        superLikesSentThisWeek: superLikesSent,
       },
     });
 
