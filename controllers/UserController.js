@@ -89,7 +89,6 @@ export const getMatches = async (req, res) => {
     ageMax,
   } = req.body;
 
-  console.log('🔍 Incoming request:', JSON.stringify(req.body, null, 2));
 
   try {
     // STEP 1: Blocked users
@@ -100,7 +99,6 @@ export const getMatches = async (req, res) => {
 
     if (blockError) throw blockError;
     const blockedByIds = blockedBy.map(row => row.blockerId);
-    console.log(`🛑 Blocked by users (${blockedByIds.length}):`, blockedByIds);
 
     // STEP 2: Interactions
     const { data: interactions, error: interactionError } = await supabase
@@ -115,10 +113,6 @@ export const getMatches = async (req, res) => {
       if (i.userId !== userId) interactedUserIds.add(i.userId);
       if (i.targetUserId !== userId) interactedUserIds.add(i.targetUserId);
     });
-
-    console.log(`🔁 Interacted with users (${interactedUserIds.size}):`, [
-      ...interactedUserIds,
-    ]);
 
     // STEP 3: Fetch all profiles
     const { data: compatibilityWithProfiles, error } = await supabase
@@ -152,7 +146,6 @@ export const getMatches = async (req, res) => {
 
     if (error) throw error;
 
-    console.log(`📦 Fetched ${compatibilityWithProfiles.length} total profiles`);
 
     // STEP 4: Distance Filter
     let afterDistance = compatibilityWithProfiles;
@@ -170,10 +163,6 @@ export const getMatches = async (req, res) => {
         }
         return false;
       });
-
-      console.log(
-        `📍 After distance filter (${distance} mi): ${afterDistance.length} profiles`
-      );
     }
 
     // STEP 5: Age Filter
@@ -187,9 +176,6 @@ export const getMatches = async (req, res) => {
         return age >= ageMin && age <= ageMax;
       });
 
-      console.log(
-        `🎂 After age filter (${ageMin}–${ageMax}): ${afterAge.length} profiles`
-      );
     } else {
       afterAge = afterDistance;
     }
@@ -600,12 +586,10 @@ export const filterProfiles = async (req, res) => {
       distance,
     } = req.body;
 
-    console.log('📥 Incoming Filter Request:', JSON.stringify(req.body, null, 2));
 
     const now = new Date();
 
     // Step 1: Fetch all other profiles
-    console.log('📡 Fetching profiles from Supabase...');
     let { data: allProfiles, error } = await supabase
       .from('Profile')
       .select(`
@@ -619,7 +603,6 @@ export const filterProfiles = async (req, res) => {
     }
 
     if (!allProfiles) {
-      console.log('⚠️ No profiles found.');
       return res.status(200).json({ success: true, data: [] });
     }
 
@@ -630,7 +613,6 @@ export const filterProfiles = async (req, res) => {
         const before = remaining.length;
         remaining = remaining.filter(fn);
         const after = remaining.length;
-        console.log(`🔎 Filter [${label}]: ${before} → ${after}`);
       } catch (e) {
         console.error(`❌ Error during filter [${label}]:`, e.message);
         throw new Error(`Filter failed: ${label}`);
@@ -711,10 +693,8 @@ export const filterProfiles = async (req, res) => {
         return dist <= distance;
       });
 
-      console.log(`📍 Distance Filter: ${before} → ${remaining.length}`);
     }
 
-    console.log('✅ Final result count:', remaining.length);
     return res.status(200).json({ success: true, data: remaining });
   } catch (err) {
     console.error('❌ Server Error:', err.message);
