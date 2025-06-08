@@ -543,6 +543,7 @@ export const getWeeklyInteractionStats = async (req, res) => {
 
     const sevenDaysAgo = new Date();
     sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
+    console.log('seven days ago', sevenDaysAgo)
 
     // ✅ Only count likes INITIATED by user
     const { data, error } = await supabase
@@ -551,6 +552,8 @@ export const getWeeklyInteractionStats = async (req, res) => {
       .eq('userId', userId) // ✅ User initiated
       .eq('userInteraction', 'liked') // ✅ Sent a Like
       .gte('created_at', sevenDaysAgo.toISOString());
+
+      console.log('data', data.length)
 
     if (error) {
       console.error('Error fetching weekly stats:', error);
