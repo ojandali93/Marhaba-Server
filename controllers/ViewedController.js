@@ -36,7 +36,7 @@ import { supabase } from "../services/SupabaseClient.js";
             *, About(*), Career(*), Core(*), Future(*), Habits(*), Intent(*), Notifications(*),  Photos(*), Preferences(*), Prompts(*), Relationships(*), Religion(*), Social(*), Subscriptions(*), Survey(*), Tags(*)
           )
         `)
-        .eq('viewer', viewer)
+        .eq('viewed', viewer)
       if (error) {
         console.error('❌ Supabase error:', error);
         return res.status(400).json({ error: error.message });
