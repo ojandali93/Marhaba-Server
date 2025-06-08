@@ -544,11 +544,12 @@ export const getWeeklyInteractionStats = async (req, res) => {
     const sevenDaysAgo = new Date();
     sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
 
-    // Fetch all interactions where user is either sender or receiver
+    // ✅ Only count likes INITIATED by user
     const { data, error } = await supabase
       .from('Interactions')
-      .select('userId, targetUserId, userInteraction, targetInteraction, created_at')
-      .or(`userId.eq.${userId},targetUserId.eq.${userId}`)
+      .select('id') // Only need id to count
+      .eq('userId', userId) // ✅ User initiated
+      .eq('userInteraction', 'liked') // ✅ Sent a Like
       .gte('created_at', sevenDaysAgo.toISOString());
 
     if (error) {
@@ -556,21 +557,12 @@ export const getWeeklyInteractionStats = async (req, res) => {
       return res.status(500).json({ error: 'Failed to fetch interactions' });
     }
 
-    let likesSent = 0;
-
-    for (const interaction of data) {
-      if (interaction.userId === userId) {
-        if (interaction.userInteraction === 'liked') likesSent++;
-      }
-      if (interaction.targetUserId === userId) {
-        if (interaction.targetInteraction === 'liked') likesSent++;
-      }
-    }
+    const likesSent = data.length;
 
     return res.status(200).json({
       success: true,
       data: {
-        likesSentThisWeek: likesSent,
+        likesSentThisWeek: likesSent, // frontend already expects this key
       },
     });
 
