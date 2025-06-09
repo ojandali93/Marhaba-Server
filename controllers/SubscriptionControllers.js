@@ -14,12 +14,12 @@ export const verifySubscription = async (req, res) => {
     // Build request to Apple
     const requestBody = {
       'receipt-data': transactionReceipt,
-      'password': 'YOUR_SHARED_SECRET',
+      'password': 'f993dc47c32f45d092ba789ac792db76',
       'exclude-old-transactions': true
     };
 
     // First try production
-    let response = await axios.post(APPLE_PRODUCTION_URL, requestBody, {
+    let response = await axios.post('https://buy.itunes.apple.com/verifyReceipt', requestBody, {
       headers: { 'Content-Type': 'application/json' }
     });
 
@@ -28,7 +28,7 @@ export const verifySubscription = async (req, res) => {
     // If receipt is from sandbox, retry with sandbox URL
     if (responseData.status === 21007) {
       console.log('\ud83d\udd04 Receipt is from Sandbox, retrying with Sandbox URL...');
-      response = await axios.post(APPLE_SANDBOX_URL, requestBody, {
+      response = await axios.post('https://sandbox.itunes.apple.com/verifyReceipt', requestBody, {
         headers: { 'Content-Type': 'application/json' }
       });
       responseData = response.data;
