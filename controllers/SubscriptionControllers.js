@@ -1,7 +1,7 @@
 export const verifySubscription = async (req, res) => {
   const { transactionDate, userId, productId, transactionId, transactionReceipt } = req.body;
 
-  if (!receiptData || !userId || !productId) {
+  if (!userId || !productId || !transactionDate || !transactionId || !transactionReceipt) {
     return res.status(400).json({ success: false, error: 'Missing required fields' });
   }
 
@@ -11,7 +11,7 @@ export const verifySubscription = async (req, res) => {
 
     // Build request to Apple
     const requestBody = {
-      'receipt-data': receiptData,
+      'receipt-data': transactionReceipt,
       'password': 'YOUR_SHARED_SECRET',
       'exclude-old-transactions': true
     };
