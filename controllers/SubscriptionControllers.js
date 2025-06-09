@@ -1,4 +1,5 @@
 import axios from 'axios';
+import { supabase } from '../services/SupabaseClient.js';
 
 export const verifySubscription = async (req, res) => {
   const { transactionDate, userId, productId, transactionId, transactionReceipt } = req.body;
