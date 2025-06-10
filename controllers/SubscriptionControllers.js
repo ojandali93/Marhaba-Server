@@ -1,6 +1,12 @@
 import axios from 'axios';
 import { supabase } from '../services/SupabaseClient.js';
 
+// Replace this with your actual shared secret from App Store Connect
+const APPLE_SHARED_SECRET = 'f993dc47c32f45d092ba789ac792db76';
+
+const APPLE_PRODUCTION_URL = 'https://buy.itunes.apple.com/verifyReceipt';
+const APPLE_SANDBOX_URL = 'https://sandbox.itunes.apple.com/verifyReceipt';
+
 export const verifySubscription = async (req, res) => {
   const { transactionDate, userId, productId, transactionId, transactionReceipt } = req.body;
 
@@ -9,79 +15,96 @@ export const verifySubscription = async (req, res) => {
   }
 
   try {
-    console.log('\ud83d\udcc5 Verifying receipt for user:', userId);
-    console.log('\ud83d\udd0d Product:', productId);
+    console.log('🧾 Verifying receipt for user:', userId);
+    console.log('🔍 Product:', productId);
 
-    // Build request to Apple
     const requestBody = {
       'receipt-data': transactionReceipt,
-      'password': 'f993dc47c32f45d092ba789ac792db76',
+      'password': APPLE_SHARED_SECRET,
       'exclude-old-transactions': true
     };
 
-    // First try production
-    let response = await axios.post('https://buy.itunes.apple.com/verifyReceipt', requestBody, {
+    // 1. Try production first
+    let response = await axios.post(APPLE_PRODUCTION_URL, requestBody, {
       headers: { 'Content-Type': 'application/json' }
     });
 
     let responseData = response.data;
 
-    // If receipt is from sandbox, retry with sandbox URL
-    if (responseData.status === 21007) {
-      console.log('\ud83d\udd04 Receipt is from Sandbox, retrying with Sandbox URL...');
-      response = await axios.post('https://sandbox.itunes.apple.com/verifyReceipt', requestBody, {
+    // 2. If 21007, retry with sandbox
+    if (responseData?.status === 21007) {
+      console.log('🔁 Receipt is from sandbox. Retrying...');
+      response = await axios.post(APPLE_SANDBOX_URL, requestBody, {
         headers: { 'Content-Type': 'application/json' }
       });
       responseData = response.data;
     }
 
-    // Log the full response for debugging
-    console.log('\ud83d\udce6 Apple receipt response:', JSON.stringify(responseData, null, 2));
+    console.log('📦 Apple receipt response:', JSON.stringify(responseData, null, 2));
 
     if (responseData.status !== 0) {
-      return res.status(400).json({ success: false, error: 'Invalid receipt', appleStatus: responseData.status });
+      return res.status(400).json({
+        success: false,
+        error: 'Invalid receipt',
+        appleStatus: responseData.status
+      });
     }
 
-    // Parse the latest subscription info (pick latest one with highest expires_date)
     const latestReceiptInfoList = responseData.latest_receipt_info || [];
 
     if (latestReceiptInfoList.length === 0) {
-      return res.status(400).json({ success: false, error: 'No subscription info found in receipt.' });
+      return res.status(400).json({
+        success: false,
+        error: 'No valid subscription info in receipt'
+      });
     }
 
-    const latestReceiptInfo = latestReceiptInfoList.reduce((latest, current) => {
-      return parseInt(current.expires_date_ms || '0') > parseInt(latest.expires_date_ms || '0') ? current : latest;
-    });
+    // Get latest by expiration
+    const latestReceiptInfo = latestReceiptInfoList.reduce((latest, current) =>
+      parseInt(current.expires_date_ms || '0') > parseInt(latest.expires_date_ms || '0')
+        ? current
+        : latest
+    );
 
     const subscriptionExpirationDate = latestReceiptInfo.expires_date_ms
       ? new Date(parseInt(latestReceiptInfo.expires_date_ms)).toISOString()
       : null;
 
-    console.log('\u2705 Subscription expiration:', subscriptionExpirationDate);
+    console.log('✅ Subscription expires on:', subscriptionExpirationDate);
 
-    // Save subscription to your database
+    // 3. Store to Supabase
     const { data: eventData, error: eventError } = await supabase
       .from('Subscriptions')
       .insert([
         {
           userId,
           productId,
-          transactionDate,
           transactionId,
           transactionReceipt,
-          transactionDate: new Date().toISOString()
+          transactionDate: new Date().toISOString(),
+          expirationDate: subscriptionExpirationDate
         }
       ])
       .select();
 
     if (eventError) {
-      console.error('\u274c Supabase error:', eventError);
-      return res.status(400).json({ error: eventError.message || 'Failed to save subscription.' });
+      console.error('❌ Supabase insert error:', eventError);
+      return res.status(400).json({
+        success: false,
+        error: eventError.message || 'Failed to store subscription'
+      });
     }
 
-    return res.status(200).json({ success: true, subscriptionExpirationDate, eventData });
+    return res.status(200).json({
+      success: true,
+      subscriptionExpirationDate,
+      eventData
+    });
   } catch (err) {
-    console.error('\u274c Error verifying receipt:', err);
-    return res.status(500).json({ success: false, error: 'Server error' });
+    console.error('❌ Server error during verification:', err?.response?.data || err.message);
+    return res.status(500).json({
+      success: false,
+      error: 'Internal server error'
+    });
   }
 };
